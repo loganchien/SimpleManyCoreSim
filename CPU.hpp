@@ -33,17 +33,18 @@ struct CPU
     }
 
 
-    /// Dispatches and, if possible, executes one simulated instruction. Returns false, if there are no more instruction to execute (i.e. EOF reached).
+    /// Dispatches and, if possible, executes one simulated instruction. Returns false, if there are no more instructions to execute (i.e. EOF reached).
     bool DispatchNext()
     {
-        assert(!IsStalling());
+        if (IsStalling()) return true;
         
         ++simInstructionCount;
-        // TODO: Only run/start the next instruction
 
-        // TODO: Call DispatchLoad on load
+        // TODO: Only run/start a single instruction
 
-        // TODO: Call if the current instruction was the last instruction: tile->coreBlock->OnThreadFinished(*currentThread);
+        // TODO: Call DispatchLoad when encountering a load instruction
+
+        // TODO: If the current instruction was the last instruction (or EOF), call tile->coreBlock->OnThreadFinished(*currentThread);
     }
 
 
@@ -65,7 +66,6 @@ struct CPU
         //      1. The instruction handler calls MMU.LoadWord(address)
         //      2. This function is called by MMU upon request completion (might be immediate or might take a while)
         //          -> Execute the rest of the load instruction here 
-        //          -> Note: This might run on a different thread, but it's OK, because StepOne cannot run while still stalling
         
         
         isStalling = false;
