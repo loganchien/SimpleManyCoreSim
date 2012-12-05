@@ -1,0 +1,10 @@
+*ReSharper*
+Debug
+Release
+ipch
+*.sdf
+*.opensdf
+*.suo
+~*.pptx
+*.o
+
