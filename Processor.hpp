@@ -115,6 +115,15 @@ struct Processor
         }
     }
 
+    
+    /// Collect stats from the functional units of the block
+    void CollectStats(TaskBlock& taskBlock)
+    {
+        CoreBlock& coreBlock = *taskBlock.coreBlock;
+
+        // TODO: Collect stats from all tiles (Core, MMU, Cache)
+    }
+
 
     /// Evaluates and/or writes stats to file
     void EvaluateStats()
@@ -165,6 +174,9 @@ struct Processor
     void OnTaskBlockFinished(TaskBlock& taskBlock)
     {
         PrintLine("TaskBLock finished: " << task.name << " (" << taskBlock.taskBlockIdx.x << ", " << taskBlock.taskBlockIdx.y << ")");
+
+        // Collect stats from the functional units of the block
+        CollectStats(taskBlock);
 
         if (taskBlock.task->HasMoreBlocks())
         {

@@ -48,10 +48,10 @@ struct CPU
 
 
     /// Forwards a load instruction to the MMU
-    void DispatchLoad(int msg)
+    void DispatchLoad(int addrWord)
     {
         simLoadInstructionCount++;
-        Address addr(msg);
+        Address addr(addrWord);
         mmu.LoadWord(addr);
     }
 
