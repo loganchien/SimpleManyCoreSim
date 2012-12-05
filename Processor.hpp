@@ -17,7 +17,7 @@ struct Processor
     /// All blocks available on this processor
     CoreBlock* blocks;
     
-    /// The Global Memory Controller supplies data that is not in any cache
+    /// The Global Memory Controller is responsible for supplying data that is not in any cache
     GlobalMemoryController gMemController;
 
     /// The current batch of tasks to run
@@ -69,7 +69,7 @@ struct Processor
 
         // Assign initial task blocks in round-robin fashion
         int t = 0;
-        for (int i = 0; i < gridSize.Area(); ++i)
+        for (int i = 0; i < coreGridSize.Area(); ++i)
         {
             Task* task = GetNextTask(task);
             if (!task) break;
