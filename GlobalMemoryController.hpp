@@ -14,11 +14,18 @@ struct GlobalMemoryController
     static const int GMemIdx = 1024 * 64 - 1;
 
     Processor* processor;
+
+    std::vector<WORD> memory;
     std::mutex queueLock;
     std::deque<Message> msgQueue;
 
     /// The sim time of the mem controller
     long long simTime;
+
+    GlobalMemoryController()
+    {
+        memory.resize(MAX_MEM_SIZE);
+    }
 
     void InitGMemController(Processor* processor)
     {
@@ -50,7 +57,7 @@ struct GlobalMemoryController
         response.receiver = request.sender;                     
         response.requestId = request.requestId;
         response.totalDelay = request.totalDelay + GlobalConfig.MemDelay;
-        memcpy(response.cacheLine, words, sizeof(int) * GlobalConfig::CacheLineSize);
+        memcpy(response.cacheLine, &memory[request.addr.Raw], sizeof(WORD) * GlobalConfig::CacheLineSize);
 
         // TODO: Compute index of boundary router, closest to destination router
         int2 nearestRouterId = ;

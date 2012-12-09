@@ -4,6 +4,10 @@
 
 #define _VERBOSE
 
+
+#define MAX_MEM_SIZE (8 * 1024 * 1024)
+
+
  struct SimConfig
  {
     // ################################ Tile Grid ################################

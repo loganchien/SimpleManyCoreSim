@@ -25,6 +25,9 @@ typedef unsigned short ushort;
 /// Represents an address in 32-bit address space
 struct Address
 {
+    /// The raw integer representation of the address
+    Raw;
+
     union
     {
         L1Index;

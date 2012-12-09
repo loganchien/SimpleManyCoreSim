@@ -42,9 +42,6 @@ struct MMU
     
     // ######### Simulation stuff #########
 
-    /// Whether this MMU is currently causing a stall to it's processor
-    bool isStalling;
-
     /// Total simulated time spent on memory requests
     long long simTime;
 
@@ -67,6 +64,7 @@ struct MMU
         ResetMMU();
     }
 
+
     /// Reset MMU to initial state
     void ResetMMU()
     {
@@ -75,7 +73,6 @@ struct MMU
         l2.Reset();
         
         simTime = 0;
-        isStalling = false;
         
         // Clear outstanding requests
         lastRequestId = 0;
@@ -121,11 +118,13 @@ struct MMU
         // TODO: Domi
     }
     
+
     /// Fetch cacheline from the given off-tile L2 cache chunk. Note that this is only used by the local Core.
     int FetchRemoteL2(int2 holderIdxr, int totalDelay, const Address& add)
     {
         SendRequest(MessageTypeRequestL2, tile->tileIdx, holderIdx, addr, totalDelay);
     }
+
 
     /// Fetch word from on-tile L2
     void FetchLocalL2(int2 requesterIdx, int totalDelay, const Address& addr)
@@ -139,16 +138,18 @@ struct MMU
             // L2 miss
             FetchFromMemory(requesterIdx, addr, totalDelay);
         }
-        
-        if (requesterIdx == tile->tileIdx)
-        {
-            // Local request -> Can be committed immediately
-            CommitLoad(line, totalDelay, addr);
-        }
         else
         {
-            // Send value back to requester
-            SendResponse(MessageTypeResponseCacheline, requesterIdx, words, totalDelay);
+            if (requesterIdx == tile->tileIdx)
+            {
+                // Local request -> Can be committed immediately
+                CommitLoad(line, totalDelay, addr);
+            }
+            else
+            {
+                // Send value back to requester
+                SendResponse(MessageTypeResponseCacheline, requesterIdx, line->words, totalDelay);
+            }
         }
     }
 
@@ -163,7 +164,7 @@ struct MMU
     // ############################################# Handle incoming Messages #############################################
     
     /// Called by router when a Cacheline has been sent to this tile
-    void OnCachelineReceived(int requestId, int totalDelay, int* words)
+    void OnCachelineReceived(int requestId, int totalDelay, WORD* words)
     {
         OutstandingRequest& request = requests[requestId];
         assert(request.pending);
@@ -176,7 +177,7 @@ struct MMU
         }
         
 
-        // TODO: Handle the case where multiple requesters requested the same line without sending multiple packets
+        // TODO: Handle coalescing (i.e. multiple requesters request the same line in a single packets)
         
         if (request.requesterIdx == tile->tileIdx)
         {
@@ -230,12 +231,6 @@ struct MMU
     /// Creates and sends a new Request Message
     void SendRequest(MessageType type, int2 requesterIdx, int2 receiver, Address addr, int totalDelay)
     {
-        if (requesterIdx == tile->tileIdx)
-        {
-            // When we send out a request, we have to wait for a while for stuff to come back
-            isStalling = true;
-        }
-
         // Add request to request buffer
         int requestId;
         OutstandingRequest& request = GetFreeRequest(requestId);
@@ -259,7 +254,7 @@ struct MMU
     
 
     /// Creates and sends a new Response Message
-    void SendResponse(MessageType type, int2 receiver, int* words, int totalDelay)
+    void SendResponse(MessageType type, int2 receiver, WORD* words, int totalDelay)
     {
         // Create Message object
         Message msg;
@@ -269,7 +264,7 @@ struct MMU
         msg.requestId = requestId;
         msg.totalDelay = totalDelay;
         msg.addr = addr;
-        memcpy(msg.cacheLine, words, sizeof(int) * GlobalConfig::CacheLineSize);
+        memcpy(msg.cacheLine, words, sizeof(WORD) * GlobalConfig::CacheLineSize);
 
         // Send the message
         tile->router.EnqueueMessage(msg);

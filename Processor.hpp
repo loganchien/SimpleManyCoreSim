@@ -106,7 +106,7 @@ struct Processor
             {
                 // One iteration per tile
                 Tile& tile = block.tiles[i];
-                //for (int s = 0; s < !tile.cpu->IsStalling() && !tile.; ++s)
+                //for (int s = 0; s < !tile.cpu->isLoadingData && !tile.; ++s)
                 {
                     tile.cpu->DispatchNext();
                     tile.router->DispatchNext();

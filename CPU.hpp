@@ -9,7 +9,7 @@ struct CPU
     Thread* currentThread;
     
     /// Whether this Core is currently waiting for off-chip data
-    bool isStalling;
+    bool isLoadingData;
 
     /// The total amount of instructions
     long long simInstructionCount, simLoadInstructionCount;
@@ -23,20 +23,25 @@ struct CPU
         mmu.InitMMU(thread->tile);
     }
 
+
+    /// This Core starts running the given Thread
     void StartThread(Thread* thread)
     {
         currentThread = thread;
         
+        isLoadingData = false;
+        simInstructionCount = simLoadInstructionCount = 0;
+
         mmu.ResetMMU();
         
-        // TODO: Put thread.Code into I-Cache
+        // TODO: Put thread.code into I-Cache
     }
 
 
     /// Dispatches and, if possible, executes one simulated instruction. Returns false, if there are no more instructions to execute (i.e. EOF reached).
     bool DispatchNext()
     {
-        if (IsStalling()) return true;
+        if (isLoadingData) return true;
         
         ++simInstructionCount;
 
@@ -51,24 +56,27 @@ struct CPU
     /// Forwards a load instruction to the MMU
     void DispatchLoad(int addrWord)
     {
-        simLoadInstructionCount++;
+        ++simLoadInstructionCount;
         Address addr(addrWord);
         mmu.LoadWord(addr);
+        isLoadingData = true;
     }
 
     
     /// Called by MMU when it received data that this CPU is waiting for
-    void CommitLoad(int data)
+    void CommitLoad(WORD data)
     {
-        assert(IsStalling());
+        assert(isLoadingData);
 
         // TODO: Separate LOAD instruction into two parts:
         //      1. The instruction handler calls MMU.LoadWord(address)
         //      2. This function is called by MMU upon request completion (might be immediate or might take a while)
         //          -> Execute the rest of the load instruction here 
         
+        // TODO: Figure out which part of the requested word is needed (which byte, which half-word, or the entire word?) 
+        //      Possibly by just storing the requested length in a variable before sending the request to the MMU
         
-        isStalling = false;
+        isLoadingData = false;
     }
 
     // ...

@@ -5,17 +5,17 @@
 /// A traditional cache line
 struct CacheLine
 {
-    bool Valid;
-    int Tag;
-    int Words[SimConfig::CacheLineWordSize];
+    bool valid;
+    int tag;
+    WORD words[SimConfig::CacheLineWordSize];
     
     CacheLine()
     {
-        Valid = false;
+        valid = false;
     }
 
     /// Get the word at the given address (given the address maps to this line)
-    int GetWord(const Address& addr)
+    WORD GetWord(const Address& addr)
     {
         return words[addr.WordOffset];
     }
@@ -50,15 +50,19 @@ struct Cache
         lines.resize(size);
     }
 
-    CacheLine& UpdateLine(const Address& addr, int* words)
+
+    /// The given CacheLine is updated
+    CacheLine& UpdateLine(const Address& addr, WORD* words)
     {
         CacheLine& line = lines[addr.Index - offset];
         
-        // TODO: Copy words into cacheline and set Valid bit
+        // TODO: Copy words into cacheline and set valid and tag
 
         return line;
     }
 
+    
+    /// Usually the cache is only reset when the processor is reset (i.e. when starting a new batch)
     void Reset()
     {
         lines.clear();
@@ -67,13 +71,14 @@ struct Cache
         simAccessCount = simMissCount = 0;
     }
     
-    /// Lookup the word at the given address
+
+    /// Get the entry of the given address
     bool GetEntry(const Address& addr, CacheLine* line)
     {   
         ++simAccessCount;
 
         line = &lines[addr.Index - offset];
-        if (line->Valid && line->Tag == addr.Tag)
+        if (line->valid && line->tag == addr.tag)
         {
             // cache hit
             return true;
