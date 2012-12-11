@@ -8,6 +8,10 @@
 
 #include <vector>
 
+#include "simutil.hpp"
+#include "Tile.hpp"
+#include "Cache.hpp"
+#include "Processor.hpp"
 
 struct OutstandingRequest
 {
@@ -27,7 +31,7 @@ struct MMU
     Cache l1, l2;
 
     /// The index of this tile's L2 chunk
-    int l2ChunkIndex;
+    int l2ChunkIdx;
 
     /// The last used request buffer entry index
     int lastRequestId;
@@ -56,10 +60,10 @@ struct MMU
         this->tile = tile;
 
         // Initialize Caches
-        // TODO: Compute chunk index
-        l2ChunkIndex = "index of tile within core block";
-        l1.InitCache(GlobalConfig.L1CacheSize);
-        l2.InitCache(GlobalConfig.L2CacheSize, chunkIndex * GlobalConfig.L2CacheSize);
+        l2ChunkIdx = tile->coreBlock->ComputeL2ChunkIndex(tile->tileIdx);
+        
+        l1.InitCache(GlobalConfig.CacheL1Size);
+        l2.InitCache(GlobalConfig.CacheL2Size, l2ChunkIdx * GlobalConfig.CacheL2Size);
         
         ResetMMU();
     }
@@ -93,11 +97,11 @@ struct MMU
         if (!l1.GetLine(addr, line))
         {
             // L1 miss
-            int2 l2TileIdx = GetL2Idx(addr);
-            if (l2TileIdx != tile.tileIdx)
+            int addrL2ChunkIdx = tile->coreBlock->ComputeL2ChunkIndex(addr);
+            if (addrL2ChunkIdx != l2ChunkIdx)
             {
                 // Get from off-tile L2
-                FetchRemoteL2(l2TileIdx, totalDelay, addr);
+                FetchRemoteL2(tile->coreBlock->ComputeTileIndex(addrL2ChunkIdx), totalDelay, addr);
             }
             else
             {
@@ -110,17 +114,10 @@ struct MMU
             CommitLoad(line, totalDelay, addr);
         }
     }
-
-    
-    /// Do Z-order lookup (simple conversion from cache entry index to tile)
-    int GetL2Idx(const Address& addr)
-    {
-        // TODO: Domi
-    }
     
 
     /// Fetch cacheline from the given off-tile L2 cache chunk. Note that this is only used by the local Core.
-    int FetchRemoteL2(int2 holderIdxr, int totalDelay, const Address& add)
+    int FetchRemoteL2(int2 holderIdx, int totalDelay, const Address& addr)
     {
         SendRequest(MessageTypeRequestL2, tile->tileIdx, holderIdx, addr, totalDelay);
     }
@@ -169,8 +166,8 @@ struct MMU
         OutstandingRequest& request = requests[requestId];
         assert(request.pending);
         
-        int addrChunkIdx = reqest.addr.L2Index / GlobalConfig.L2CacheSize;
-        if (addrChunkIdx == l2ChunkIndex)
+        int addrChunkIdx = request.addr.L2Index / GlobalConfig.L2CacheSize;
+        if (addrChunkIdx == l2ChunkIdx)
         {
             // Address maps to this tile's L2 chunk, so have to update it
             l2.Update(request.addr, words);

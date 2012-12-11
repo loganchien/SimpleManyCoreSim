@@ -96,13 +96,13 @@ struct Processor
 
         // Simulate one step for each tile
         // Run on all available cores, using OpenMP
-        #pragma omp parallel for private(i, tile, s)
+        //#pragma omp parallel for private(i, tile, s)
         for (int bi = 0; bi < coreGridSize.Area(); ++bi)
         {
             // One iteration per block
             CoreBlock& block = blocks[bi];
             
-            for (int i = 0; i < coreBlockSize.Area(); i)
+            for (int i = 0; i < coreBlockSize.Area(); ++i)
             {
                 // One iteration per tile
                 Tile& tile = block.tiles[i];

@@ -52,14 +52,14 @@ struct Router
     {
         if (msgQueue.size() == 0) return;
 
+        // TODO: Simulate queueing delay for all waiting packets
+        msg.totalDelay += GlobalConfig.QueuingDelay;
+
         // Dequeue next message
         queueLock.lock();
         Message& msg = msgQueue.front();
         msgQueue.pop_front();
         queueLock.unlock();
-
-        // Simulate dispatch delay
-        msg.totalDelay += GlobalConfig.DispatchDelay;
 
         // Handle dispatch
         if (msg.receiver == tile->tileIdx || msg.IsBroadcast())

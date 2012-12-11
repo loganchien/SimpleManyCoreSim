@@ -56,10 +56,10 @@ struct TaskBlock
         assert(HasMoreThreads());
 
         Thread nextThread;
-        nextThread.InitTaskBlock(this, lastBlockIdx, coreBlock);
+        nextThread.InitThread(this, nextThreadId, tile, GetInjectedCode(nextThreadId));
         
-        nextThreadId.Inc(task->blockSize.x);
+        nextThreadId.Inc(1);
 
-        return nextBlock;
+        return nextThread;
     }
 };

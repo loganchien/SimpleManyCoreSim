@@ -11,6 +11,10 @@ struct Thread
     /// The index of this thread within it's TaskBlock
     int2 threadIdx;
 
+
+    /// This thread's instruction stream
+    Code code;
+
     void InitThread(params)
     {
         // TODO: Init thread

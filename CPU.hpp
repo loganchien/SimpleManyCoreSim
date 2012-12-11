@@ -34,7 +34,7 @@ struct CPU
 
         mmu.ResetMMU();
         
-        // TODO: Put thread.code into I-Cache
+        // TODO: Copy thread.code into mmu.code
     }
 
 
@@ -74,7 +74,7 @@ struct CPU
         //          -> Execute the rest of the load instruction here 
         
         // TODO: Figure out which part of the requested word is needed (which byte, which half-word, or the entire word?) 
-        //      Possibly by just storing the requested length in a variable before sending the request to the MMU
+        //      Possibly by just storing the requested length in a variable before in DispatchLoad
         
         isLoadingData = false;
     }

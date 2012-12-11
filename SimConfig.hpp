@@ -28,6 +28,12 @@
     /// Total amount of cores in a core block
     int CoreBlockSize() { return CoreBlockLen * CoreBlockLen; }
 
+    /// Convers the given 1D index within a CoreBlock to the corresponding 2D index
+    int2 ComputeInCoreBlockIdx2(int inCoreBlockIdx1)
+    {
+        div_t d = div(inCoreBlockIdx1, CoreBlockLen);
+        return int2(d.quot, d.rem);
+    }
 
     
     // ################################ Caches ################################
@@ -39,11 +45,16 @@
     int CacheL1Size, CacheL1Delay;
 
     /// L2 size & access time
-    int CacheL1Size, CacheL2Delay;
+    int CacheL2Size, CacheL2Delay;
     
     /// Main memory access time
     int CacheMissDelay;
 
+    /// Total size of shared L2 in a core block
+    int GetTotalL2CacheSize()
+    {
+        return CoreBlockSize() * CacheL2Size;
+    }
     
     // ################################ Networking ################################
 

@@ -44,7 +44,7 @@ struct Message
     union
     {
         Address addr;
-        int cacheLine[GlobalCfg::CacheLineSize];
+        WORD cacheLine[GlobalCfg::CacheLineSize];
     }
 
     /// Whether this message is broadcasted to all cores of a core block
