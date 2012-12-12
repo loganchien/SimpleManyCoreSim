@@ -1,3 +1,13 @@
+#ifndef THREAD_HPP
+#define THREAD_HPP
+
+#include "simutil.hpp"
+
+#include <vector>
+#include <stdint.h>
+
+struct Tile;
+struct TaskBlock;
 
 /// A thread is an instruction streams that runs on one Core
 struct Thread
@@ -11,12 +21,13 @@ struct Thread
     /// The index of this thread within it's TaskBlock
     int2 threadIdx;
 
-
     /// This thread's instruction stream
-    Code code;
+    std::vector<uint8_t> code;
 
-    void InitThread(params)
+    void InitThread(TaskBlock*, int2, Tile&, const std::vector<uint8_t>&)
     {
         // TODO: Init thread
     }
 };
+
+#endif // THREAD_HPP
