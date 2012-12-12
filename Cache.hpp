@@ -1,4 +1,9 @@
+#ifndef CACHE_HPP
+#define CACHE_HPP
 
+#include "VisualCXXCompatibility.hpp"
+#include "SimConfig.hpp"
+#include "simutil.hpp"
 
 #include <vector>
 
@@ -8,7 +13,7 @@ struct CacheLine
     bool valid;
     int tag;
     WORD words[SimConfig::CacheLineWordSize];
-    
+
     CacheLine()
     {
         valid = false;
@@ -32,7 +37,7 @@ struct Cache
 
     /// Amount of lines
     int size;
-    
+
     /// Address offset of this cache chunk. Must be subtracted from actual entry index. Default = 0
     int offset;
 
@@ -54,7 +59,7 @@ struct Cache
     /// The given CacheLine is updated
     CacheLine& UpdateLine(const Address& addr, WORD* words)
     {
-        CacheLine& line = lines[addr.Index - offset];
+        CacheLine& line = lines[addr.L1Index - offset]; // FIXME: L1Index?
         
         // TODO: Copy words into cacheline and set valid and tag
 
@@ -70,22 +75,24 @@ struct Cache
 
         simAccessCount = simMissCount = 0;
     }
-    
+
 
     /// Get the entry of the given address
     bool GetEntry(const Address& addr, CacheLine* line)
-    {   
+    {
         ++simAccessCount;
 
-        line = &lines[addr.Index - offset];
-        if (line->valid && line->tag == addr.tag)
+        line = &lines[addr.L1Index - offset]; // FIXME: L1Index?
+        if (line->valid && line->tag == addr.L1Tag) // FIXME: L1Tag?
         {
             // cache hit
             return true;
         }
-        
+
         // cache miss
         ++simMissCount;
         return false;
     }
 };
+
+#endif // CACHE_HPP
