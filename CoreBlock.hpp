@@ -39,32 +39,32 @@ struct CoreBlock
     }
 
 
-    /// Computes the tile index of the given L2 chunk within this core block
-    int2 ComputeTileIndex(int l2ChunkIdx) const
+    /// Computes the global 2D index of the given block-local 1D index
+    int2 ComputeTileIndex(int inCoreID) const
     {
-        return ComputeCoreBlockOrigin() + GlobalConfig.ComputeInCoreBlockIdx2(l2ChunkIdx);
+        return ComputeCoreBlockOrigin() + GlobalConfig.ComputeInCoreBlockIdx2(inCoreID);
     }
-
     
-    /// Do Z-order lookup (simple conversion from cache entry index to tile)
-    int ComputeL2ChunkIndex(const Address& addr) const
+    /// Computes the L2 chunk index of the given memory address
+    int ComputeL2ChunkID(const Address& addr) const
     {
-        return ComputeL2ChunkIndex(addr.GetL2ChunkIndex());
+        return ComputeL2ChunkID(GlobalConfig.ComputeInCoreBlockIdx2(addr.GetL2ChunkIdx1()));
     }
 
 
-    /// Computes the L2 chunk index of the given tile index
-    int ComputeL2TileChunkIndex(int2 tileIdx) const
+    /// Computes the L2 chunk index of the given global tile index
+    int ComputeL2TileChunkID(int2 globalIdx) const
     {
         int2 blockOrigin = ComputeCoreBlockOrigin();
-        return ComputeL2ChunkIndex(tileIdx - blockOrigin);
+        return ComputeL2ChunkID(globalIdx - blockOrigin);
     }
 
 
-    /// Computes the L2 chunk index of the given in-block indexs
-    int ComputeL2ChunkIndex(int2 chunkIdx2) const
+    /// Computes the L2 chunk ID of the given block-local 2D index
+    int ComputeL2ChunkID(int2 inCoreBlockIdx2) const
     {
-        // TODO: Domi
+        // TODO: Convert to 1D index, possibly using Z-order 
+        //return inBlockIdx;
     }
 
 

@@ -60,7 +60,7 @@ struct MMU
         this->tile = tile;
 
         // Initialize Caches
-        l2ChunkIdx = tile->coreBlock->ComputeL2ChunkIndex(tile->tileIdx);
+        l2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(tile->tileIdx);
         
         l1.InitCache(GlobalConfig.CacheL1Size);
         l2.InitCache(GlobalConfig.CacheL2Size, l2ChunkIdx * GlobalConfig.CacheL2Size);
@@ -97,7 +97,7 @@ struct MMU
         if (!l1.GetLine(addr, line))
         {
             // L1 miss
-            int addrL2ChunkIdx = tile->coreBlock->ComputeL2ChunkIndex(addr);
+            int addrL2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(addr);
             if (addrL2ChunkIdx != l2ChunkIdx)
             {
                 // Get from off-tile L2
