@@ -1,10 +1,18 @@
+#ifndef TASK_BLOCK_HPP
+#define TASK_BLOCK_HPP
 
+#include "simutil.hpp"
+#include <vector>
+#include <stdint.h>
 
 struct Tile;
+struct Thread;
+struct Task;
+struct CoreBlock;
 
 /**
- * Every Task is logically partitioned into TaskBlocks. 
- * One TaskBlock has a fixed size of threads that can be scheduled on an assigned CoreBlock.
+ * Every Task is logically partitioned into TaskBlocks.  One TaskBlock has a
+ * fixed size of threads that can be scheduled on an assigned CoreBlock.
  */
 struct TaskBlock
 {
@@ -12,54 +20,27 @@ struct TaskBlock
     Task* task;
     int2 taskBlockIdx;
     CoreBlock* assignedBlock;
+    int finishedCount;
 
     /// The id of the first thread that has not been scheduled yet
     int2 nextThreadId;
 
     TaskBlock() {}
-    
-    /// Initializes this TaskBlock
-    void InitTaskBlock(params)
-    {
-        // TODO: Init TaskBlock
 
-        assignedBlock->taskBlock = this;
-    }
+    /// Initializes this TaskBlock
+    void InitTaskBlock(Task*, int, CoreBlock&);
 
     /// Instruments the Task code for this block (i.e. insert block-id, thread-id etc into special placeholders within the code)
-    Code GetInjectedCode(int2 threadId)
-    {
-        // copy original code
-        Code origCode = task->code;
-        
-        // TODO: Replace placeholders in constant segment with thread id information
-
-        return code;
-    }
-    
+    std::vector<uint8_t> GetInjectedCode(int2 threadId);
 
     /// Whether this TaskBlock still has unscheduled threads
-    bool HasMoreThreads() const
-    {
-        return nextThreadId.Area() <= task->blockSize.Area();
-    }
+    bool HasMoreThreads() const;
 
     /// Whether all TaskBlocks of this Task have already finished running
-    bool IsFinished()
-    {
-        return finishedCount == task->blockSize.Area();
-    }
+    bool IsFinished();
 
     /// Creates the next Thread from this TaskBlock to run on the given tile
-    Thread CreateNextThread(Tile& tile)
-    {
-        assert(HasMoreThreads());
-
-        Thread nextThread;
-        nextThread.InitThread(this, nextThreadId, tile, GetInjectedCode(nextThreadId));
-        
-        nextThreadId.Inc(1);
-
-        return nextThread;
-    }
+    Thread CreateNextThread(Tile& tile);
 };
+
+#endif // TASK_BLOCK_HPP

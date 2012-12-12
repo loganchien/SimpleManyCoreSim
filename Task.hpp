@@ -1,6 +1,10 @@
+#include "simutil.hpp"
 
+#include <vector>
+#include <stdint.h>
 
 struct CoreBlock;
+struct TaskBlock;
 
 /// One stat value
 struct TaskStat
@@ -46,7 +50,7 @@ struct Task
     std::string name;
 
     /// Code to be executed
-    Code code;
+    std::vector<uint8_t> code;
 
     /// Total and per-block size
     int2 taskSize, blockSize;
@@ -73,14 +77,5 @@ struct Task
     }
 
     /// Creates the next TaskBlock in this task
-    TaskBlock CreateNextTaskBlock(CoreBlock& coreBlock)
-    {
-        assert(HasMoreBlocks());
-        TaskBlock nextBlock;
-        nextBlock.InitTaskBlock(this, lastBlockIdx, coreBlock);
-        
-        nextBlockIdx.Inc(blockSize.x);
-
-        return nextBlock;
-    }
+    TaskBlock CreateNextTaskBlock(CoreBlock& coreBlock);
 };

@@ -4,6 +4,7 @@
 #include "SimConfig.hpp"
 #include "simutil.hpp"
 
+struct TaskBlock;
 struct Processor;
 struct TaskBlock;
 struct Tile;
@@ -17,6 +18,9 @@ struct CoreBlock
 
     /// All tiles in this block
     Tile* tiles;
+
+    /// Running task
+    TaskBlock* taskBlock;
 
     /// The index of this core block inside the grid
     int2 blockIdx;
