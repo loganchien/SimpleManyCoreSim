@@ -1,3 +1,9 @@
+#ifndef MESSAGE_HPP
+#define MESSAGE_HPP
+
+#include "VisualCXXCompatibility.hpp"
+#include "SimConfig.hpp"
+#include "simutil.hpp"
 
 /// The type of message identifies the purpose of a message
 enum MessageType
@@ -19,7 +25,7 @@ struct NodeId
     {
         int2 tileIdx;
         int someMemoryIdentifier;
-    }
+    };
 };
 
 
@@ -44,8 +50,8 @@ struct Message
     union
     {
         Address addr;
-        WORD cacheLine[GlobalCfg::CacheLineSize];
-    }
+        WORD cacheLine[SimConfig::CacheLineWordSize];
+    };
 
     /// Whether this message is broadcasted to all cores of a core block
     bool IsBroadcast() const
@@ -60,3 +66,5 @@ struct Message
         return type != MessageTypeRequestMem;
     }
 };
+
+#endif // MESSAGE_HPP
