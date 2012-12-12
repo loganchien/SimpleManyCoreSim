@@ -1,11 +1,17 @@
+#ifndef GLOBAL_MEMORY_CONTROLLER_HPP
+#define GLOBAL_MEMORY_CONTROLLER_HPP
 
+#include "SimConfig.hpp"
 #include "Message.hpp"
 
 #include <mutex>
 #include <deque>
+#include <vector>
 
-#include "SimConfig.hpp"
+#include <string.h>
 
+struct Processor;
+struct Router;
 
 /// The global memory controller simulates transport of packets to and from main memory
 struct GlobalMemoryController
@@ -40,31 +46,7 @@ struct GlobalMemoryController
         queueLock.unlock();
     }
 
-    void DispatchNext()
-    {
-        if (msgQueue.size() == 0) return;
-        
-        // Dequeue next message
-        queueLock.lock();
-        Message& request = msgQueue.front();
-        msgQueue.pop_front();
-        queueLock.unlock();
-
-        // send response back to sender
-        Message response;
-        response.type = MessageTypeResponseCacheline;
-        response.sender = int2(GMemIdx, GMemIdx);               // this does not matter
-        response.receiver = request.sender;                     
-        response.requestId = request.requestId;
-        response.totalDelay = request.totalDelay + GlobalConfig.MemDelay;
-        memcpy(response.cacheLine, &memory[request.addr.Raw], sizeof(WORD) * GlobalConfig::CacheLineSize);
-
-        // TODO: Compute index of boundary router, closest to destination router
-        int2 nearestRouterId = ;
-        
-        Router& nearestRouter = processor.GetTile(nearestRouterId).router;
-
-        // Send out new response Message
-        nearestRouter.EnqueueMessage(response);
-    }
+    void DispatchNext();
 };
+
+#endif // GLOBAL_MEMORY_CONTROLLER_HPP
