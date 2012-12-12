@@ -58,6 +58,10 @@ struct int2
     {
         return int2(x * rhs.x, y * rhs.y);
     }
+
+    bool operator==(const int2 &rhs) const {
+        return (x == rhs.x && y == rhs.y);
+    }
 };
 
 /// Represents an address in 32-bit address space
@@ -81,7 +85,7 @@ struct Address
     /// The offset of the word that this address is referring to
     int WordOffset;
 
-    Address(int addr)
+    Address(int addr = 0)
     {
         // TODO: Read index, tag and offset from address
     }
