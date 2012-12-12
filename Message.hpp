@@ -47,11 +47,8 @@ struct Message
     /// The total delay that the current instruction (i.e. memory access) has cost so far
     int totalDelay;
 
-    union
-    {
-        Address addr;
-        WORD cacheLine[SimConfig::CacheLineWordSize];
-    };
+    Address addr;
+    WORD cacheLine[SimConfig::CacheLineWordSize];
 
     /// Whether this message is broadcasted to all cores of a core block
     bool IsBroadcast() const
