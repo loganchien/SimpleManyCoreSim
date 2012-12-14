@@ -20,6 +20,8 @@ typedef unsigned short ushort;
 // Some convenient macros
 #define PrintLine(str) std::cout << str << endl;
 
+typedef unsigned int uint;
+
 
 /// A pair of (small) integers, x and y
 struct int2
@@ -71,22 +73,24 @@ struct int2
 struct Address
 {
     /// The raw integer representation of the address
-    Raw;
+    uint Raw;
 
-    union
+    /// 
+    uint GetL1Index() const
     {
+        return GlobalConfig.CacheL1Size ;
+    }
         L1Index;
         L1Tag;
-    };
     
-    union
-    {
         L2Index;
         L2Tag;
-    };
     
     /// The offset of the word that this address is referring to
-    WordOffset;
+    uint GetWordOffset() const
+    {
+        return Raw & GlobalConfig.CacheLineBits;
+    }
     
     Address(int addr)
     {

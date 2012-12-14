@@ -38,8 +38,10 @@
     
     // ################################ Caches ################################
  
-    /// 64 bytes per cache line (= 16 x 4 byte words)
-    static const int CacheLineSize = 16;
+    /// 64 bytes per cache line (64 bytes = 16 x 4 byte words)
+    static const int CacheLineSize = 64;
+
+    static const int CacheLineBits = 0x3f;
 
     /// L1 size & access time
     int CacheL1Size, CacheL1Delay;
