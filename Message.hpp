@@ -12,17 +12,6 @@ enum MessageType
     MessageTypeRequestMem
 };
 
-/// Might or might not be useful
-struct NodeId
-{
-    union
-    {
-        int2 tileIdx;
-        int someMemoryIdentifier;
-    }
-};
-
-
 /// A message can be sent through the network for 
 struct Message
 {

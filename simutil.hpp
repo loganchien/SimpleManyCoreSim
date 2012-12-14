@@ -13,9 +13,6 @@ typedef unsigned short ushort;
 #include <cmath>
 #include <iostream>
 
-// include config, make it available to everyone
-#include "SimConfig.hpp"
-
 
 // Some convenient macros
 #define PrintLine(str) std::cout << str << endl;
@@ -69,6 +66,10 @@ struct int2
     }
 }
 
+
+// include config, make it available to everyone
+#include "SimConfig.hpp"
+
 /// Represents an address in 32-bit address space
 struct Address
 {
@@ -92,7 +93,7 @@ struct Address
         return Raw & GlobalConfig.CacheLineBits;
     }
     
-    Address(int addr)
+    Address(uint raw = 0)
     {
         // TODO: Read index, tag and offset from address
     }
