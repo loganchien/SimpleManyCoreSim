@@ -98,8 +98,8 @@ struct Address
     }
 
 
-    /// The chunk of the shared L2 cache, to which this address maps
-    int2 GetL2ChunkIndex() const
+    /// The block-local L2 chunk index, to which this address maps
+    int GetL2ChunkIdx1() const
     {
         return (L2Index / GlobalConfig.CacheL2Size) % GlobalConfig.CoreBlockSize();
     }

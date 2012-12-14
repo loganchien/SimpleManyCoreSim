@@ -3,7 +3,7 @@
 TODO LIST:
 
 - Add include guards to header files
-- Add includes
+- Add include files
 
 - Modify ARMulator
     - Merge MMU modifications
@@ -12,7 +12,6 @@ TODO LIST:
 - Fill in all TODOs and obvious compiler errors
     - How to design the Address class? Can we do bitwise packing?
     - foreach
-    - GlobalConfig
     - Some more
 
 
@@ -23,6 +22,7 @@ Important tasks:
     - Take stats from sim* variables and average them over tasks (especially: Cache, MMU, Router)
     - Print screenshots of simulation stats to file
         -> Visualize results using Matlab
+    - Do not send a request to memory on L2 miss, if it is already being requested?
 
 
 
@@ -38,3 +38,10 @@ Less important:
         - Allow for dynamic Core Block sizes
             - Scheduler must core block sizes against capacity miss rates
         - Produce compiler that understands the new paradigm annotations and can automatically instrument the code with place holders
+
+        
+Comparison to proposal
+    - No broadcast
+    - No cache coherence
+    - No __syncthreads() instruction
+    - Only simulate load, not store

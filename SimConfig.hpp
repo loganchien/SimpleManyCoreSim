@@ -28,7 +28,7 @@
     /// Total amount of cores in a core block
     int CoreBlockSize() { return CoreBlockLen * CoreBlockLen; }
 
-    /// Convers the given 1D index within a CoreBlock to the corresponding 2D index
+    /// Converts the given block-local 1D index to the corresponding block-local 2D index
     int2 ComputeInCoreBlockIdx2(int inCoreBlockIdx1)
     {
         div_t d = div(inCoreBlockIdx1, CoreBlockLen);
