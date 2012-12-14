@@ -21,7 +21,7 @@ typedef unsigned int uint;
 
 
 /// A pair of (small) integers, x and y
-struct int2
+typedef struct int2
 {
     ushort x, y;
 
@@ -64,7 +64,7 @@ struct int2
     {
         return int2(x * rhs.x, y * rhs.y);
     }
-}
+} int2;
 
 
 // include config, make it available to everyone
@@ -76,16 +76,12 @@ struct Address
     /// The raw integer representation of the address
     uint Raw;
 
-    /// 
-    uint GetL1Index() const
-    {
-        return GlobalConfig.CacheL1Size ;
-    }
-        L1Index;
-        L1Tag;
+
+    uint GetL1Index() const { return GlobalConfig.CacheL1Size TODO; }
+    uint GetL1Tag() const { return TODO; }
     
-        L2Index;
-        L2Tag;
+    uint GetL2Index() const { return TODO; }
+    uint GetL2Tag() const { return TODO; }
     
     /// The offset of the word that this address is referring to
     uint GetWordOffset() const
@@ -102,9 +98,8 @@ struct Address
     /// The block-local L2 chunk index, to which this address maps
     int GetL2ChunkIdx1() const
     {
-        return (L2Index / GlobalConfig.CacheL2Size) % GlobalConfig.CoreBlockSize();
+        return (GetL2Index() / GlobalConfig.CacheL2Size) % GlobalConfig.CoreBlockSize();
     }
 };
-
 
 #endif

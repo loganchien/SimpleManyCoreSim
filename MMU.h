@@ -22,7 +22,7 @@ struct OutstandingRequest
 };
 
 /// A per-tile MMU
-struct MMU
+typedef struct MMU
 {
     /// The tile to which this local MMU belongs
     Tile* tile;
@@ -166,7 +166,7 @@ struct MMU
         OutstandingRequest& request = requests[requestId];
         assert(request.pending);
         
-        int addrChunkIdx = request.addr.L2Index / GlobalConfig.L2CacheSize;
+        int addrChunkIdx = request.addr.GetL2Index() / GlobalConfig.L2CacheSize;
         if (addrChunkIdx == l2ChunkIdx)
         {
             // Address maps to this tile's L2 chunk, so have to update it
