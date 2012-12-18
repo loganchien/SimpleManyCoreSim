@@ -1,3 +1,9 @@
+#ifndef CPU_HPP
+#define CPU_HPP
+
+struct Tile;
+struct Thread;
+struct MMU;
 
 /// This is an ARMulator class
 struct CPU
@@ -15,73 +21,23 @@ struct CPU
     long long simInstructionCount, simLoadInstructionCount;
 
     // ...
+    MMU* mmu;
 
-    CPU(Tile* tile)
-    {
-        this->tile = tile;
-        
-        mmu.InitMMU(thread->tile);
-    }
-
+    CPU(Tile* tile);
 
     /// This Core starts running the given Thread
-    void StartThread(Thread* thread)
-    {
-        currentThread = thread;
-        
-        isLoadingData = false;
-        simInstructionCount = simLoadInstructionCount = 0;
-
-        mmu.ResetMMU();
-        
-        // TODO: Copy thread.code into mmu.code
-    }
-
+    void StartThread(Thread* thread);
 
     /// Dispatches and, if possible, executes one simulated instruction. Returns false, if there are no more instructions to execute (i.e. EOF reached).
-    bool DispatchNext()
-    {
-        if (isLoadingData) return true;
-        
-        ++simInstructionCount;
-
-        // TODO: Only run/start a single instruction
-
-        // TODO: Call DispatchLoad when encountering a load instruction
-
-        // TODO: If the current instruction was the last instruction (or EOF), call tile->coreBlock->OnThreadFinished(*currentThread);
-    }
-
+    bool DispatchNext();
 
     /// Forwards a load instruction to the MMU
-    void DispatchLoad(int addrWord)
-    {
-        ++simLoadInstructionCount;
-        Address addr(addrWord);
-        mmu.LoadWord(addr);
-        isLoadingData = true;
-    }
+    void DispatchLoad(int addrWord);
 
-    
     /// Called by MMU when it received data that this CPU is waiting for
-    void CommitLoad(WORD data)
-    {
-        assert(isLoadingData);
-
-        // TODO: Separate LOAD instruction into two parts:
-        //      1. The instruction handler calls MMU.LoadWord(address)
-        //      2. This function is called by MMU upon request completion (might be immediate or might take a while)
-        //          -> Execute the rest of the load instruction here 
-        
-        // TODO: Figure out which part of the requested word is needed (which byte, which half-word, or the entire word?) 
-        //      Possibly by just storing the requested length in a variable before in DispatchLoad
-        
-        isLoadingData = false;
-    }
+    void CommitLoad(WORD data);
 
     // ...
 };
 
-
-/// ARMulator calls Core "CPU", so we rename it accordingly
-typedef CPU Core;
+#endif // CPU_HPP
