@@ -1,13 +1,17 @@
 #include "SimConfig.hpp"
 
-int SimConfig::CoreGridSize()
+#include "Dimension.hpp"
+
+#include <stdlib.h>
+
+Dim2 SimConfig::CoreGridSize()
 {
-    return CoreGridLen * CoreGridLen;
+    return Dim2(CoreGridLen, CoreGridLen);
 }
 
-int SimConfig::CoreBlockSize()
+Dim2 SimConfig::CoreBlockSize()
 {
-    return CoreBlockLen * CoreBlockLen;
+    return Dim2(CoreBlockLen, CoreBlockLen);
 }
 
 Dim2 SimConfig::ComputeInCoreBlockIdx2(int inCoreBlockIdx1)
@@ -18,5 +22,5 @@ Dim2 SimConfig::ComputeInCoreBlockIdx2(int inCoreBlockIdx1)
 
 int SimConfig::GetTotalL2CacheSize()
 {
-    return CoreBlockSize() * CacheL2Size;
+    return CoreBlockSize().Area() * CacheL2Size;
 }

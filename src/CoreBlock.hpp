@@ -22,6 +22,10 @@ public:
     /// The index of this core block inside the grid
     Dim2 blockIdx;
 
+    /// Running task block
+    TaskBlock* runningTaskBlock;
+
+public:
     CoreBlock();
 
     ~CoreBlock();

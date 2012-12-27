@@ -35,13 +35,21 @@ void Cache::InitCache(int size, int offset)
 
 
 /// The given CacheLine is updated
-CacheLine& Cache::UpdateLine(const Address& addr, uint32_t* words)
+CacheLine& Cache::UpdateLine(const Address& addr, const CacheLine &cacheLine)
 {
     CacheLine& line = lines[addr.GetL1Index() - offset];
 
     // TODO: Copy words into cacheline and set valid and tag
+    line = cacheLine;
 
     return line;
+}
+
+
+CacheLine* Cache::GetLine(const Address& addr)
+{
+    // TODO: Not implemented.
+    return 0;
 }
 
 

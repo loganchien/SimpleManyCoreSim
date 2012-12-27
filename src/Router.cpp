@@ -1,5 +1,14 @@
 #include "Router.hpp"
 
+#include "Debug.hpp"
+#include "Processor.hpp"
+#include "CoreBlock.hpp"
+#include "SimConfig.hpp"
+#include "Tile.hpp"
+
+#include <algorithm>
+#include <assert.h>
+
 /// Initialize a new Router object
 void Router::InitRouter(Tile* tile)
 {
@@ -15,12 +24,12 @@ void Router::HandleIncomingMessage(Message& msg)
     {
     case MessageTypeResponseCacheline:
         // Requested cacheline arrived
-        tile->core.mmu.OnCachelineReceived(msg.requestId, msg.totalDelay, msg.cacheLine);
+        tile->core->mmu.OnCachelineReceived(msg.requestId, msg.totalDelay, msg.cacheLine);
         break;
 
     case MessageTypeRequestL2:
         // Sender is requesting shared cache entry
-        tile->core.mmu.FetchLocalL2(msg.sender, msg.addr);
+        tile->core->mmu.FetchLocalL2(msg.sender, msg.totalDelay, msg.addr);
         break;
 
     default:
@@ -39,7 +48,7 @@ void Router::DispatchNext()
     if (msgQueue.size() == 0) return;
 
     // TODO: Simulate queueing delay for all waiting packets
-    msg.totalDelay += GlobalConfig.QueuingDelay;
+    //msg.totalDelay += GlobalConfig.QueuingDelay;
 
     // Dequeue next message
     Message& msg = msgQueue.front();
@@ -70,13 +79,13 @@ void Router::DispatchNext()
 // ############################################## Transport messages ##############################################
 
 /// Send message to next Tile on the shortest path to target
-void Router::RouteToNeighbor(const Message& msg)
+void Router::RouteToNeighbor(Message& msg)
 {
     // Simulate transport delay
     Dim2 neighborIdx;
 
     Processor& processor = *tile->coreBlock->processor;
-    Dim2 blockSize = processor->coreBlockSize;
+    Dim2 blockSize = processor.coreBlockSize;
     Dim2 coreOrigin = tile->coreBlock->ComputeCoreBlockOrigin();
 
     // TODO: Shortest path computation below (Hint: See Tile::IsBoundaryTile() for more information)
@@ -87,25 +96,27 @@ void Router::RouteToNeighbor(const Message& msg)
         if (tile->IsBoundaryTile())
         {
             // Arrived at boundary -> Put in memory queue
-            processor.globalMemory.Enqueue(msg);
+            processor.gMemController.EnqueueRequest(msg);
             return;
         }
 
         // TODO: Shortest path to memory is always path to shortest boundary, i.e. min(x, y, width-x, width-y)
-        int x = tile->TileIdx.x;
-        int y = tile->TileIdx.y;
-        if(min(x,CoreGridLen-x)<min(y,width-y)){
+        int x = tile->tileIdx.x;
+        int y = tile->tileIdx.y;
+        if (std::min(x, GlobalConfig.CoreGridLen - x) <
+            std::min(y, GlobalConfig.CoreGridLen - y))
+        {
             //move horizontally to border
-            if(x<CoreGridLen-x)
-                neighborIdx = Dim2(x-1,y);
+            if (x < GlobalConfig.CoreGridLen - x)
+                neighborIdx = Dim2(x-1, y);
             else
-                neighborIdx = Dim2(x+1,y)
+                neighborIdx = Dim2(x+1, y);
         }
         else{	//move vertically
-            if(y<CoreGridLen-y)
-                neighborIdx = Dim2(x,y-1);
+            if (y < GlobalConfig.CoreGridLen - y)
+                neighborIdx = Dim2(x, y-1);
             else
-                neighborIdx = Dim2(x,y+1);
+                neighborIdx = Dim2(x, y+1);
         }
     }
     else
@@ -115,33 +126,33 @@ void Router::RouteToNeighbor(const Message& msg)
         int r = rand() % 2;
         int next;
         if(r==0){ //prefer horizontal movement
-            if(msg.receiver.x != tile->TileIdx.x){
-                next = (msg.receiver.x > tile->TileIdx.x) ? tile->TileIdx.x+1 : tile->TileIdx.x-1 ;
-                neighborIdx = Dim2(next,tile->TileIdx.y);
+            if(msg.receiver.x != tile->tileIdx.x){
+                next = (msg.receiver.x > tile->tileIdx.x) ? tile->tileIdx.x+1 : tile->tileIdx.x-1 ;
+                neighborIdx = Dim2(next,tile->tileIdx.y);
             }
             else { //already on correct x index, move vertical!
-                next = (msg.receiver.y > tile->TileIdx.y) ? tile->TileIdx.y+1 : tile->TileIdx.y-1 ;
-                neighborIdx = Dim2(tile->TileIdx.x,next);
+                next = (msg.receiver.y > tile->tileIdx.y) ? tile->tileIdx.y+1 : tile->tileIdx.y-1 ;
+                neighborIdx = Dim2(tile->tileIdx.x,next);
             }
         }
         else {	//perfer vertical movement
-            if(msg.receiver.y != tile->TileIdx.y){
-                next = (msg.receiver.y > tile->TileIdx.y) ? tile->TileIdx.y+1 : tile->TileIdx.y-1 ;
-                neighborIdx = Dim2(tile->TileIdx.x,next);
+            if(msg.receiver.y != tile->tileIdx.y){
+                next = (msg.receiver.y > tile->tileIdx.y) ? tile->tileIdx.y+1 : tile->tileIdx.y-1 ;
+                neighborIdx = Dim2(tile->tileIdx.x,next);
             }
             else{
-                next = (msg.receiver.x > tile->TileIdx.x) ? tile->TileIdx.x+1 : tile->TileIdx.x-1 ;
-                neighborIdx = Dim2(next,tile->TileIdx.y);
+                next = (msg.receiver.x > tile->tileIdx.x) ? tile->tileIdx.x+1 : tile->tileIdx.x-1 ;
+                neighborIdx = Dim2(next,tile->tileIdx.y);
             }
         }
     }
 
-    Router& neighbor = processor.GetTile(neighborIdx).router;
+    Router& neighbor = processor.GetTile(neighborIdx)->router;
     neighbor.EnqueueMessage(msg);
 }
 
 /// Enqueue message on this router
-void Router::EnqueueMessage(const Message& msg)
+void Router::EnqueueMessage(Message& msg)
 {
     // Add to queue
     ++simTotalPacketsReceived;

@@ -35,10 +35,10 @@ public:
     // ############################################## Transport messages ##############################################
 
     /// Send message to next Tile on the shortest path to target
-    void RouteToNeighbor(const Message& msg);
+    void RouteToNeighbor(Message& msg);
 
     /// Enqueue message on this router
-    void EnqueueMessage(const Message& msg);
+    void EnqueueMessage(Message& msg);
 };
 
 #endif // ROUTER_HPP

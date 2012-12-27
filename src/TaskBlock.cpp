@@ -1,6 +1,12 @@
 #include "TaskBlock.hpp"
 
-TaskBlock()
+#include "CoreBlock.hpp"
+#include "Dimension.hpp"
+#include "Task.hpp"
+
+#include <assert.h>
+
+TaskBlock::TaskBlock(): finishedCount(0)
 {
 }
 
@@ -9,21 +15,21 @@ void TaskBlock::InitTaskBlock()
 {
     // TODO: Init TaskBlock
 
-    assignedBlock->taskBlock = this;
+    assignedBlock->runningTaskBlock = this;
 }
 
 /// Instruments the Task code for this block (i.e. insert block-id, thread-id etc into special placeholders within the code)
-Program *TaskBlock::GetInjectedCode(int2 threadId)
+Program *TaskBlock::GetInjectedCode(const Dim2& threadIdx)
 {
     // TODO: Replace placeholders in constant segment with thread id information
-    return NULL;
+    return 0;
 }
 
 
 /// Whether this TaskBlock still has unscheduled threads
 bool TaskBlock::HasMoreThreads() const
 {
-    return nextThreadId.Area() <= task->blockSize.Area();
+    return nextThreadIdx.Area() <= task->blockSize.Area();
 }
 
 /// Whether all TaskBlocks of this Task have already finished running
@@ -38,9 +44,9 @@ Thread TaskBlock::CreateNextThread(Tile& tile)
     assert(HasMoreThreads());
 
     Thread nextThread;
-    nextThread.InitThread(this, nextThreadId, tile, GetInjectedCode(nextThreadId));
+    nextThread.InitThread(this, nextThreadIdx, &tile, GetInjectedCode(nextThreadIdx));
 
-    nextThreadId.Inc(1);
+    nextThreadIdx.Inc(1);
 
     return nextThread;
 }

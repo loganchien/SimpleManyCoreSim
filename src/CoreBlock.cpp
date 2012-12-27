@@ -1,12 +1,18 @@
 #include "CoreBlock.hpp"
 
 #include "Address.hpp"
+#include "CPU.hpp"
+#include "Debug.hpp"
 #include "Dimension.hpp"
+#include "Processor.hpp"
+#include "SimConfig.hpp"
+#include "TaskBlock.hpp"
+#include "Thread.hpp"
 #include "Tile.hpp"
 
 CoreBlock::CoreBlock()
 {
-    tiles = new Tile[GlobalConfig.CoreBlockSize()];
+    tiles = new Tile[GlobalConfig.CoreBlockSize().Area()];
 }
 
 CoreBlock::~CoreBlock()
@@ -72,23 +78,21 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 #ifdef _VERBOSE
     if (nextThread.threadIdx.Area() % 100)
     {
-        PrintLine("Thread starting: " << task.name << " (" << nextThread.threadIdx.x << ", " << nextThread.threadIdx.y << ") on Tile (" <<
-            << tile.tileIdx.x << ", " << tile.tileIdx.y << ")";
+        PrintLine(
+            "Thread starting: " << runningTaskBlock->task->name <<
+            " (" << nextThread.threadIdx.x << ", "
+                 << nextThread.threadIdx.y << ") " <<
+            "on Tile (" << tile.tileIdx.x << ", "
+                        << tile.tileIdx.y << ")");
     }
 #endif
-    tile.core.StartThread(nextThread);
+    tile.core->StartThread(&nextThread);
 }
 
 
 /// Is called by Core when it reached the end of it's current instruction stream
 void CoreBlock::OnThreadFinished(Thread& thread)
 {
-#ifdef _VERBOSE
-    if (nextThread.threadIdx.Area() % 100)
-    {
-        PrintLine("Thread fininshed: " << task.name << " (" << nextThread.threadIdx.x << ", " << nextThread.threadIdx.y << ")");
-    }
-#endif
     if (thread.taskBlock->HasMoreThreads())
     {
         // Schedule next thread

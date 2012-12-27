@@ -22,6 +22,9 @@ public:
     /// The id of the first thread that has not been scheduled yet
     Dim2 nextThreadIdx;
 
+    int finishedCount;
+
+public:
     TaskBlock();
 
     /// Initializes this TaskBlock

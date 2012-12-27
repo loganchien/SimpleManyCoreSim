@@ -2,13 +2,14 @@
 
 #include "Address.hpp"
 
+#include <assert.h>
 #include <stdint.h>
 
 CPU::CPU(Tile* tile)
 {
     this->tile = tile;
 
-    mmu.InitMMU(thread->tile);
+    // TODO: mmu.InitMMU(thread->tile);
 }
 
 

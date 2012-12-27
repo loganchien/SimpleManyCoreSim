@@ -1,5 +1,8 @@
 #include "Task.hpp"
 
+#include "TaskBlock.hpp"
+#include <assert.h>
+
 /// Whether this Task still has unscheduled TaskBlocks
 bool Task::HasMoreBlocks() const
 {
@@ -17,7 +20,7 @@ TaskBlock Task::CreateNextTaskBlock(CoreBlock& coreBlock)
 {
     assert(HasMoreBlocks());
     TaskBlock nextBlock;
-    nextBlock.InitTaskBlock(this, lastBlockIdx, coreBlock);
+    nextBlock.InitTaskBlock(); // TODO: Initialize the task block correctly.
 
     nextBlockIdx.Inc(blockSize.x);
 

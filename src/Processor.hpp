@@ -9,6 +9,7 @@
 
 class CoreBlock;
 class TaskBlock;
+class Tile;
 
 /// The Processor contains and does it all
 class Processor
@@ -67,6 +68,11 @@ public:
 
     /// Called when all tasks have been worked through
     void OnBatchFinished();
+
+    // ######################################################################
+
+    Tile* GetTile(const Dim2& tileIdx);
+
 };
 
 #endif // PROCESSOR_HPP

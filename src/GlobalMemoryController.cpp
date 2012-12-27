@@ -1,6 +1,11 @@
 #include "GlobalMemoryController.hpp"
 
+#include "Address.hpp"
 #include "Processor.hpp"
+#include "Router.hpp"
+#include "SimConfig.hpp"
+
+#include <string.h>
 
 GlobalMemoryController::GlobalMemoryController()
 {
@@ -33,12 +38,12 @@ void GlobalMemoryController::DispatchNext()
     response.receiver = request.sender;
     response.requestId = request.requestId;
     response.totalDelay = request.totalDelay + GlobalConfig.MemDelay;
-    memcpy(response.cacheLine, &memory[request.addr.Raw], sizeof(uint32_t) * GlobalConfig::CacheLineSize);
+    memcpy(&*response.cacheLine.bytes.begin(), &memory[request.addr.raw], sizeof(uint32_t) * GlobalConfig.CacheLineSize);
 
     // TODO: Compute index of boundary router, closest to destination router
     Dim2 nearestRouterId;
 
-    Router& nearestRouter = processor.GetTile(nearestRouterId).router;
+    Router nearestRouter; // TODO: processor->getTile(nearestRouterId).router;
 
     // Send out new response Message
     nearestRouter.EnqueueMessage(response);

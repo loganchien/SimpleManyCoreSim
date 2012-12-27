@@ -1,7 +1,13 @@
 #include "MMU.hpp"
 
+#include "CoreBlock.hpp"
+#include "Debug.hpp"
 #include "Dimension.hpp"
+#include "GlobalMemoryController.hpp"
+#include "SimConfig.hpp"
+#include "Tile.hpp"
 
+#include <assert.h>
 #include <stdint.h>
 
 /// New custom function that we call during start-up
@@ -43,8 +49,8 @@ void MMU::LoadWord(const Address& addr)
     // L1 access time
     int totalDelay = GlobalConfig.CacheL1Delay;
 
-    CacheLine* line;
-    if (!l1.GetLine(addr, line))
+    CacheLine* line = l1.GetLine(addr);
+    if (!line)
     {
         // L1 miss
         int addrL2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(addr);
@@ -81,8 +87,8 @@ void MMU::FetchLocalL2(const Dim2& requesterIdx, int totalDelay,
     // Add hit penalty
     totalDelay += GlobalConfig.CacheL2Delay;
 
-    CacheLine* line;
-    if (!l2.GetLine(addr, line))
+    CacheLine* line = l2.GetLine(addr);
+    if (!line)
     {
         // L2 miss
         FetchFromMemory(requesterIdx, addr, totalDelay);
@@ -97,7 +103,7 @@ void MMU::FetchLocalL2(const Dim2& requesterIdx, int totalDelay,
         else
         {
             // Send value back to requester
-            SendResponse(MessageTypeResponseCacheline, requesterIdx, line->words, totalDelay);
+            SendResponse(MessageTypeResponseCacheline, requesterIdx, *line, totalDelay);
         }
     }
 }
@@ -114,16 +120,17 @@ int MMU::FetchFromMemory(const Dim2& requesterIdx, const Address& addr,
 // ############################################# Handle incoming Messages #############################################
 
 /// Called by router when a Cacheline has been sent to this tile
-void MMU::OnCachelineReceived(int requestId, int totalDelay, uint32_t* words)
+void MMU::OnCachelineReceived(int requestId, int totalDelay,
+                              const CacheLine &cacheLine)
 {
     OutstandingRequest& request = requests[requestId];
     assert(request.pending);
 
-    int addrChunkIdx = request.addr.GetL2Index() / GlobalConfig.L2CacheSize;
+    int addrChunkIdx = request.addr.GetL2Index() / GlobalConfig.CacheL2Size;
     if (addrChunkIdx == l2ChunkIdx)
     {
         // Address maps to this tile's L2 chunk, so have to update it
-        l2.Update(request.addr, words);
+        l2.UpdateLine(request.addr, cacheLine);
     }
 
 
@@ -134,15 +141,15 @@ void MMU::OnCachelineReceived(int requestId, int totalDelay, uint32_t* words)
         // Cacheline was requested by this guy
 
         // -> Also goes into L1
-        CacheLine& line = l1.Update(request.addr, words);
+        CacheLine& line = l1.UpdateLine(request.addr, cacheLine);
 
         // And we can finally restart the CPU
-        CommitLoad(line, request.addr, totalDelay);
+        CommitLoad(&line, totalDelay, request.addr);
     }
     else
     {
         // CacheLine is a response to an off-tile request -> Send it to requester
-        SendResponse(MessageTypeResponseCacheline, request.requesterIdx, words, totalDelay);
+        SendResponse(MessageTypeResponseCacheline, request.requesterIdx, cacheLine, totalDelay);
     }
 
     // Request buffer entry not in use anymore
@@ -155,7 +162,7 @@ void MMU::CommitLoad(CacheLine* line, int totalDelay, const Address& addr)
 {
     // Add time spent on this request to total sim time
     simTime += totalDelay;
-    tile->cpu->CommitLoad(line->GetWord(addr));
+    tile->core->CommitLoad(line->GetWord(addr));
 }
 
 
@@ -205,18 +212,18 @@ void MMU::SendRequest(MessageType type, const Dim2& requesterIdx,
 
 
 /// Creates and sends a new Response Message
-void MMU::SendResponse(MessageType type, const Dim2& receiver, uint32_t* words,
-                       int totalDelay)
+void MMU::SendResponse(MessageType type, const Dim2& receiver,
+                       const CacheLine& cacheLine, int totalDelay)
 {
     // Create Message object
     Message msg;
     msg.type = type;
     msg.sender = tile->tileIdx;
     msg.receiver = receiver;
-    msg.requestId = requestId;
+    msg.requestId = 0; // FIXME: TODO: requestId
     msg.totalDelay = totalDelay;
-    msg.addr = addr;
-    memcpy(msg.cacheLine, words, sizeof(uint32_t) * GlobalConfig::CacheLineSize);
+    msg.addr = Address();
+    msg.cacheLine = cacheLine;
 
     // Send the message
     tile->router.EnqueueMessage(msg);

@@ -21,7 +21,7 @@ public:
     int CoreGridLen;
 
     /// Total amount of core blocks on the processor
-    int CoreGridSize();
+    Dim2 CoreGridSize();
 
 
 
@@ -31,7 +31,7 @@ public:
     int CoreBlockLen;
 
     /// Total amount of cores in a core block
-    int CoreBlockSize();
+    Dim2 CoreBlockSize();
 
     /// Converts the given block-local 1D index to the corresponding block-local 2D index
     Dim2 ComputeInCoreBlockIdx2(int inCoreBlockIdx1);

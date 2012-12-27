@@ -27,6 +27,11 @@ public:
     {
         return Dim1(x * rhs.x);
     }
+
+    bool operator==(const Dim1& rhs) const
+    {
+        return (x == rhs.x);
+    }
 };
 
 class Dim2
@@ -82,6 +87,11 @@ public:
     Dim2 operator*(const Dim2& rhs) const
     {
         return Dim2(x * rhs.x, y * rhs.y);
+    }
+
+    bool operator==(const Dim2& rhs) const
+    {
+        return (x == rhs.x && y == rhs.y);
     }
 };
 

@@ -1,12 +1,14 @@
 #include "Tile.hpp"
 
+#include "CoreBlock.hpp"
 #include "Dimension.hpp"
+#include "Processor.hpp"
 
 void Tile::InitTile(const Dim2& tileIdx, CoreBlock* coreBlock)
 {
     // TODO: Init index, Core etc.
-    core = new Core();
-    mmu = core->mmu;
+    core = new Core(this);
+    mmu = &core->mmu;
 }
 
 

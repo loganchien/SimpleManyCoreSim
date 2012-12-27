@@ -17,6 +17,7 @@
 /// We can have a lot of concurrently outstanding requests
 #define MAX_OUTSTANDING_REQUESTS 8192
 
+class CacheLine;
 class Tile;
 
 class OutstandingRequest
@@ -89,7 +90,8 @@ public:
     // ############################################# Handle incoming Messages #############################################
 
     /// Called by router when a Cacheline has been sent to this tile
-    void OnCachelineReceived(int requestId, int totalDelay, uint32_t* words);
+    void OnCachelineReceived(int requestId, int totalDelay,
+                             const CacheLine& cacheLine);
 
 
     /// This function is always called when the MMU retrieved a word
@@ -108,8 +110,8 @@ public:
 
 
     /// Creates and sends a new Response Message
-    void SendResponse(MessageType type, const Dim2& receiver, uint32_t* words,
-                      int totalDelay);
+    void SendResponse(MessageType type, const Dim2& receiver,
+                      const CacheLine &cacheLine, int totalDelay);
 };
 
 #endif // MMU_HPP

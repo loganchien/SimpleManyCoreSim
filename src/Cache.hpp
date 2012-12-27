@@ -50,7 +50,9 @@ public:
 
 
     /// The given CacheLine is updated
-    CacheLine& UpdateLine(const Address& addr, uint32_t* words);
+    CacheLine& UpdateLine(const Address& addr, const CacheLine &cachdLine);
+
+    CacheLine* GetLine(const Address& addr);
 
 
     /// Usually the cache is only reset when the processor is reset (i.e. when starting a new batch)

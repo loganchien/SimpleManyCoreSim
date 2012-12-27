@@ -1,5 +1,15 @@
 #include "Processor.hpp"
 
+#include "Dimension.hpp"
+#include "Tile.hpp"
+#include "CoreBlock.hpp"
+#include "TaskBlock.hpp"
+#include "Debug.hpp"
+
+#include <algorithm>
+
+#include <assert.h>
+
 Processor::Processor()
 {
     coreGridSize = GlobalConfig.CoreGridSize();
@@ -13,7 +23,7 @@ Processor::Processor()
     for (int i = 0; i < coreGridSize.Area(); ++i)
     {
         // TODO: Pass initial settings to block
-        blocks[i].InitCoreBlock(this, otherArgs);
+        blocks[i].InitCoreBlock();
     }
 }
 
@@ -42,7 +52,7 @@ void Processor::StartBatch(const std::vector<Task>& tasks)
     int t = 0;
     for (int i = 0; i < coreGridSize.Area(); ++i)
     {
-        Task* task = GetNextTask(task);
+        Task* task = GetNextTask();
         if (!task) break;
 
         ScheduleTaskBlock(*task, blocks[i]);
@@ -79,8 +89,8 @@ void Processor::SimSteps()
             Tile& tile = block.tiles[i];
             //for (int s = 0; s < !tile.cpu->isLoadingData && !tile.; ++s)
             {
-                tile.cpu->DispatchNext();
-                tile.router->DispatchNext();
+                tile.core->DispatchNext();
+                tile.router.DispatchNext();
             }
         }
     }
@@ -90,8 +100,6 @@ void Processor::SimSteps()
 /// Collect stats from the functional units of the block
 void Processor::CollectStats(TaskBlock& taskBlock)
 {
-    CoreBlock& coreBlock = *taskBlock.coreBlock;
-
     // TODO: Collect stats from all tiles (Core, MMU, Cache)
 }
 
@@ -112,10 +120,10 @@ Task* Processor::GetNextTask()
     {
         if (it->HasMoreBlocks())
         {
-            return *it;
+            return &*it;
         }
     }
-    return nullptr;
+    return NULL;
 }
 
 
@@ -134,9 +142,10 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
     int threadCount = task.blockSize.Area();
 
     // Put all initial threads on tiles
-    for (int i = 0; i < min(tileCount, threadCount); ++i)
+    for (int i = 0; i < std::min(tileCount, threadCount); ++i)
     {
-        coreBlock.ScheduleThread(taskBlock, *tile);
+        Tile tile; // TODO: What the hall?
+        coreBlock.ScheduleThread(taskBlock, tile);
     }
 }
 
@@ -144,7 +153,7 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
 /// Called by a CoreBlock when it finished executing the given TaskBlock
 void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
 {
-    PrintLine("TaskBLock finished: " << task.name << " (" << taskBlock.taskBlockIdx.x << ", " << taskBlock.taskBlockIdx.y << ")");
+    PrintLine("TaskBLock finished: " << taskBlock.task->name << " (" << taskBlock.taskBlockIdx.x << ", " << taskBlock.taskBlockIdx.y << ")");
 
     // Collect stats from the functional units of the block
     CollectStats(taskBlock);
@@ -152,15 +161,15 @@ void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
     if (taskBlock.task->HasMoreBlocks())
     {
         // Schedule next TaskBlock on the now free core block
-        ScheduleTaskBlock(*taskBlock.task, *taskBlock.coreBlock);
+        ScheduleTaskBlock(*taskBlock.task, *taskBlock.assignedBlock);
     }
     else
     {
-        Task* task = GetNextTask(task);
+        Task* task = GetNextTask();
         if (task)
         {
             // Schedule next TaskBlock of a different Task on the now free core block
-            ScheduleTaskBlock(newTask, *taskBlock.coreBlock);
+            ScheduleTaskBlock(*task, *taskBlock.assignedBlock);
         }
 
         if (taskBlock.task->IsFinished())
@@ -190,4 +199,13 @@ void Processor::OnBatchFinished()
 {
     PrintLine("Batch finished: " << batchNum);
     batchFinished = true;
+}
+
+
+/// Get the tile
+Tile* Processor::GetTile(const Dim2& tileIdx)
+{
+    // TODO: Not implemented.
+    assert(0 && "Not implemented");
+    return 0;
 }
