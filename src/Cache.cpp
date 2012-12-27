@@ -1,12 +1,14 @@
 #include "Cache.hpp"
 
+#include <stdint.h>
+
 CacheLine::CacheLine()
 {
     valid = false;
 }
 
 /// Get the word at the given address (given the address maps to this line)
-WORD CacheLine::GetWord(const Address& addr)
+uint32_t CacheLine::GetWord(const Address& addr)
 {
     return words[addr.WordOffset];
 }
@@ -22,7 +24,7 @@ void Cache::InitCache(int size, int offset = 0)
 
 
 /// The given CacheLine is updated
-CacheLine& Cache::UpdateLine(const Address& addr, WORD* words)
+CacheLine& Cache::UpdateLine(const Address& addr, uint32_t* words)
 {
     CacheLine& line = lines[addr.Index - offset];
 

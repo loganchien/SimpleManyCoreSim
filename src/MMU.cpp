@@ -2,6 +2,8 @@
 
 #include "Dimension.hpp"
 
+#include <stdint.h>
+
 /// New custom function that we call during start-up
 void MMU::InitMMU(Tile* tile)
 {
@@ -112,7 +114,7 @@ int MMU::FetchFromMemory(const Dim2& requesterIdx, const Address& addr,
 // ############################################# Handle incoming Messages #############################################
 
 /// Called by router when a Cacheline has been sent to this tile
-void MMU::OnCachelineReceived(int requestId, int totalDelay, WORD* words)
+void MMU::OnCachelineReceived(int requestId, int totalDelay, uint32_t* words)
 {
     OutstandingRequest& request = requests[requestId];
     assert(request.pending);
@@ -203,7 +205,7 @@ void MMU::SendRequest(MessageType type, const Dim2& requesterIdx,
 
 
 /// Creates and sends a new Response Message
-void MMU::SendResponse(MessageType type, const Dim2& receiver, WORD* words,
+void MMU::SendResponse(MessageType type, const Dim2& receiver, uint32_t* words,
                        int totalDelay)
 {
     // Create Message object
@@ -214,7 +216,7 @@ void MMU::SendResponse(MessageType type, const Dim2& receiver, WORD* words,
     msg.requestId = requestId;
     msg.totalDelay = totalDelay;
     msg.addr = addr;
-    memcpy(msg.cacheLine, words, sizeof(WORD) * GlobalConfig::CacheLineSize);
+    memcpy(msg.cacheLine, words, sizeof(uint32_t) * GlobalConfig::CacheLineSize);
 
     // Send the message
     tile->router.EnqueueMessage(msg);

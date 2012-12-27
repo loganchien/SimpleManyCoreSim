@@ -1,6 +1,8 @@
 #ifndef MESSAGE_HPP
 #define MESSAGE_HPP
 
+#include <stdint.h>
+
 /// The type of message identifies the purpose of a message
 enum MessageType
 {
@@ -36,7 +38,7 @@ public:
     union
     {
         Address addr;
-        WORD cacheLine[SimConfig::CacheLineSize];
+        uint32_t cacheLine[SimConfig::CacheLineSize];
     };
 
     /// Whether this message is broadcasted to all cores of a core block

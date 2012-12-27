@@ -2,11 +2,11 @@
 #define GLOBAL_MEMORY_CONTROLLER_HPP
 
 #include "Message.hpp"
+#include "SimConfig.hpp"
 
 #include <mutex>
 #include <deque>
-
-#include "SimConfig.hpp"
+#include <stdint.h>
 
 class Processor;
 
@@ -19,7 +19,7 @@ public:
 
     Processor* processor;
 
-    std::vector<WORD> memory;
+    std::vector<uint32_t> memory;
     std::mutex queueLock;
     std::deque<Message> msgQueue;
 

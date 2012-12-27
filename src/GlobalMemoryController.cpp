@@ -37,7 +37,7 @@ void GlobalMemoryController::DispatchNext()
     response.receiver = request.sender;
     response.requestId = request.requestId;
     response.totalDelay = request.totalDelay + GlobalConfig.MemDelay;
-    memcpy(response.cacheLine, &memory[request.addr.Raw], sizeof(WORD) * GlobalConfig::CacheLineSize);
+    memcpy(response.cacheLine, &memory[request.addr.Raw], sizeof(uint32_t) * GlobalConfig::CacheLineSize);
 
     // TODO: Compute index of boundary router, closest to destination router
     Dim2 nearestRouterId;

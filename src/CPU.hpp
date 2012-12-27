@@ -3,6 +3,8 @@
 
 #include "MMU.h"
 
+#include <stdint.h>
+
 class Tile;
 class Thread;
 
@@ -41,7 +43,7 @@ public:
 
 
     /// Called by MMU when it received data that this CPU is waiting for
-    void CommitLoad(WORD data);
+    void CommitLoad(uint32_t data);
 };
 
 

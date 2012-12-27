@@ -1,5 +1,7 @@
 #include "CPU.hpp"
 
+#include <stdint.h>
+
 CPU::CPU(Tile* tile)
 {
     this->tile = tile;
@@ -48,7 +50,7 @@ void CPU::DispatchLoad(int addrWord)
 
 
 /// Called by MMU when it received data that this CPU is waiting for
-void CPU::CommitLoad(WORD data)
+void CPU::CommitLoad(uint32_t data)
 {
     assert(isLoadingData);
 

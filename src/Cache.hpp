@@ -2,6 +2,7 @@
 #define CACHE_HPP
 
 #include <vector>
+#include <stdint.h>
 
 class Address;
 
@@ -11,12 +12,12 @@ class CacheLine
 public:
     bool valid;
     int tag;
-    WORD words[SimConfig::CacheLineWordSize];
+    uint32_t words[SimConfig::CacheLineWordSize];
 
     CacheLine();
 
     /// Get the word at the given address (given the address maps to this line)
-    WORD GetWord(const Address& addr);
+    uint32_t GetWord(const Address& addr);
 };
 
 
@@ -45,7 +46,7 @@ public:
 
 
     /// The given CacheLine is updated
-    CacheLine& UpdateLine(const Address& addr, WORD* words);
+    CacheLine& UpdateLine(const Address& addr, uint32_t* words);
 
 
     /// Usually the cache is only reset when the processor is reset (i.e. when starting a new batch)
