@@ -4,7 +4,7 @@
 struct Tile;
 
 /**
- * Every Task is logically partitioned into TaskBlocks. 
+ * Every Task is logically partitioned into TaskBlocks.
  * One TaskBlock has a fixed size of threads that can be scheduled on an assigned CoreBlock.
  */
 struct TaskBlock

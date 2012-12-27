@@ -17,7 +17,7 @@ void GlobalMemoryController::DispatchNext()
     Message response;
     response.type = MessageTypeResponseCacheline;
     response.sender = int2(GMemIdx, GMemIdx);               // this does not matter
-    response.receiver = request.sender;                     
+    response.receiver = request.sender;
     response.requestId = request.requestId;
     response.totalDelay = request.totalDelay + GlobalConfig.MemDelay;
     memcpy(response.cacheLine, &memory[request.addr.Raw], sizeof(WORD) * GlobalConfig::CacheLineSize);

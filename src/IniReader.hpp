@@ -19,7 +19,7 @@ public:
     }
     int IniReader::ReadInteger(char* szSection, char* szKey, int iDefaultValue)
     {
-        int iResult = GetPrivateProfileInt(szSection,  szKey, iDefaultValue, m_szFileName); 
+        int iResult = GetPrivateProfileInt(szSection,  szKey, iDefaultValue, m_szFileName);
         return iResult;
     }
     float IniReader::ReadFloat(char* szSection, char* szKey, float fltDefaultValue)
@@ -28,7 +28,7 @@ public:
         char szDefault[255];
         float fltResult;
         sprintf(szDefault, "%f",fltDefaultValue);
-        GetPrivateProfileString(szSection,  szKey, szDefault, szResult, 255, m_szFileName); 
+        GetPrivateProfileString(szSection,  szKey, szDefault, szResult, 255, m_szFileName);
         fltResult =  atof(szResult);
         return fltResult;
     }
@@ -38,8 +38,8 @@ public:
         char szDefault[255];
         bool bolResult;
         sprintf(szDefault, "%s", bolDefaultValue? "True" : "False");
-        GetPrivateProfileString(szSection, szKey, szDefault, szResult, 255, m_szFileName); 
-        bolResult =  (strcmp(szResult, "True") == 0 || 
+        GetPrivateProfileString(szSection, szKey, szDefault, szResult, 255, m_szFileName);
+        bolResult =  (strcmp(szResult, "True") == 0 ||
             strcmp(szResult, "true") == 0) ? true : false;
         return bolResult;
     }
@@ -47,8 +47,8 @@ public:
     {
         char* szResult = new char[255];
         memset(szResult, 0x00, 255);
-        GetPrivateProfileString(szSection,  szKey, 
-            szDefaultValue, szResult, 255, m_szFileName); 
+        GetPrivateProfileString(szSection,  szKey,
+            szDefaultValue, szResult, 255, m_szFileName);
         return szResult;
     }
 private:

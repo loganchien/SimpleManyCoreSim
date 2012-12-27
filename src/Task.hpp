@@ -55,7 +55,7 @@ struct Task
     /// The index of the TaskBlock that is to be scheduled next
     int2 nextBlockIdx;
 
-    /// The amount of blocks that have already finished executing 
+    /// The amount of blocks that have already finished executing
     int finishedCount;
 
     /// All relevant stats, recorded during execution

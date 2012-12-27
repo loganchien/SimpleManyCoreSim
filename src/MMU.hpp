@@ -2,7 +2,7 @@
 #define MMU_HPP
 
 /**
- * This file already exists in ARMulator. 
+ * This file already exists in ARMulator.
  * We have to add modifications in order to simulate our new memory-access system.
  */
 
@@ -29,7 +29,7 @@ typedef struct MMU
 {
     /// The tile to which this local MMU belongs
     Tile* tile;
-    
+
     /// L1 cache and one chunk of a distributed and shared L2 cache
     Cache l1, l2;
 
@@ -38,22 +38,22 @@ typedef struct MMU
 
     /// The last used request buffer entry index
     int lastRequestId;
-    
+
     /**
-     * Request buffer: Currently outstanding requests, going to an off-tile destination. 
+     * Request buffer: Currently outstanding requests, going to an off-tile destination.
      * This includes requests from the on-tile core, as well as requests from off-tile cores (i.e. off-tile L2 cache misses that happen on this tile).
      */
     std::vector<OutstandingRequest> requests;
 
 
-    
+
     // ######### Simulation stuff #########
 
     /// Total simulated time spent on memory requests
     long long simTime;
 
     // ...
-    
+
 
 
 
@@ -64,10 +64,10 @@ typedef struct MMU
 
         // Initialize Caches
         l2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(tile->tileIdx);
-        
+
         l1.InitCache(GlobalConfig.CacheL1Size);
         l2.InitCache(GlobalConfig.CacheL2Size, l2ChunkIdx * GlobalConfig.CacheL2Size);
-        
+
         ResetMMU();
     }
 
@@ -78,21 +78,21 @@ typedef struct MMU
         // Clear caches & reset simulated time
         l1.Reset();
         l2.Reset();
-        
+
         simTime = 0;
-        
+
         // Clear outstanding requests
         lastRequestId = 0;
         requests.clear();
         requests.resize(MAX_OUTSTANDING_REQUESTS);
     }
 
-    
+
     /// Loads a word into the on-tile Core
     void LoadWord(const Address& addr)
     {
         // Lookup in caches
-        
+
         // L1 access time
         int totalDelay = GlobalConfig.CacheL1Delay;
 
@@ -117,7 +117,7 @@ typedef struct MMU
             CommitLoad(line, totalDelay, addr);
         }
     }
-    
+
 
     /// Fetch cacheline from the given off-tile L2 cache chunk. Note that this is only used by the local Core.
     int FetchRemoteL2(int2 holderIdx, int totalDelay, const Address& addr)
@@ -153,7 +153,7 @@ typedef struct MMU
         }
     }
 
-    
+
     /// Fetch word from memory, when it is missing in this tile's L2
     int FetchFromMemory(int2 requesterIdx, const Address& addr, int totalDelay)
     {
@@ -162,27 +162,27 @@ typedef struct MMU
 
 
     // ############################################# Handle incoming Messages #############################################
-    
+
     /// Called by router when a Cacheline has been sent to this tile
     void OnCachelineReceived(int requestId, int totalDelay, WORD* words)
     {
         OutstandingRequest& request = requests[requestId];
         assert(request.pending);
-        
+
         int addrChunkIdx = request.addr.GetL2Index() / GlobalConfig.L2CacheSize;
         if (addrChunkIdx == l2ChunkIdx)
         {
             // Address maps to this tile's L2 chunk, so have to update it
             l2.Update(request.addr, words);
         }
-        
+
 
         // TODO: Handle coalescing (i.e. multiple requesters request the same line in a single packets)
-        
+
         if (request.requesterIdx == tile->tileIdx)
         {
             // Cacheline was requested by this guy
-            
+
             // -> Also goes into L1
             CacheLine& line = l1.Update(request.addr, words);
 
@@ -207,7 +207,7 @@ typedef struct MMU
         simTime += totalDelay;
         tile->cpu->CommitLoad(line->GetWord(addr));
     }
-    
+
 
 
     // ############################################# Handle Request buffer & Send Messages #############################################
@@ -251,7 +251,7 @@ typedef struct MMU
         // Send the message
         tile->router.EnqueueMessage(msg);
     }
-    
+
 
     /// Creates and sends a new Response Message
     void SendResponse(MessageType type, int2 receiver, WORD* words, int totalDelay)

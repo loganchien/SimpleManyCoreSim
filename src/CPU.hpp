@@ -14,7 +14,7 @@ struct CPU
 
     /// The currently running thread
     Thread* currentThread;
-    
+
     /// Whether this Core is currently waiting for off-chip data
     bool isLoadingData;
 
@@ -38,7 +38,7 @@ struct CPU
     /// Forwards a load instruction to the MMU
     void DispatchLoad(int addrWord)
 
-    
+
     /// Called by MMU when it received data that this CPU is waiting for
     void CommitLoad(WORD data);
 };

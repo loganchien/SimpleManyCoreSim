@@ -25,7 +25,7 @@ void Cache::InitCache(int size, int offset = 0)
 CacheLine& Cache::UpdateLine(const Address& addr, WORD* words)
 {
     CacheLine& line = lines[addr.Index - offset];
-    
+
     // TODO: Copy words into cacheline and set valid and tag
 
     return line;
