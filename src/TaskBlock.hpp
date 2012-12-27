@@ -1,14 +1,15 @@
 #ifndef TASK_BLOCK_HPP
 #define TASK_BLOCK_HPP
 
-struct Tile;
+class Tile;
 
 /**
  * Every Task is logically partitioned into TaskBlocks.
  * One TaskBlock has a fixed size of threads that can be scheduled on an assigned CoreBlock.
  */
-struct TaskBlock
+class TaskBlock
 {
+public:
     /// The task to which this block belongs
     Task* task;
     int2 taskBlockIdx;

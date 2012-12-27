@@ -13,8 +13,9 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 
 /// A pair of (small) integers, x and y
-struct int2
+class int2
 {
+public:
     ushort x, y;
 
     int2(int x = 0, int y = 0) : x(x), y(y) {}
@@ -42,8 +43,9 @@ struct int2
 #include "SimConfig.hpp"
 
 /// Represents an address in 32-bit address space
-struct Address
+class Address
 {
+public:
     /// The raw integer representation of the address
     uint Raw;
 

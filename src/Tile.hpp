@@ -2,8 +2,9 @@
 #define TILE_HPP
 
 /// A tile consists of a core and a router
-struct Tile
+class Tile
 {
+public:
     /// Index of this tile within the core block
     int2 tileIdx;
 

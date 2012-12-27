@@ -10,8 +10,9 @@
 
 
 /// A router receives packets from and sends them to immediate neighbors or it's own core
-struct Router
+class Router
 {
+public:
     Tile* tile;
     std::mutex queueLock;
     std::deque<Message> msgQueue;

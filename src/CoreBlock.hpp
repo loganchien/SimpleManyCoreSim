@@ -4,8 +4,9 @@
 #include "Tile.hpp"
 
 /// A core block contains multiple tiles that are used to schedule the threads of one TaskBlock
-struct CoreBlock
+class CoreBlock
 {
+public:
     /// The processor to which this block belongs
     Processor* processor;
 

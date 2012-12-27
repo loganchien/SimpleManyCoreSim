@@ -4,8 +4,9 @@
 #include <vector>
 
 /// A traditional cache line
-struct CacheLine
+class CacheLine
 {
+public:
     bool valid;
     int tag;
     WORD words[SimConfig::CacheLineWordSize];
@@ -18,8 +19,9 @@ struct CacheLine
 
 
 /// A traditional cache or cache chunk
-struct Cache
+class Cache
 {
+public:
     // TODO: Add associativity (?)
 
     /// All lines

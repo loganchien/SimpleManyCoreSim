@@ -15,8 +15,9 @@ enum MessageType
 };
 
 /// A message can be sent through the network for
-struct Message
+class Message
 {
+public:
     /// The type of message
     MessageType type;
 

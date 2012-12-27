@@ -16,8 +16,9 @@
 #include "Cache.hpp"
 #include "Processor.hpp"
 
-struct OutstandingRequest
+class OutstandingRequest
 {
+public:
     Address addr;
     bool pending;
     int totalDelay;
@@ -25,8 +26,9 @@ struct OutstandingRequest
 };
 
 /// A per-tile MMU
-typedef struct MMU
+class MMU
 {
+public:
     /// The tile to which this local MMU belongs
     Tile* tile;
 

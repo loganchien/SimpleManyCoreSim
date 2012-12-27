@@ -2,8 +2,9 @@
 #define THREAD_HPP
 
 /// A thread is an instruction streams that runs on one Core
-struct Thread
+class Thread
 {
+public:
     /// The tile on which this Thread runs
     Tile* tile;
 

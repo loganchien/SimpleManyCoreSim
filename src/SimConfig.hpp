@@ -10,8 +10,9 @@
 #define MAX_MEM_SIZE (8 * 1024 * 1024)
 
 
-struct SimConfig
+class SimConfig
 {
+public:
     // ################################ Tile Grid ################################
 
     /// Length of the grid of core blocks

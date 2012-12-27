@@ -7,8 +7,9 @@
 #include "MMU.h"
 
 /// This is an ARMulator class
-struct CPU
+class CPU
 {
+public:
     /// The tile to which this CPU belongs
     Tile* tile;
 

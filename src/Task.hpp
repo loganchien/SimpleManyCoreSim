@@ -1,11 +1,12 @@
 #ifndef TASK_HPP
 #define TASK_HPP
 
-struct CoreBlock;
+class CoreBlock;
 
 /// One stat value
-struct TaskStat
+class TaskStat
 {
+public:
     void SetStat(double totalCount, int threadCount)
     {
         TotalCount = totalCount;
@@ -18,8 +19,9 @@ struct TaskStat
 };
 
 /// Stats for one task
-struct TaskStats
+class TaskStats
 {
+public:
     /// # of executed threads
     long long TotalThreadCount;
 
@@ -41,8 +43,9 @@ struct TaskStats
 
 
 /// A Task has code and some meta information
-struct Task
+class Task
 {
+public:
     /// Name
     std::string name;
 

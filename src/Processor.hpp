@@ -10,8 +10,9 @@
 
 
 /// The Processor contains and does it all
-struct Processor
+class Processor
 {
+public:
     /// The amount and size of blocks on this processor
     int2 coreGridSize, coreBlockSize;
 
