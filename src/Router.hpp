@@ -3,8 +3,6 @@
 
 #include "Message.hpp"
 
-#include <WinBase.h>    //mutex in VS2010
-#include <mutex>
 #include <deque>
 
 class Tile;
@@ -14,7 +12,6 @@ class Router
 {
 public:
     Tile* tile;
-    std::mutex queueLock;
     std::deque<Message> msgQueue;
 
     /// Sim stats: How many packets went through this router

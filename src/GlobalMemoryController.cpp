@@ -15,9 +15,7 @@ void GlobalMemoryController::InitGMemController(Processor* processor_)
 void GlobalMemoryController::EnqueueRequest(const Message& msg)
 {
     // Add to queue
-    queueLock.lock();
     msgQueue.push_back(msg);
-    queueLock.unlock();
 }
 
 void GlobalMemoryController::DispatchNext()
@@ -25,10 +23,8 @@ void GlobalMemoryController::DispatchNext()
     if (msgQueue.size() == 0) return;
 
     // Dequeue next message
-    queueLock.lock();
     Message& request = msgQueue.front();
     msgQueue.pop_front();
-    queueLock.unlock();
 
     // send response back to sender
     Message response;

@@ -4,7 +4,6 @@
 #include "Message.hpp"
 #include "SimConfig.hpp"
 
-#include <mutex>
 #include <deque>
 #include <stdint.h>
 
@@ -20,7 +19,6 @@ public:
     Processor* processor;
 
     std::vector<uint32_t> memory;
-    std::mutex queueLock;
     std::deque<Message> msgQueue;
 
     /// The sim time of the mem controller

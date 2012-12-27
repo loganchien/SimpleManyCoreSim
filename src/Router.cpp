@@ -42,10 +42,8 @@ void Router::DispatchNext()
     msg.totalDelay += GlobalConfig.QueuingDelay;
 
     // Dequeue next message
-    queueLock.lock();
     Message& msg = msgQueue.front();
     msgQueue.pop_front();
-    queueLock.unlock();
 
     // Handle dispatch
     if (msg.receiver == tile->tileIdx || msg.IsBroadcast())
@@ -149,7 +147,5 @@ void Router::EnqueueMessage(const Message& msg)
     ++simTotalPacketsReceived;
     msg.totalDelay += GlobalConfig.Route1Delay;
 
-    queueLock.lock();
     msgQueue.push_back(msg);
-    queueLock.unlock();
 }
