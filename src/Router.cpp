@@ -75,11 +75,11 @@ void Router::DispatchNext()
 void Router::RouteToNeighbor(const Message& msg)
 {
     // Simulate transport delay
-    int2 neighborIdx;
+    Dim2 neighborIdx;
 
     Processor& processor = *tile->coreBlock->processor;
-    int2 blockSize = processor->coreBlockSize;
-    int2 coreOrigin = tile->coreBlock->ComputeCoreBlockOrigin();
+    Dim2 blockSize = processor->coreBlockSize;
+    Dim2 coreOrigin = tile->coreBlock->ComputeCoreBlockOrigin();
 
     // TODO: Shortest path computation below (Hint: See Tile::IsBoundaryTile() for more information)
 
@@ -99,15 +99,15 @@ void Router::RouteToNeighbor(const Message& msg)
         if(min(x,CoreGridLen-x)<min(y,width-y)){
             //move horizontally to border
             if(x<CoreGridLen-x)
-                neighborIdx = int2(x-1,y);
+                neighborIdx = Dim2(x-1,y);
             else
-                neighborIdx = int2(x+1,y)
+                neighborIdx = Dim2(x+1,y)
         }
         else{	//move vertically
             if(y<CoreGridLen-y)
-                neighborIdx = int2(x,y-1);
+                neighborIdx = Dim2(x,y-1);
             else
-                neighborIdx = int2(x,y+1);
+                neighborIdx = Dim2(x,y+1);
         }
     }
     else
@@ -119,21 +119,21 @@ void Router::RouteToNeighbor(const Message& msg)
         if(r==0){ //prefer horizontal movement
             if(msg.receiver.x != tile->TileIdx.x){
                 next = (msg.receiver.x > tile->TileIdx.x) ? tile->TileIdx.x+1 : tile->TileIdx.x-1 ;
-                neighborIdx = int2(next,tile->TileIdx.y);
+                neighborIdx = Dim2(next,tile->TileIdx.y);
             }
             else { //already on correct x index, move vertical!
                 next = (msg.receiver.y > tile->TileIdx.y) ? tile->TileIdx.y+1 : tile->TileIdx.y-1 ;
-                neighborIdx = int2(tile->TileIdx.x,next);
+                neighborIdx = Dim2(tile->TileIdx.x,next);
             }
         }
         else {	//perfer vertical movement
             if(msg.receiver.y != tile->TileIdx.y){
                 next = (msg.receiver.y > tile->TileIdx.y) ? tile->TileIdx.y+1 : tile->TileIdx.y-1 ;
-                neighborIdx = int2(tile->TileIdx.x,next);
+                neighborIdx = Dim2(tile->TileIdx.x,next);
             }
             else{
                 next = (msg.receiver.x > tile->TileIdx.x) ? tile->TileIdx.x+1 : tile->TileIdx.x-1 ;
-                neighborIdx = int2(next,tile->TileIdx.y);
+                neighborIdx = Dim2(next,tile->TileIdx.y);
             }
         }
     }

@@ -24,7 +24,7 @@ public:
     Address addr;
     bool pending;
     int totalDelay;
-    int2 requesterIdx;
+    Dim2 requesterIdx;
 };
 
 /// A per-tile MMU
@@ -71,15 +71,17 @@ public:
 
     /// Fetch cacheline from the given off-tile L2 cache chunk. Note that this
     /// is only used by the local Core.
-    int FetchRemoteL2(int2 holderIdx, int totalDelay, const Address& addr);
+    int FetchRemoteL2(const Dim2& holderIdx, int totalDelay,
+                      const Address& addr);
 
 
     /// Fetch word from on-tile L2
-    void FetchLocalL2(int2 requesterIdx, int totalDelay, const Address& addr);
+    void FetchLocalL2(const Dim2& requesterIdx, int totalDelay,
+                      const Address& addr);
 
 
     /// Fetch word from memory, when it is missing in this tile's L2
-    int FetchFromMemory(int2 requesterIdx, const Address& addr,
+    int FetchFromMemory(const Dim2& requesterIdx, const Address& addr,
                         int totalDelay);
 
 
@@ -100,12 +102,12 @@ public:
     OutstandingRequest& GetFreeRequest(int& requestId);
 
     /// Creates and sends a new Request Message
-    void SendRequest(MessageType type, int2 requesterIdx, int2 receiver,
-                     Address addr, int totalDelay);
+    void SendRequest(MessageType type, const Dim2& requesterIdx,
+                     const Dim2& receiver, Address addr, int totalDelay);
 
 
     /// Creates and sends a new Response Message
-    void SendResponse(MessageType type, int2 receiver, WORD* words,
+    void SendResponse(MessageType type, const Dim2& receiver, WORD* words,
                       int totalDelay);
 };
 

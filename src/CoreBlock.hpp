@@ -1,6 +1,8 @@
 #ifndef CORE_BLOCK_HPP
 #define CORE_BLOCK_HPP
 
+#include "Dimension.hpp"
+
 class Address;
 class Processor;
 class TaskBlock;
@@ -18,7 +20,7 @@ public:
     Tile* tiles;
 
     /// The index of this core block inside the grid
-    int2 blockIdx;
+    Dim2 blockIdx;
 
     CoreBlock()
 
@@ -28,22 +30,22 @@ public:
     void InitCoreBlock();
 
     /// The index of the first tile within this core block
-    int2 ComputeCoreBlockOrigin() const;
+    Dim2 ComputeCoreBlockOrigin() const;
 
 
     /// Computes the global 2D index of the given block-local 1D index
-    int2 ComputeTileIndex(int inCoreID) const;
+    Dim2 ComputeTileIndex(int inCoreID) const;
 
     /// Computes the L2 chunk index of the given memory address
     int ComputeL2ChunkID(const Address& addr) const;
 
 
     /// Computes the L2 chunk index of the given global tile index
-    int ComputeL2TileChunkID(int2 globalIdx) const;
+    int ComputeL2TileChunkID(const Dim2& globalIdx) const;
 
 
     /// Computes the L2 chunk ID of the given block-local 2D index
-    int ComputeL2ChunkID(int2 inCoreBlockIdx2) const;
+    int ComputeL2ChunkID(const Dim2& inCoreBlockIdx2) const;
 
 
     /// Put the next thread of the given TaskBlock on the given tile

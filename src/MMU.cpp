@@ -1,3 +1,7 @@
+#include "MMU.hpp"
+
+#include "Dimension.hpp"
+
 /// New custom function that we call during start-up
 void MMU::InitMMU(Tile* tile)
 {
@@ -61,14 +65,16 @@ void MMU::LoadWord(const Address& addr)
 
 
 /// Fetch cacheline from the given off-tile L2 cache chunk. Note that this is only used by the local Core.
-int MMU::FetchRemoteL2(int2 holderIdx, int totalDelay, const Address& addr)
+int MMU::FetchRemoteL2(const Dim2& holderIdx, int totalDelay,
+                       const Address& addr)
 {
     SendRequest(MessageTypeRequestL2, tile->tileIdx, holderIdx, addr, totalDelay);
 }
 
 
 /// Fetch word from on-tile L2
-void MMU::FetchLocalL2(int2 requesterIdx, int totalDelay, const Address& addr)
+void MMU::FetchLocalL2(const Dim2& requesterIdx, int totalDelay,
+                       const Address& addr)
 {
     // Add hit penalty
     totalDelay += GlobalConfig.CacheL2Delay;
@@ -96,9 +102,10 @@ void MMU::FetchLocalL2(int2 requesterIdx, int totalDelay, const Address& addr)
 
 
 /// Fetch word from memory, when it is missing in this tile's L2
-int MMU::FetchFromMemory(int2 requesterIdx, const Address& addr, int totalDelay)
+int MMU::FetchFromMemory(const Dim2& requesterIdx, const Address& addr,
+                         int totalDelay)
 {
-    SendRequest(MessageTypeRequestMem, requesterIdx, int2(GlobalMemoryController::GMemIdx, GlobalMemoryController::GMemIdx), addr, totalDelay);
+    SendRequest(MessageTypeRequestMem, requesterIdx, Dim2(GlobalMemoryController::GMemIdx, GlobalMemoryController::GMemIdx), addr, totalDelay);
 }
 
 
@@ -170,7 +177,8 @@ OutstandingRequest& MMU::GetFreeRequest(int& requestId)
 }
 
 /// Creates and sends a new Request Message
-void MMU::SendRequest(MessageType type, int2 requesterIdx, int2 receiver, Address addr, int totalDelay)
+void MMU::SendRequest(MessageType type, const Dim2& requesterIdx,
+                      const Dim2& receiver, Address addr, int totalDelay)
 {
     // Add request to request buffer
     int requestId;
@@ -195,7 +203,8 @@ void MMU::SendRequest(MessageType type, int2 requesterIdx, int2 receiver, Addres
 
 
 /// Creates and sends a new Response Message
-void MMU::SendResponse(MessageType type, int2 receiver, WORD* words, int totalDelay)
+void MMU::SendResponse(MessageType type, const Dim2& receiver, WORD* words,
+                       int totalDelay)
 {
     // Create Message object
     Message msg;

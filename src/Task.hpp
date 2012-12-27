@@ -1,6 +1,8 @@
 #ifndef TASK_HPP
 #define TASK_HPP
 
+#include "Dimension.hpp"
+
 class CoreBlock;
 
 /// One stat value
@@ -53,10 +55,10 @@ public:
     Code code;
 
     /// Total and per-block size
-    int2 taskSize, blockSize;
+    Dim2 taskSize, blockSize;
 
     /// The index of the TaskBlock that is to be scheduled next
-    int2 nextBlockIdx;
+    Dim2 nextBlockIdx;
 
     /// The amount of blocks that have already finished executing
     int finishedCount;

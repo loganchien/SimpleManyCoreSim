@@ -22,10 +22,10 @@ public:
     MessageType type;
 
     /// The id of the sender (tile or Global MMU)
-    int2 sender;
+    Dim2 sender;
 
     /// The id of the receiver (Tile, core block or Global MMU)
-    int2 receiver;
+    Dim2 receiver;
 
     /// The id of the request in the sender that this Message is serving
     int requestId;

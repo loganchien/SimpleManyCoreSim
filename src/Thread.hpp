@@ -1,6 +1,8 @@
 #ifndef THREAD_HPP
 #define THREAD_HPP
 
+#include "Dimension.hpp"
+
 class TaskBlock;
 class Tile;
 
@@ -15,7 +17,7 @@ public:
     TaskBlock* taskBlock;
 
     /// The index of this thread within it's TaskBlock
-    int2 threadIdx;
+    Dim2 threadIdx;
 
     /// This thread's instruction stream
     Code code;

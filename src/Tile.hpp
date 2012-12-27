@@ -1,6 +1,7 @@
 #ifndef TILE_HPP
 #define TILE_HPP
 
+#include "Dimension.hpp"
 #include "Router.hpp"
 
 class Core;
@@ -12,7 +13,7 @@ class Tile
 {
 public:
     /// Index of this tile within the core block
-    int2 tileIdx;
+    Dim2 tileIdx;
 
     /// The block to which this tile belongs
     CoreBlock* coreBlock;
@@ -32,7 +33,8 @@ public:
     /// Whether this tile is not currently doing anything
     bool tileIdle;
 
-    void InitTile(int2 tileIdx, CoreBlock* coreBlock);
+public:
+    void InitTile(Dim2 tileIdx, CoreBlock* coreBlock);
 
     /// Whether this tile is at the core's x = 0, y = 0, x = w-1 or y = h-1
     bool IsBoundaryTile();

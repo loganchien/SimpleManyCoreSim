@@ -12,32 +12,6 @@
 typedef unsigned short ushort;
 typedef unsigned int uint;
 
-/// A pair of (small) integers, x and y
-class int2
-{
-public:
-    ushort x, y;
-
-    int2(int x = 0, int y = 0) : x(x), y(y) {}
-
-    int Area() const;
-
-    /// Convert to one-dimensional index
-    int Get1DIndex(int width) const;
-
-    /// Increments x by one, but wraps x at width, at which point, it resets x and increments y by one.
-    void Inc(int width);
-
-    /// Component-wise addition
-    int2 operator+ (int2 rhs);
-
-    /// Component-wise subtraction
-    int2 operator- (int2 rhs);
-
-    /// Component-wise multiplication
-    int2 operator* (int2 rhs);
-};
-
 
 // include config, make it available to everyone
 #include "SimConfig.hpp"

@@ -1,5 +1,7 @@
 #include "CoreBlock.hpp"
 
+#include "Dimension.hpp"
+
 CoreBlock::CoreBlock()
 {
     tiles = new Tile[GlobalConfig.CoreBlockSize()];
@@ -12,25 +14,27 @@ CoreBlock::~CoreBlock()
 
 
 /// Initializes this CoreBlock
-void CoreBlock::InitCoreBlock()//params)
+void CoreBlock::InitCoreBlock()
 {
-    /*foreach(tile in tiles)
+    /*
+    foreach(tile in tiles)
     {
         // TODO: Pass init parameters to each tile
         tile.InitTile(...);
-    }*/
+    }
+    */
 }
 
 
 /// The index of the first tile within this core block
-int2 CoreBlock::ComputeCoreBlockOrigin() const
+Dim2 CoreBlock::ComputeCoreBlockOrigin() const
 {
     return blockIdx * processor->coreBlockSize;
 }
 
 
 /// Computes the global 2D index of the given block-local 1D index
-int2 CoreBlock::ComputeTileIndex(int inCoreID) const
+Dim2 CoreBlock::ComputeTileIndex(int inCoreID) const
 {
     return ComputeCoreBlockOrigin() + GlobalConfig.ComputeInCoreBlockIdx2(inCoreID);
 }
@@ -43,15 +47,15 @@ int CoreBlock::ComputeL2ChunkID(const Address& addr) const
 
 
 /// Computes the L2 chunk index of the given global tile index
-int CoreBlock::ComputeL2TileChunkID(int2 globalIdx) const
+int CoreBlock::ComputeL2TileChunkID(const Dim2& globalIdx) const
 {
-    int2 blockOrigin = ComputeCoreBlockOrigin();
+    Dim2 blockOrigin = ComputeCoreBlockOrigin();
     return ComputeL2ChunkID(globalIdx - blockOrigin);
 }
 
 
 /// Computes the L2 chunk ID of the given block-local 2D index
-int CoreBlock::ComputeL2ChunkID(int2 inCoreBlockIdx2) const
+int CoreBlock::ComputeL2ChunkID(const Dim2& inCoreBlockIdx2) const
 {
     // TODO: Convert to 1D index, possibly using Z-order
     //return inBlockIdx;

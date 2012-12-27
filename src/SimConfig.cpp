@@ -10,10 +10,10 @@ int SimConfig::CoreBlockSize()
     return CoreBlockLen * CoreBlockLen;
 }
 
-int2 SimConfig::ComputeInCoreBlockIdx2(int inCoreBlockIdx1)
+Dim2 SimConfig::ComputeInCoreBlockIdx2(int inCoreBlockIdx1)
 {
     div_t d = div(inCoreBlockIdx1, CoreBlockLen);
-    return int2(d.quot, d.rem);
+    return Dim2(d.quot, d.rem);
 }
 
 int SimConfig::GetTotalL2CacheSize()

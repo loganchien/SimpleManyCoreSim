@@ -1,22 +1,21 @@
 #ifndef PROCESSOR_HPP
 #define PROCESSOR_HPP
 
-#include <vector>
-
-#include "simutil.hpp"
-#include "Task.hpp"
+#include "Dimension.hpp"
 #include "GlobalMemoryController.hpp"
+#include "Task.hpp"
+
+#include <vector>
 
 class CoreBlock;
 class TaskBlock;
-
 
 /// The Processor contains and does it all
 class Processor
 {
 public:
     /// The amount and size of blocks on this processor
-    int2 coreGridSize, coreBlockSize;
+    Dim2 coreGridSize, coreBlockSize;
 
     /// All blocks available on this processor
     CoreBlock* blocks;
@@ -33,6 +32,7 @@ public:
     /// The number of the current batch
     int batchNum;
 
+public:
     Processor();
 
     ~Processor()

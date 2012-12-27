@@ -1,6 +1,8 @@
 #ifndef SIM_CONFIG_HPP
 #define SIM_CONFIG_HPP
 
+#include "Dimension.hpp"
+
 /**
  * All tweakable parameters of the system
  */
@@ -32,7 +34,7 @@ public:
     int CoreBlockSize();
 
     /// Converts the given block-local 1D index to the corresponding block-local 2D index
-    int2 ComputeInCoreBlockIdx2(int inCoreBlockIdx1);
+    Dim2 ComputeInCoreBlockIdx2(int inCoreBlockIdx1);
 
 
     // ################################ Caches ################################
