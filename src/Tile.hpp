@@ -1,10 +1,10 @@
 #ifndef TILE_HPP
 #define TILE_HPP
 
+#include "CPU.hpp"
 #include "Dimension.hpp"
 #include "Router.hpp"
 
-class Core;
 class CoreBlock;
 class MMU;
 

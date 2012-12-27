@@ -3,6 +3,7 @@
 
 #include "Dimension.hpp"
 
+class Program;
 class TaskBlock;
 class Tile;
 
@@ -20,9 +21,11 @@ public:
     Dim2 threadIdx;
 
     /// This thread's instruction stream
-    Code code;
+    Program* code;
 
-    void InitThread();
+public:
+    void InitThread(TaskBlock* taskBlock, const Dim2& threadIdx, Tile *tile,
+                    Program *code);
 };
 
 #endif // THREAD_HPP

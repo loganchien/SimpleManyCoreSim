@@ -1,20 +1,31 @@
 #include "Cache.hpp"
 
+#include "Address.hpp"
+#include "SimConfig.hpp"
+
+#include <vector>
 #include <stdint.h>
 
-CacheLine::CacheLine()
+CacheLine::CacheLine(): valid(false), tag(0), bytes(GlobalConfig.CacheLineSize)
 {
-    valid = false;
 }
 
 /// Get the word at the given address (given the address maps to this line)
-uint32_t CacheLine::GetWord(const Address& addr)
+uint32_t CacheLine::GetWord(const Address& addr) const
 {
-    return words[addr.WordOffset];
+    return *reinterpret_cast<const uint32_t*>(&*bytes.begin() +
+                                              addr.GetWordOffset());
+}
+
+/// Set the word to the given address (given the address maps to this line)
+void CacheLine::SetWord(const Address& addr, uint32_t word)
+{
+    *reinterpret_cast<uint32_t*>(&*bytes.begin() +
+                                 addr.GetWordOffset()) = word;
 }
 
 
-void Cache::InitCache(int size, int offset = 0)
+void Cache::InitCache(int size, int offset)
 {
     this->size = size;
     this->offset = offset;
@@ -26,7 +37,7 @@ void Cache::InitCache(int size, int offset = 0)
 /// The given CacheLine is updated
 CacheLine& Cache::UpdateLine(const Address& addr, uint32_t* words)
 {
-    CacheLine& line = lines[addr.Index - offset];
+    CacheLine& line = lines[addr.GetL1Index() - offset];
 
     // TODO: Copy words into cacheline and set valid and tag
 
@@ -49,8 +60,8 @@ bool Cache::GetEntry(const Address& addr, CacheLine* line)
 {
     ++simAccessCount;
 
-    line = &lines[addr.Index - offset];
-    if (line->valid && line->tag == addr.tag)
+    line = &lines[addr.GetL1Index() - offset];
+    if (line->valid && line->tag == addr.GetL1Tag())
     {
         // cache hit
         return true;

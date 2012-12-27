@@ -3,7 +3,11 @@
 
 #include "Dimension.hpp"
 
+#include <string>
+
 class CoreBlock;
+class TaskBlock;
+class Program;
 
 /// One stat value
 class TaskStat
@@ -52,7 +56,7 @@ public:
     std::string name;
 
     /// Code to be executed
-    Code code;
+    Program* code;
 
     /// Total and per-block size
     Dim2 taskSize, blockSize;

@@ -1,6 +1,8 @@
 #include "CoreBlock.hpp"
 
+#include "Address.hpp"
 #include "Dimension.hpp"
+#include "Tile.hpp"
 
 CoreBlock::CoreBlock()
 {

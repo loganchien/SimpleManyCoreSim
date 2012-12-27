@@ -22,9 +22,9 @@ public:
     /// The index of this core block inside the grid
     Dim2 blockIdx;
 
-    CoreBlock()
+    CoreBlock();
 
-    ~CoreBlock()
+    ~CoreBlock();
 
     /// Initializes this CoreBlock
     void InitCoreBlock();

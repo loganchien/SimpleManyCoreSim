@@ -13,14 +13,10 @@ void TaskBlock::InitTaskBlock()
 }
 
 /// Instruments the Task code for this block (i.e. insert block-id, thread-id etc into special placeholders within the code)
-Code TaskBlock::GetInjectedCode(int2 threadId)
+Program *TaskBlock::GetInjectedCode(int2 threadId)
 {
-    // copy original code
-    Code origCode = task->code;
-
     // TODO: Replace placeholders in constant segment with thread id information
-
-    return code;
+    return NULL;
 }
 
 

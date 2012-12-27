@@ -1,6 +1,10 @@
 #ifndef MESSAGE_HPP
 #define MESSAGE_HPP
 
+#include "Address.hpp"
+#include "Cache.hpp"
+#include "Dimension.hpp"
+
 #include <stdint.h>
 
 /// The type of message identifies the purpose of a message
@@ -35,11 +39,8 @@ public:
     /// The total delay that the current instruction (i.e. memory access) has cost so far
     int totalDelay;
 
-    union
-    {
-        Address addr;
-        uint32_t cacheLine[SimConfig::CacheLineSize];
-    };
+    Address addr;
+    CacheLine cacheLine;
 
     /// Whether this message is broadcasted to all cores of a core block
     bool IsBroadcast() const;

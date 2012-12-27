@@ -11,13 +11,17 @@ class CacheLine
 {
 public:
     bool valid;
-    int tag;
-    uint32_t words[SimConfig::CacheLineWordSize];
+    uint32_t tag;
+    std::vector<uint8_t> bytes;
 
+public:
     CacheLine();
 
     /// Get the word at the given address (given the address maps to this line)
-    uint32_t GetWord(const Address& addr);
+    uint32_t GetWord(const Address& addr) const;
+
+    /// Set the word to the given address (given the address maps to this line)
+    void SetWord(const Address& addr, uint32_t word);
 };
 
 

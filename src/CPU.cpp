@@ -1,5 +1,7 @@
 #include "CPU.hpp"
 
+#include "Address.hpp"
+
 #include <stdint.h>
 
 CPU::CPU(Tile* tile)

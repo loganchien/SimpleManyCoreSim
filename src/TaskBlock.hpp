@@ -4,6 +4,7 @@
 #include "Thread.hpp"
 
 class CoreBlock;
+class Task;
 class Tile;
 
 /**
@@ -15,11 +16,11 @@ class TaskBlock
 public:
     /// The task to which this block belongs
     Task* task;
-    int2 taskBlockIdx;
+    Dim2 taskBlockIdx;
     CoreBlock* assignedBlock;
 
     /// The id of the first thread that has not been scheduled yet
-    int2 nextThreadId;
+    Dim2 nextThreadIdx;
 
     TaskBlock();
 
@@ -27,7 +28,7 @@ public:
     void InitTaskBlock();
 
     /// Instruments the Task code for this block (i.e. insert block-id, thread-id etc into special placeholders within the code)
-    Code GetInjectedCode(int2 threadId);
+    Program *GetInjectedCode(const Dim2& threadIdx);
 
     /// Whether this TaskBlock still has unscheduled threads
     bool HasMoreThreads() const;

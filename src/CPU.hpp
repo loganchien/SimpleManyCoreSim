@@ -1,7 +1,8 @@
 #ifndef CPU_HPP
 #define CPU_HPP
 
-#include "MMU.h"
+#include "Dimension.hpp"
+#include "MMU.hpp"
 
 #include <stdint.h>
 
@@ -31,7 +32,7 @@ public:
 
 
     /// This Core starts running the given Thread
-    void StartThread(Thread* thread)
+    void StartThread(Thread* thread);
 
 
     /// Dispatches and, if possible, executes one simulated instruction. Returns false, if there are no more instructions to execute (i.e. EOF reached).
@@ -39,7 +40,7 @@ public:
 
 
     /// Forwards a load instruction to the MMU
-    void DispatchLoad(int addrWord)
+    void DispatchLoad(int addrWord);
 
 
     /// Called by MMU when it received data that this CPU is waiting for

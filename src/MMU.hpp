@@ -9,6 +9,7 @@
 
 #include "Address.hpp"
 #include "Cache.hpp"
+#include "Message.hpp"
 
 #include <vector>
 #include <stdint.h>
