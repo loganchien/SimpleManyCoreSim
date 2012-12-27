@@ -9,7 +9,6 @@
 
 #include "Address.hpp"
 #include "Cache.hpp"
-#include "simutil.hpp"
 
 #include <vector>
 #include <stdint.h>
