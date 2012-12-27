@@ -1,7 +1,24 @@
-
 #include "GlobalMemoryController.hpp"
+
 #include "Processor.hpp"
 
+GlobalMemoryController::GlobalMemoryController()
+{
+    memory.resize(MAX_MEM_SIZE);
+}
+
+void GlobalMemoryController::InitGMemController(Processor* processor_)
+{
+    processor = processor_;
+}
+
+void GlobalMemoryController::EnqueueRequest(const Message& msg)
+{
+    // Add to queue
+    queueLock.lock();
+    msgQueue.push_back(msg);
+    queueLock.unlock();
+}
 
 void GlobalMemoryController::DispatchNext()
 {

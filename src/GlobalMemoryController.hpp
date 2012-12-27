@@ -1,3 +1,5 @@
+#ifndef GLOBAL_MEMORY_CONTROLLER_HPP
+#define GLOBAL_MEMORY_CONTROLLER_HPP
 
 #include "Message.hpp"
 
@@ -24,26 +26,14 @@ public:
     /// The sim time of the mem controller
     long long simTime;
 
-    GlobalMemoryController()
-    {
-        memory.resize(MAX_MEM_SIZE);
-    }
+    GlobalMemoryController();
 
-    void InitGMemController(Processor* processor)
-    {
-        this->processor = processor;
-    }
+    void InitGMemController(Processor* processor);
 
-    void EnqueueRequest(const Message& msg)
-    {
-        // Add to queue
-        queueLock.lock();
-        msgQueue.push_back(msg);
-        queueLock.unlock();
-    }
-
+    void EnqueueRequest(const Message& msg);
 
     /// Process the next gmem request
     void DispatchNext();
 };
 
+#endif // GLOBAL_MEMORY_CONTROLLER_HPP
