@@ -1,4 +1,5 @@
-
+#ifndef CACHE_HPP
+#define CACHE_HPP
 
 #include <vector>
 
@@ -8,17 +9,11 @@ struct CacheLine
     bool valid;
     int tag;
     WORD words[SimConfig::CacheLineWordSize];
-    
-    CacheLine()
-    {
-        valid = false;
-    }
+
+    CacheLine();
 
     /// Get the word at the given address (given the address maps to this line)
-    WORD GetWord(const Address& addr)
-    {
-        return words[addr.WordOffset];
-    }
+    WORD GetWord(const Address& addr);
 };
 
 
@@ -32,7 +27,7 @@ struct Cache
 
     /// Amount of lines
     int size;
-    
+
     /// Address offset of this cache chunk. Must be subtracted from actual entry index. Default = 0
     int offset;
 
@@ -42,50 +37,19 @@ struct Cache
 
 
 
-    void InitCache(int size, int offset = 0)
-    {
-        this->size = size;
-        this->offset = offset;
-
-        lines.resize(size);
-    }
+    void InitCache(int size, int offset = 0);
 
 
     /// The given CacheLine is updated
-    CacheLine& UpdateLine(const Address& addr, WORD* words)
-    {
-        CacheLine& line = lines[addr.Index - offset];
-        
-        // TODO: Copy words into cacheline and set valid and tag
+    CacheLine& UpdateLine(const Address& addr, WORD* words);
 
-        return line;
-    }
 
-    
     /// Usually the cache is only reset when the processor is reset (i.e. when starting a new batch)
-    void Reset()
-    {
-        lines.clear();
-        lines.resize(size);
+    void Reset();
 
-        simAccessCount = simMissCount = 0;
-    }
-    
 
     /// Get the entry of the given address
-    bool GetEntry(const Address& addr, CacheLine* line)
-    {   
-        ++simAccessCount;
-
-        line = &lines[addr.Index - offset];
-        if (line->valid && line->tag == addr.tag)
-        {
-            // cache hit
-            return true;
-        }
-        
-        // cache miss
-        ++simMissCount;
-        return false;
-    }
+    bool GetEntry(const Address& addr, CacheLine* line);
 };
+
+#endif // CACHE_HPP

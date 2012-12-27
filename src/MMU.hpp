@@ -1,3 +1,6 @@
+#ifndef MMU_HPP
+#define MMU_HPP
+
 /**
  * This file already exists in ARMulator. 
  * We have to add modifications in order to simulate our new memory-access system.
@@ -267,3 +270,5 @@ typedef struct MMU
         tile->router.EnqueueMessage(msg);
     }
 };
+
+#endif // MMU_HPP

@@ -1,4 +1,5 @@
-
+#ifndef TASK_BLOCK_HPP
+#define TASK_BLOCK_HPP
 
 struct Tile;
 
@@ -16,50 +17,22 @@ struct TaskBlock
     /// The id of the first thread that has not been scheduled yet
     int2 nextThreadId;
 
-    TaskBlock() {}
-    
-    /// Initializes this TaskBlock
-    void InitTaskBlock(params)
-    {
-        // TODO: Init TaskBlock
+    TaskBlock();
 
-        assignedBlock->taskBlock = this;
-    }
+    /// Initializes this TaskBlock
+    void InitTaskBlock();
 
     /// Instruments the Task code for this block (i.e. insert block-id, thread-id etc into special placeholders within the code)
-    Code GetInjectedCode(int2 threadId)
-    {
-        // copy original code
-        Code origCode = task->code;
-        
-        // TODO: Replace placeholders in constant segment with thread id information
-
-        return code;
-    }
-    
+    Code GetInjectedCode(int2 threadId);
 
     /// Whether this TaskBlock still has unscheduled threads
-    bool HasMoreThreads() const
-    {
-        return nextThreadId.Area() <= task->blockSize.Area();
-    }
+    bool HasMoreThreads() const;
 
     /// Whether all TaskBlocks of this Task have already finished running
-    bool IsFinished()
-    {
-        return finishedCount == task->blockSize.Area();
-    }
+    bool IsFinished();
 
     /// Creates the next Thread from this TaskBlock to run on the given tile
-    Thread CreateNextThread(Tile& tile)
-    {
-        assert(HasMoreThreads());
-
-        Thread nextThread;
-        nextThread.InitThread(this, nextThreadId, tile, GetInjectedCode(nextThreadId));
-        
-        nextThreadId.Inc(1);
-
-        return nextThread;
-    }
+    Thread CreateNextThread(Tile& tile);
 };
+
+#endif // TASK_BLOCK_HPP

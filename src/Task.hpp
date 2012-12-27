@@ -1,4 +1,5 @@
-
+#ifndef TASK_HPP
+#define TASK_HPP
 
 struct CoreBlock;
 
@@ -61,26 +62,13 @@ struct Task
     TaskStats Stats;
 
     /// Whether this Task still has unscheduled TaskBlocks
-    bool HasMoreBlocks() const
-    {
-        return nextBlockIdx.Area() <= taskSize.Area();
-    }
+    bool HasMoreBlocks() const;
 
     /// Whether all TaskBlocks of this Task have already finished running
-    bool IsFinished()
-    {
-        return finishedCount == taskSize.Area();
-    }
+    bool IsFinished();
 
     /// Creates the next TaskBlock in this task
-    TaskBlock CreateNextTaskBlock(CoreBlock& coreBlock)
-    {
-        assert(HasMoreBlocks());
-        TaskBlock nextBlock;
-        nextBlock.InitTaskBlock(this, lastBlockIdx, coreBlock);
-        
-        nextBlockIdx.Inc(blockSize.x);
-
-        return nextBlock;
-    }
+    TaskBlock CreateNextTaskBlock(CoreBlock& coreBlock);
 };
+
+#endif // TASK_HPP

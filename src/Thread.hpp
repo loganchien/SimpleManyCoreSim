@@ -1,3 +1,5 @@
+#ifndef THREAD_HPP
+#define THREAD_HPP
 
 /// A thread is an instruction streams that runs on one Core
 struct Thread
@@ -11,12 +13,10 @@ struct Thread
     /// The index of this thread within it's TaskBlock
     int2 threadIdx;
 
-
     /// This thread's instruction stream
     Code code;
 
-    void InitThread(params)
-    {
-        // TODO: Init thread
-    }
+    void InitThread();
 };
+
+#endif // THREAD_HPP
