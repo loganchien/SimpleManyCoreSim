@@ -4,9 +4,11 @@
 #include <vector>
 
 #include "simutil.hpp"
-#include "CoreBlock.hpp"
 #include "Task.hpp"
 #include "GlobalMemoryController.hpp"
+
+class CoreBlock;
+class TaskBlock;
 
 
 /// The Processor contains and does it all

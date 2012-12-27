@@ -1,6 +1,9 @@
 #ifndef TASK_BLOCK_HPP
 #define TASK_BLOCK_HPP
 
+#include "Thread.hpp"
+
+class CoreBlock;
 class Tile;
 
 /**

@@ -1,10 +1,10 @@
 #ifndef CPU_HPP
 #define CPU_HPP
 
-#include "simutil.hpp"
-#include "Tile.hpp"
-#include "Thread.hpp"
 #include "MMU.h"
+
+class Tile;
+class Thread;
 
 /// This is an ARMulator class
 class CPU
@@ -23,7 +23,7 @@ public:
     long long simInstructionCount, simLoadInstructionCount;
 
     // ...
-	MMU mmu;
+    MMU mmu;
 
     CPU(Tile* tile);
 

@@ -2,12 +2,12 @@
 #define ROUTER_HPP
 
 #include "Message.hpp"
-#include "Tile.hpp"
 
 #include <WinBase.h>    //mutex in VS2010
 #include <mutex>
 #include <deque>
 
+class Tile;
 
 /// A router receives packets from and sends them to immediate neighbors or it's own core
 class Router

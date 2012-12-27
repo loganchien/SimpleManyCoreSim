@@ -1,7 +1,11 @@
 #ifndef CORE_BLOCK_HPP
 #define CORE_BLOCK_HPP
 
-#include "Tile.hpp"
+class Address;
+class Processor;
+class TaskBlock;
+class Thread;
+class Tile;
 
 /// A core block contains multiple tiles that are used to schedule the threads of one TaskBlock
 class CoreBlock

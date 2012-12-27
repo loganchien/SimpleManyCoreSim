@@ -1,6 +1,9 @@
 #ifndef THREAD_HPP
 #define THREAD_HPP
 
+class TaskBlock;
+class Tile;
+
 /// A thread is an instruction streams that runs on one Core
 class Thread
 {

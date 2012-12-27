@@ -1,6 +1,12 @@
 #ifndef TILE_HPP
 #define TILE_HPP
 
+#include "Router.hpp"
+
+class Core;
+class CoreBlock;
+class MMU;
+
 /// A tile consists of a core and a router
 class Tile
 {
@@ -26,7 +32,7 @@ public:
     /// Whether this tile is not currently doing anything
     bool tileIdle;
 
-    void InitTile(const Index& tileIdx, CoreBlock* coreBlock);
+    void InitTile(int2 tileIdx, CoreBlock* coreBlock);
 
     /// Whether this tile is at the core's x = 0, y = 0, x = w-1 or y = h-1
     bool IsBoundaryTile();

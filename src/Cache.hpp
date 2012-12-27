@@ -3,6 +3,8 @@
 
 #include <vector>
 
+class Address;
+
 /// A traditional cache line
 class CacheLine
 {
