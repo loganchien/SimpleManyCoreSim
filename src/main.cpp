@@ -17,9 +17,9 @@ int main()
     // TODO: Load a bunch of task descriptions from file
 
     // TODO: Load several different configs from file
-
+	
     // All different configs that we want to run the tasks under
-    vector<SimConfig> configs;
+    vector<SimConfig> configs = IniLoader::loadConfigs();
 
 
     for (vector<SimConfig>::iterator it = configs.begin(); it != configs.end(); ++it)
