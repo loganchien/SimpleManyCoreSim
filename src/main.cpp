@@ -3,7 +3,7 @@
 #include "Processor.hpp"
 #include "Task.hpp"
 #include "SimConfig.hpp"
-#include "IniLoader.h"
+#include "IniLoader.hpp"
 
 #define MAX_CONFIGS 128
 
@@ -21,7 +21,6 @@ int main()
 	
     // All different configs that we want to run the tasks under
     vector<SimConfig> configs = IniLoader::loadConfigs();
-
 
     for (vector<SimConfig>::iterator it = configs.begin(); it != configs.end(); ++it)
     {
