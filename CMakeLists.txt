@@ -14,18 +14,17 @@ IF (WINDOWS)
 ENDIF (WINDOWS)
 
 add_executable (TileSim
+  src/Address.cpp
   src/Cache.cpp
   src/CoreBlock.cpp
   src/CPU.cpp
   src/GlobalMemoryController.cpp
-  src/IniReader.cpp
   src/main.cpp
   src/Message.cpp
   src/MMU.cpp
   src/Processor.cpp
   src/Router.cpp
   src/SimConfig.cpp
-  src/simutil.cpp
   src/TaskBlock.cpp
   src/Task.cpp
   src/Thread.cpp
