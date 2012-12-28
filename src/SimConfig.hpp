@@ -66,7 +66,8 @@ public:
 
     ///
     int MemDelay;
-}
-GlobalConfig;
+};
+
+extern SimConfig GlobalConfig;
 
 #endif // SIM_CONFIG_HPP

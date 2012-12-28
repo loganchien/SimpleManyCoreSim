@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 
+SimConfig GlobalConfig;
+
 Dim2 SimConfig::CoreGridSize()
 {
     return Dim2(CoreGridLen, CoreGridLen);
