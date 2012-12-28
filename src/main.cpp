@@ -3,6 +3,7 @@
 #include "Processor.hpp"
 #include "Task.hpp"
 #include "SimConfig.hpp"
+#include "IniLoader.h"
 
 #define MAX_CONFIGS 128
 

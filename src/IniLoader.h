@@ -6,6 +6,6 @@ using namespace std;
 
 class IniLoader {
 public:
-	vector<SimConfig> loadConfigs();
+	static vector<SimConfig> loadConfigs();
 
 };
