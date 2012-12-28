@@ -31,6 +31,6 @@ uint32_t Address::GetWordOffset() const
 /// The block-local L2 chunk index, to which this address maps
 int Address::GetL2ChunkIdx1() const
 {
-    return (GetL2Index() / GlobalConfig.CacheL2Size.Area()) %
+    return (GetL2Index() / GlobalConfig.CacheL2Size) %
                                 GlobalConfig.CoreBlockSize().Area();
 }
