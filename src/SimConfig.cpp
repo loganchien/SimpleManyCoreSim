@@ -22,6 +22,11 @@ Dim2 SimConfig::ComputeInCoreBlockIdx2(int inCoreBlockIdx1)
     return Dim2(d.quot, d.rem);
 }
 
+Dim2 SimConfig::int ComputeInCoreBlockIdx1(const Dim2& inCoreBlockIdx2);
+{
+	return inCoreBlockIdx2.y * CoreBlockLen + inCoreBlockIdx2.x;
+}
+
 int SimConfig::GetTotalL2CacheSize()
 {
     return CoreBlockSize().Area() * CacheL2Size;

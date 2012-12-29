@@ -65,8 +65,8 @@ int CoreBlock::ComputeL2TileChunkID(const Dim2& globalIdx) const
 /// Computes the L2 chunk ID of the given block-local 2D index
 int CoreBlock::ComputeL2ChunkID(const Dim2& inCoreBlockIdx2) const
 {
-    // TODO: Convert to 1D index, possibly using Z-order
-    //return inBlockIdx;
+    // Converts to 1D index, using some order
+    return GlobalConfig.ComputeInCoreBlockIdx1(inCoreBlockIdx2);
 }
 
 

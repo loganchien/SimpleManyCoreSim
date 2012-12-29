@@ -36,6 +36,9 @@ public:
     /// Converts the given block-local 1D index to the corresponding block-local 2D index
     Dim2 ComputeInCoreBlockIdx2(int inCoreBlockIdx1);
 
+    /// Converts the given block-local 2D index to the corresponding block-local 1D index
+    int ComputeInCoreBlockIdx1(const Dim2& inCoreBlockIdx2);
+
 
     // ################################ Caches ################################
 
