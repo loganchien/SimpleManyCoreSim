@@ -8,3 +8,4 @@ ipch
 ~*.pptx
 *.o
 external/boost_*
+build
