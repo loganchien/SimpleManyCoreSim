@@ -3,14 +3,14 @@
 
 #include "Dimension.hpp"
 
+#include <iostream>
+#include <string>
+
 /**
  * All tweakable parameters of the system
  */
 
-#define _VERBOSE
-
 #define MAX_MEM_SIZE (8 * 1024 * 1024)
-
 
 class SimConfig
 {
@@ -69,6 +69,13 @@ public:
 
     ///
     int MemDelay;
+
+public:
+    SimConfig();
+
+    bool LoadConfig(const std::string& path);
+
+    bool LoadConfig(std::istream& stream);
 };
 
 extern SimConfig GlobalConfig;

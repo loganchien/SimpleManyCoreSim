@@ -1,35 +1,42 @@
-
-
 #include "Processor.hpp"
-#include "Task.hpp"
 #include "SimConfig.hpp"
-#include "IniLoader.hpp"
+#include "Task.hpp"
 
-#define MAX_CONFIGS 128
+#include <iostream>
+#include <vector>
+
+#include <stdlib.h>
 
 using namespace std;
 
-int main()
+int main(int argc, char **argv)
 {
-    Processor processor;
-
-    std::vector<Task> tasks;
-
-    // TODO: Load a bunch of task descriptions from file
-
-    // TODO: Load several different configs from file
-	
-    // All different configs that we want to run the tasks under
-    vector<SimConfig> configs = IniLoader::loadConfigs();
-
-    for (vector<SimConfig>::iterator it = configs.begin(); it != configs.end(); ++it)
+    // Check the command line options
+    if (argc < 3)
     {
-        // Change config
-        GlobalConfig = *it;
-
-        // Run simulation
-        processor.StartBatch(tasks);
+        cerr << "USAGE: " << argv[0]
+             << " [SIMCONFIG] [TASK1] [TASK2] ..." << endl;
+        exit(EXIT_FAILURE);
     }
+
+    // Load the configuration
+    if (!GlobalConfig.LoadConfig(argv[1]))
+    {
+        cerr << "ERROR: Can't load simulation configuration from "
+             << argv[1] << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // Load the tasks to run
+    vector<Task> tasks;
+    for (size_t i = 2; i < argc; ++i)
+    {
+        // TODO: Load the task from the files.
+    }
+
+    // Run simulation
+    Processor processor;
+    processor.StartBatch(tasks);
 
     return 0;
 }
