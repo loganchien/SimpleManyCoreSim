@@ -75,7 +75,6 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 {
     Thread nextThread = taskBlock.CreateNextThread(tile);
 
-#ifdef _VERBOSE
     if (nextThread.threadIdx.Area() % 100)
     {
         PrintLine(
@@ -85,7 +84,7 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
             "on Tile (" << tile.tileIdx.x << ", "
                         << tile.tileIdx.y << ")");
     }
-#endif
+
     tile.core->StartThread(&nextThread);
 }
 
