@@ -1,2 +1,0 @@
-example.ini
-list.txt
