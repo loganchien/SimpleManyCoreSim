@@ -3,10 +3,10 @@ TARGETS := matrix_simple
 all: $(TARGETS)
 
 %: %.c
-	arm-none-eabi-gcc -mthumb -Bstatic -static $^ -include rt/lib.h -o $@
+	tools/compile_executable.sh $@ $< 16 16 1 1
 
 matrix_simple: matrix_simple.c rt/lib.c
 
 .PHONY: clean
 clean:
-	-rm $(TARGETS)
+	-rm $(TARGETS) $(addsuffix .ini,$(TARGETS))
