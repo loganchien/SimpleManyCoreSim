@@ -4,6 +4,7 @@
 #include "Dimension.hpp"
 
 #include <string>
+#include <stdint.h>
 
 class CoreBlock;
 class TaskBlock;
@@ -56,7 +57,25 @@ public:
     std::string name;
 
     /// Code to be executed
-    Program* code;
+    std::string elfFilePath;
+
+    /// The address of predefined threadIdx
+    uint32_t threadIdxAddr;
+
+    /// The address of predefined threadDim
+    uint32_t threadDimAddr;
+
+    /// The address of predefined blockIdx
+    uint32_t blockIdxAddr;
+
+    /// The address of predefined blockDim
+    uint32_t blockDimAddr;
+
+    /// Thread dimension specified by the programmer.
+    Dim2 threadDim;
+
+    /// Task block dimension specified by the programmer.
+    Dim2 blockDim;
 
     /// Total and per-block size
     Dim2 taskSize, blockSize;
@@ -76,8 +95,19 @@ public:
     /// Whether all TaskBlocks of this Task have already finished running
     bool IsFinished();
 
+public:
     /// Creates the next TaskBlock in this task
     TaskBlock CreateNextTaskBlock(CoreBlock& coreBlock);
+
+    /// Load the task configuration from the configuration file
+    static Task* Create(const std::string& path);
+
+private:
+    Task(const std::string& name,
+         const std::string& elfFilePath,
+         uint32_t threadIdxAddr, uint32_t threadDimAddr,
+         uint32_t blockIdxAddr, uint32_t blockDimAddr,
+         const Dim2& threadDim, const Dim2& blockDim);
 };
 
 #endif // TASK_HPP

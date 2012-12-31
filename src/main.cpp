@@ -31,7 +31,15 @@ int main(int argc, char **argv)
     vector<Task> tasks;
     for (size_t i = 2; i < argc; ++i)
     {
-        // TODO: Load the task from the files.
+        if (Task* t = Task::Create(argv[i]))
+        {
+            tasks.push_back(*t);
+            delete t;
+        }
+        else
+        {
+            cerr << "ERROR: Can't load " << argv[i] << endl;
+        }
     }
 
     // Run simulation
