@@ -77,8 +77,6 @@ public:
     SimConfig();
 
     bool LoadConfig(const std::string& path);
-
-    bool LoadConfig(std::istream& stream);
 };
 
 extern SimConfig GlobalConfig;

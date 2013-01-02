@@ -1,5 +1,6 @@
 #include "SimConfig.hpp"
 
+#include "Debug.hpp"
 #include "Dimension.hpp"
 
 #include <fstream>
@@ -23,30 +24,30 @@ SimConfig::SimConfig(): CoreGridLen(0), CoreBlockLen(0), CacheL1Size(0),
 
 bool SimConfig::LoadConfig(const string& path)
 {
-    ifstream stream;
-    stream.open(path.c_str(), ios_base::in);
-    if (!stream)
-    {
-        return false;
-    }
-    return LoadConfig(stream);
-}
-
-bool SimConfig::LoadConfig(istream& stream)
-{
     ptree pt;
-    read_ini(stream, pt);
+    read_ini(path, pt);
 
-    CoreGridLen = pt.get("SETTING.CORE_GRID_LEN", 2);
-    CoreBlockLen = pt.get("SETTING.CORE_BLOCK_LEN", 2);
-    CacheL1Size = pt.get("SETTING.CACHE_L1_SIZE", 32 * 1024);
-    CacheL1Delay = pt.get("SETTING.CAChe_L2_DELAY", 1);
-    CacheL2Size = pt.get("SETTING.CACHE_L2_SIZE", 256 * 1024);
-    CacheL2Delay = pt.get("SETTING.CACHE_L2_DELAY", 5);
-    CacheMissDelay = pt.get("SETTING.CACHE_MISS_DELAY", 50);
-    DispatchDelay = pt.get("SETTING.DISPATCH_DELAY", 5);
-    Route1Delay = pt.get("SETTING.ROUTE_1_DELAY", 10);
-    MemDelay = pt.get("SETTING.MEM_DELAY", 50);
+    CoreGridLen = pt.get("setting.CORE_GRID_LEN", 2);
+    CoreBlockLen = pt.get("setting.CORE_BLOCK_LEN", 2);
+    CacheL1Size = pt.get("setting.CACHE_L1_SIZE", 32 * 1024);
+    CacheL1Delay = pt.get("setting.CACHE_L1_DELAY", 1);
+    CacheL2Size = pt.get("setting.CACHE_L2_SIZE", 256 * 1024);
+    CacheL2Delay = pt.get("setting.CACHE_L2_DELAY", 5);
+    CacheMissDelay = pt.get("setting.CACHE_MISS_DELAY", 50);
+    DispatchDelay = pt.get("setting.DISPATCH_DELAY", 5);
+    Route1Delay = pt.get("setting.ROUTE_1_DELAY", 10);
+    MemDelay = pt.get("setting.MEM_DELAY", 50);
+
+    PrintLine("CONFIG: Core Grid Len:    " << CoreGridLen);
+    PrintLine("CONFIG: Core Block Len:   " << CoreBlockLen);
+    PrintLine("CONFIG: L1 Cache Size:    " << CacheL1Size);
+    PrintLine("CONFIG: L1 Cache Delay:   " << CacheL1Delay);
+    PrintLine("CONFIG: L2 Cache Size:    " << CacheL2Size);
+    PrintLine("CONFIG: L2 Cache Delay:   " << CacheL2Delay);
+    PrintLine("CONFIG: Cache Miss Delay: " << CacheMissDelay);
+    PrintLine("CONFIG: Dispatch Delay:   " << DispatchDelay);
+    PrintLine("CONFIG: Route 1 Delay:    " << Route1Delay);
+    PrintLine("CONFIG: Mem Delay:        " << MemDelay);
 
     return true;
 }
