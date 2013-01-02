@@ -209,7 +209,9 @@ void Processor::OnBatchFinished()
 /// Get the tile
 Tile* Processor::GetTile(const Dim2& tileIdx)
 {
-    // TODO: Not implemented.
-    assert(0 && "Not implemented");
-    return 0;
+	div_t dx = div(tileIdx.x,coreBlockSize.x);
+	div_t dy = div(tileIdx.y,coreBlockSize.y);
+	int blockIdx = dx.quot+dy.quot*coreGridSize.x;
+	CoreBlock& cb = blocks[blockIdx];
+	return &cb.tiles[dx.rem+dy.rem*coreBlockSize.x];
 }
