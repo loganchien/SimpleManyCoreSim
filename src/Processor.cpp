@@ -130,11 +130,11 @@ Task* Processor::GetNextTask()
 void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
 {
     // Create TaskBlock
-    TaskBlock taskBlock = task.CreateNextTaskBlock(coreBlock);
+    TaskBlock* taskBlock = task.CreateNextTaskBlock(coreBlock);
 
     PrintLine("TaskBlock starting: " << task.name <<
-              " (" << taskBlock.taskBlockIdx.y << ", "
-                   << taskBlock.taskBlockIdx.x << ") "
+              " (" << taskBlock->taskBlockIdx.y << ", "
+                   << taskBlock->taskBlockIdx.x << ") "
               "on Core Block (" << coreBlock.blockIdx.y << ", " <<
                                    coreBlock.blockIdx.x << ")");
 
@@ -146,7 +146,7 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
     {
         Tile& tile = coreBlock.GetTile(
             Dim2::FromLinear(GlobalConfig.CoreBlockSize(), i));
-        coreBlock.ScheduleThread(taskBlock, tile);
+        coreBlock.ScheduleThread(*taskBlock, tile);
     }
 }
 
@@ -182,6 +182,8 @@ void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
             OnTaskFinished(*taskBlock.task);
         }
     }
+
+    delete &taskBlock;
 }
 
 

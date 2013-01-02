@@ -14,8 +14,12 @@ class TaskBlock
 public:
     /// The task to which this block belongs
     Task* task;
-    Dim2 taskBlockIdx;
+
+    /// The core block to which this task block assigned
     CoreBlock* assignedBlock;
+
+    /// The blockIdx of this task block
+    Dim2 taskBlockIdx;
 
     /// The id of the first thread that has not been scheduled yet
     Dim2 nextThreadIdx;
@@ -23,7 +27,7 @@ public:
     int finishedCount;
 
 public:
-    TaskBlock();
+    TaskBlock(Task& task, CoreBlock& assignedBlock, const Dim2& taskBlockIdx);
 
     /// Initializes this TaskBlock
     void InitTaskBlock();

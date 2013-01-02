@@ -79,13 +79,10 @@ bool Task::IsFinished()
 }
 
 /// Creates the next TaskBlock in this task
-TaskBlock Task::CreateNextTaskBlock(CoreBlock& coreBlock)
+TaskBlock* Task::CreateNextTaskBlock(CoreBlock& coreBlock)
 {
     assert(HasMoreBlocks());
-    TaskBlock nextBlock;
-    nextBlock.InitTaskBlock(); // TODO: Initialize the task block correctly.
-
+    TaskBlock* nextBlock = new TaskBlock(*this, coreBlock, nextBlockIdx);
     nextBlockIdx.Inc(blockSize.x);
-
     return nextBlock;
 }

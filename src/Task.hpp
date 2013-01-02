@@ -94,7 +94,7 @@ public:
 
 public:
     /// Creates the next TaskBlock in this task
-    TaskBlock CreateNextTaskBlock(CoreBlock& coreBlock);
+    TaskBlock* CreateNextTaskBlock(CoreBlock& coreBlock);
 
     /// Load the task configuration from the configuration file
     static Task* Create(const std::string& path);

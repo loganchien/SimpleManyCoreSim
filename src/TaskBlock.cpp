@@ -6,16 +6,11 @@
 
 #include <assert.h>
 
-TaskBlock::TaskBlock(): finishedCount(0)
+TaskBlock::TaskBlock(Task& task_, CoreBlock& assignedBlock_,
+                     const Dim2& taskBlockIdx_)
+    : task(&task_), assignedBlock(&assignedBlock_),
+      taskBlockIdx(taskBlockIdx_),finishedCount(0)
 {
-}
-
-/// Initializes this TaskBlock
-void TaskBlock::InitTaskBlock()
-{
-    // TODO: Init TaskBlock
-
-    assignedBlock->runningTaskBlock = this;
 }
 
 /// Instruments the Task code for this block (i.e. insert block-id, thread-id etc into special placeholders within the code)
