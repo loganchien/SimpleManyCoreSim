@@ -73,6 +73,20 @@ int CoreBlock::ComputeL2ChunkID(const Dim2& inCoreBlockIdx2) const
 }
 
 
+/// Get the Tile by tileIdx
+Tile& CoreBlock::GetTile(const Dim2& tileIdx)
+{
+    return tiles[Dim2::ToLinear(GlobalConfig.CoreBlockSize(), tileIdx)];
+}
+
+
+/// Get the Tile by tileIdx
+const Tile& CoreBlock::GetTile(const Dim2& tileIdx) const
+{
+    return tiles[Dim2::ToLinear(GlobalConfig.CoreBlockSize(), tileIdx)];
+}
+
+
 /// Put the next thread of the given TaskBlock on the given tile
 void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 {

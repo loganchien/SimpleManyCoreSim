@@ -53,6 +53,13 @@ public:
     int ComputeL2ChunkID(const Dim2& inCoreBlockIdx2) const;
 
 
+    /// Get the Tile by local tileIdx
+    Tile& GetTile(const Dim2& tileIdx);
+
+    /// Get the Tile by local tileIdx
+    const Tile& GetTile(const Dim2& tileIdx) const;
+
+
     /// Put the next thread of the given TaskBlock on the given tile
     void ScheduleThread(TaskBlock& taskBlock, Tile& tile);
 
