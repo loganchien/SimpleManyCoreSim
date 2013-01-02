@@ -21,7 +21,8 @@ public:
     /// All blocks available on this processor
     CoreBlock* blocks;
 
-    /// The Global Memory Controller is responsible for supplying data that is not in any cache
+    /// The Global Memory Controller is responsible for supplying data that is
+    /// not in any cache
     GlobalMemoryController gMemController;
 
     /// The current batch of tasks to run
@@ -38,7 +39,7 @@ public:
 
     ~Processor();
 
-    // ################################################## Simulation ##################################################
+    // #################### Simulation ########################################
 
     /// The entry point of any simulation: Run a batch of tasks
     void StartBatch(const std::vector<Task>& tasks);
@@ -52,9 +53,10 @@ public:
     /// Evaluates and/or writes stats to file
     void EvaluateStats();
 
-    // ################################################## Task management ##################################################
+    // #################### Task management ###################################
 
-    /// Gets the next task that still has unscheduled blocks or null, if there is none
+    /// Gets the next task that still has unscheduled blocks or null, if there
+    /// is none
     Task* GetNextTask();
 
     /// Put the next TaskBlock of the given Task on the given CoreBlock
@@ -69,10 +71,8 @@ public:
     /// Called when all tasks have been worked through
     void OnBatchFinished();
 
-    // ######################################################################
-
+    // ########################################################################
     Tile* GetTile(const Dim2& tileIdx);
-
 };
 
 #endif // PROCESSOR_HPP

@@ -7,10 +7,8 @@ class CoreBlock;
 class Task;
 class Tile;
 
-/**
- * Every Task is logically partitioned into TaskBlocks.
- * One TaskBlock has a fixed size of threads that can be scheduled on an assigned CoreBlock.
- */
+/// Every Task is logically partitioned into TaskBlocks.  One TaskBlock has a
+/// fixed size of threads that can be scheduled on an assigned CoreBlock.
 class TaskBlock
 {
 public:
@@ -30,7 +28,8 @@ public:
     /// Initializes this TaskBlock
     void InitTaskBlock();
 
-    /// Instruments the Task code for this block (i.e. insert block-id, thread-id etc into special placeholders within the code)
+    /// Instruments the Task code for this block (i.e. insert block-id,
+    /// thread-id etc into special placeholders within the code)
     Program *GetInjectedCode(const Dim2& threadIdx);
 
     /// Whether this TaskBlock still has unscheduled threads

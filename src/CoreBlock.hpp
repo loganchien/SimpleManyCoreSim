@@ -9,7 +9,8 @@ class TaskBlock;
 class Thread;
 class Tile;
 
-/// A core block contains multiple tiles that are used to schedule the threads of one TaskBlock
+/// A core block contains multiple tiles that are used to schedule the threads
+/// of one TaskBlock
 class CoreBlock
 {
 public:
@@ -56,7 +57,8 @@ public:
     void ScheduleThread(TaskBlock& taskBlock, Tile& tile);
 
 
-    /// Is called by Core when it reached the end of it's current instruction stream
+    /// Is called by Core when it reached the end of it's current instruction
+    /// stream
     void OnThreadFinished(Thread& thread);
 };
 

@@ -15,7 +15,7 @@ void Router::InitRouter(Tile* tile)
     this->tile = tile;
 }
 
-// ############################################## Handle messages ##############################################
+// #################### Handle messages #######################################
 
 /// Called when a Message directed at this tile is dispatched
 void Router::HandleIncomingMessage(Message& msg)
@@ -39,10 +39,9 @@ void Router::HandleIncomingMessage(Message& msg)
     }
 }
 
-/**
- * Sends the message with highest priority to it's next target (either this tile's MMU, a neighboring router, the global MMU (, or the entire core block)).
- * Called by Processor.
- */
+/// Sends the message with highest priority to it's next target (either this
+/// tile's MMU, a neighboring router, the global MMU (, or the entire core
+/// block)).  Called by Processor.
 void Router::DispatchNext()
 {
     if (msgQueue.size() == 0) return;
@@ -64,8 +63,9 @@ void Router::DispatchNext()
     {
         if (msg.IsBroadcast())
         {
-            // The message is a broadcast that goes to this guy and also to a bunch of other guys
-            // NIY
+            // The message is a broadcast that goes to this guy and also to a
+            // bunch of other guys
+            //NIY
         }
         else
         {
@@ -76,7 +76,7 @@ void Router::DispatchNext()
 }
 
 
-// ############################################## Transport messages ##############################################
+// #################### Transport messages ####################################
 
 /// Send message to next Tile on the shortest path to target
 void Router::RouteToNeighbor(Message& msg)
@@ -88,7 +88,8 @@ void Router::RouteToNeighbor(Message& msg)
     Dim2 blockSize = processor.coreBlockSize;
     Dim2 coreOrigin = tile->coreBlock->ComputeCoreBlockOrigin();
 
-    // TODO: Shortest path computation below (Hint: See Tile::IsBoundaryTile() for more information)
+    // TODO: Shortest path computation below (Hint: See Tile::IsBoundaryTile()
+    // for more information)
 
     if (!msg.IsReceiverTile())
     {
@@ -100,7 +101,8 @@ void Router::RouteToNeighbor(Message& msg)
             return;
         }
 
-        // TODO: Shortest path to memory is always path to shortest boundary, i.e. min(x, y, width-x, width-y)
+        // TODO: Shortest path to memory is always path to shortest boundary,
+        // i.e. min(x, y, width-x, width-y)
         int x = tile->tileIdx.x;
         int y = tile->tileIdx.y;
         if (std::min(x, GlobalConfig.CoreGridLen - x) <
@@ -122,7 +124,8 @@ void Router::RouteToNeighbor(Message& msg)
     else
     {
         // Message is sent to tile
-        // TODO: Shortest path between two routers often allows for 2 choices at any point - Select one of the choices at random
+        // TODO: Shortest path between two routers often allows for 2 choices
+        // at any point - Select one of the choices at random
         int r = rand() % 2;
         int next;
         if(r==0){ //prefer horizontal movement

@@ -15,7 +15,7 @@
 class SimConfig
 {
 public:
-    // ################################ Tile Grid ################################
+    // #################### Tile Grid #########################################
 
     /// Length of the grid of core blocks
     int CoreGridLen;
@@ -25,22 +25,25 @@ public:
 
 
 
-    // ################################ Core Blocks ################################
+    // #################### Core Blocks #######################################
 
-    /// Side length of a core block. If CoreBlockLen == 1, then we have private L2s!
+    /// Side length of a core block. If CoreBlockLen == 1, then we have private
+    /// L2s!
     int CoreBlockLen;
 
     /// Total amount of cores in a core block
     Dim2 CoreBlockSize();
 
-    /// Converts the given block-local 1D index to the corresponding block-local 2D index
+    /// Converts the given block-local 1D index to the corresponding
+    /// block-local 2D index
     Dim2 ComputeInCoreBlockIdx2(int inCoreBlockIdx1);
 
-    /// Converts the given block-local 2D index to the corresponding block-local 1D index
+    /// Converts the given block-local 2D index to the corresponding
+    /// block-local 1D index
     int ComputeInCoreBlockIdx1(const Dim2& inCoreBlockIdx2);
 
 
-    // ################################ Caches ################################
+    // #################### Caches ############################################
 
     /// 64 bytes per cache line (64 bytes = 16 x 4 byte words)
     static const int CacheLineSize = 64;
@@ -59,7 +62,7 @@ public:
     /// Total size of shared L2 in a core block
     int GetTotalL2CacheSize();
 
-    // ################################ Networking ################################
+    // #################### Networking ########################################
 
     /// Delay when a router processes a packet
     int DispatchDelay;

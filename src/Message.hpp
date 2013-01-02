@@ -36,7 +36,8 @@ public:
     /// The id of the request in the sender that this Message is serving
     int requestId;
 
-    /// The total delay that the current instruction (i.e. memory access) has cost so far
+    /// The total delay that the current instruction (i.e. memory access) has
+    /// cost so far
     int totalDelay;
 
     Address addr;
