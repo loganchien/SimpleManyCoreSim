@@ -34,11 +34,11 @@ Task::Task(const std::string& name_,
            const std::string& elfFilePath_,
            uint32_t threadIdxAddr_, uint32_t threadDimAddr_,
            uint32_t blockIdxAddr_, uint32_t blockDimAddr_,
-           const Dim2& threadDim_, const Dim2& blockDim_)
+           const Dim2& taskSize_, const Dim2& blockSize_)
     : name(name_), elfFilePath(elfFilePath_),
       threadIdxAddr(threadIdxAddr_), threadDimAddr(threadDimAddr_),
       blockIdxAddr(blockIdxAddr_), blockDimAddr(blockDimAddr_),
-      threadDim(threadDim_), blockDim(blockDim_), finishedCount(0)
+      taskSize(taskSize_), blockSize(blockSize_), finishedCount(0)
 {
 }
 
