@@ -22,8 +22,7 @@ Processor::Processor()
 
     for (int i = 0; i < coreGridSize.Area(); ++i)
     {
-        // TODO: Pass initial settings to block
-        blocks[i].InitCoreBlock();
+        blocks[i].InitCoreBlock(this, Dim2::FromLinear(coreGridSize, i));
     }
 }
 

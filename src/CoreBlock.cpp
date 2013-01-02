@@ -22,8 +22,11 @@ CoreBlock::~CoreBlock()
 
 
 /// Initializes this CoreBlock
-void CoreBlock::InitCoreBlock()
+void CoreBlock::InitCoreBlock(Processor* processor_, const Dim2& blockIdx_)
 {
+    blockIdx = blockIdx_;
+    processor = processor_;
+
     /*
     foreach(tile in tiles)
     {

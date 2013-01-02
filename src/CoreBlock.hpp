@@ -14,14 +14,14 @@ class Tile;
 class CoreBlock
 {
 public:
+    /// The index of this core block inside the grid
+    Dim2 blockIdx;
+
     /// The processor to which this block belongs
     Processor* processor;
 
     /// All tiles in this block
     Tile* tiles;
-
-    /// The index of this core block inside the grid
-    Dim2 blockIdx;
 
     /// Running task block
     TaskBlock* runningTaskBlock;
@@ -32,7 +32,7 @@ public:
     ~CoreBlock();
 
     /// Initializes this CoreBlock
-    void InitCoreBlock();
+    void InitCoreBlock(Processor* processor, const Dim2& blockIdx);
 
     /// The index of the first tile within this core block
     Dim2 ComputeCoreBlockOrigin() const;
