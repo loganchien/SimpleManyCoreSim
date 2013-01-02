@@ -10,6 +10,8 @@
 #include "Thread.hpp"
 #include "Tile.hpp"
 
+#include "assert.h"
+
 CoreBlock::CoreBlock()
 {
     tiles = new Tile[GlobalConfig.CoreBlockSize().Area()];
@@ -102,6 +104,7 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
                         << tile.tileIdx.y << ")");
     }
 
+    assert(tile.core != NULL);
     tile.core->StartThread(&nextThread);
 }
 
