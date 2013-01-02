@@ -1,5 +1,7 @@
 #include "Message.hpp"
 
+using namespace smcsim;
+
 /// Whether this message is broadcasted to all cores of a core block
 bool Message::IsBroadcast() const
 {

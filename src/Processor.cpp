@@ -10,6 +10,8 @@
 
 #include <assert.h>
 
+using namespace smcsim;
+
 Processor::Processor()
 {
     coreGridSize = GlobalConfig.CoreGridSize();

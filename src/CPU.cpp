@@ -5,7 +5,9 @@
 #include <assert.h>
 #include <stdint.h>
 
-CPU::CPU(Tile* tile)
+using namespace smcsim;
+
+Core::Core(Tile* tile)
 {
     this->tile = tile;
 
@@ -14,7 +16,7 @@ CPU::CPU(Tile* tile)
 
 
 /// This Core starts running the given Thread
-void CPU::StartThread(Thread* thread)
+void Core::StartThread(Thread* thread)
 {
     currentThread = thread;
 
@@ -28,7 +30,7 @@ void CPU::StartThread(Thread* thread)
 
 
 /// Dispatches and, if possible, executes one simulated instruction. Returns false, if there are no more instructions to execute (i.e. EOF reached).
-bool CPU::DispatchNext()
+bool Core::DispatchNext()
 {
     if (isLoadingData) return true;
 
@@ -43,7 +45,7 @@ bool CPU::DispatchNext()
 
 
 /// Forwards a load instruction to the MMU
-void CPU::DispatchLoad(int addrWord)
+void Core::DispatchLoad(int addrWord)
 {
     ++simLoadInstructionCount;
     Address addr(addrWord);
@@ -52,8 +54,8 @@ void CPU::DispatchLoad(int addrWord)
 }
 
 
-/// Called by MMU when it received data that this CPU is waiting for
-void CPU::CommitLoad(uint32_t data)
+/// Called by MMU when it received data that this Core is waiting for
+void Core::CommitLoad(uint32_t data)
 {
     assert(isLoadingData);
 

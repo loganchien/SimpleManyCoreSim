@@ -2,6 +2,8 @@
 
 #include "SimConfig.hpp"
 
+using namespace smcsim;
+
 uint32_t Address::GetL1Index() const
 {
     return 0; // TODO: Not implemented

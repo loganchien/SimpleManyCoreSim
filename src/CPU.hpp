@@ -6,14 +6,15 @@
 
 #include <stdint.h>
 
+namespace smcsim {
+
 class Tile;
 class Thread;
 
-/// This is an ARMulator class
-class CPU
+class Core
 {
 public:
-    /// The tile to which this CPU belongs
+    /// The tile to which this Core belongs
     Tile* tile;
 
     /// The currently running thread
@@ -28,7 +29,9 @@ public:
     // ...
     MMU mmu;
 
-    CPU(Tile* tile);
+
+public:
+    Core(Tile* tile);
 
 
     /// This Core starts running the given Thread
@@ -43,12 +46,10 @@ public:
     void DispatchLoad(int addrWord);
 
 
-    /// Called by MMU when it received data that this CPU is waiting for
+    /// Called by MMU when it received data that this Core is waiting for
     void CommitLoad(uint32_t data);
 };
 
-
-/// ARMulator calls Core "CPU", so we rename it accordingly
-typedef CPU Core;
+} // end namespace smcsim
 
 #endif // CPU_HPP

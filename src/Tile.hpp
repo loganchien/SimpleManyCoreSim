@@ -5,6 +5,8 @@
 #include "Dimension.hpp"
 #include "Router.hpp"
 
+namespace smcsim {
+
 class CoreBlock;
 class MMU;
 
@@ -39,5 +41,7 @@ public:
     /// Whether this tile is at the core's x = 0, y = 0, x = w-1 or y = h-1
     bool IsBoundaryTile();
 };
+
+} // end namespace smcsim
 
 #endif // TILE_HPP

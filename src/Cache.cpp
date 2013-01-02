@@ -6,6 +6,8 @@
 #include <vector>
 #include <stdint.h>
 
+using namespace smcsim;
+
 CacheLine::CacheLine(): valid(false), tag(0), bytes(GlobalConfig.CacheLineSize)
 {
 }

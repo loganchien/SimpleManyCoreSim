@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <assert.h>
 
+using namespace smcsim;
+
 /// Initialize a new Router object
 void Router::InitRouter(Tile* tile)
 {

@@ -12,6 +12,8 @@
 
 #include "assert.h"
 
+using namespace smcsim;
+
 CoreBlock::CoreBlock()
 {
     tiles = new Tile[GlobalConfig.CoreBlockSize().Area()];

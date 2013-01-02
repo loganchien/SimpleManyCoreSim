@@ -5,6 +5,8 @@
 
 #include <deque>
 
+namespace smcsim {
+
 class Tile;
 
 /// A router receives packets from and sends them to immediate neighbors or
@@ -41,5 +43,7 @@ public:
     /// Enqueue message on this router
     void EnqueueMessage(Message& msg);
 };
+
+} // end namespace smcsim
 
 #endif // ROUTER_HPP

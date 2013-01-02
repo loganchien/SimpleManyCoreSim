@@ -3,6 +3,8 @@
 
 #include "Dimension.hpp"
 
+namespace smcsim {
+
 class Program;
 class TaskBlock;
 class Tile;
@@ -27,5 +29,7 @@ public:
     void InitThread(TaskBlock* taskBlock, const Dim2& threadIdx, Tile *tile,
                     Program *code);
 };
+
+} // end namespace smcsim
 
 #endif // THREAD_HPP

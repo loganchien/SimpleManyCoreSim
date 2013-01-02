@@ -4,7 +4,6 @@ project (TileSim)
 
 include_directories (
   external/boost
-  config
 )
 
 IF (WINDOWS)
@@ -14,6 +13,11 @@ IF (WINDOWS)
 ENDIF (WINDOWS)
 
 add_executable (TileSim
+  external/armulator/src/ARM.cpp
+  external/armulator/src/Thumb.cpp
+  external/armulator/src/MMU.cpp
+  external/armulator/src/elf_file.cpp
+  external/armulator/src/swi_semihost.cpp
   src/Address.cpp
   src/Cache.cpp
   src/CoreBlock.cpp

@@ -6,6 +6,8 @@
 #include <string>
 #include <stdint.h>
 
+namespace smcsim {
+
 class CoreBlock;
 class TaskBlock;
 class Program;
@@ -106,5 +108,7 @@ private:
          uint32_t blockIdxAddr, uint32_t blockDimAddr,
          const Dim2& threadDim, const Dim2& blockDim);
 };
+
+} // end namespace smcsim
 
 #endif // TASK_HPP

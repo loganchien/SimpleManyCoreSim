@@ -4,6 +4,8 @@
 #include "Dimension.hpp"
 #include "Processor.hpp"
 
+using namespace smcsim;
+
 void Tile::InitTile(const Dim2& tileIdx, CoreBlock* coreBlock)
 {
     // TODO: Init index, Core etc.

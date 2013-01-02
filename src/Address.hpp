@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+namespace smcsim {
+
 /// Represents an address in 32-bit address space
 class Address
 {
@@ -26,5 +28,7 @@ public:
     /// The block-local L2 chunk index, to which this address maps
     int GetL2ChunkIdx1() const;
 };
+
+} // end namespace smcsim
 
 #endif // ADDRESS_HPP

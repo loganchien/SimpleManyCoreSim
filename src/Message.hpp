@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+namespace smcsim {
+
 /// The type of message identifies the purpose of a message
 enum MessageType
 {
@@ -49,5 +51,7 @@ public:
     /// Whether this message is being sent to another tile (or main memory, if false)
     bool IsReceiverTile() const;
 };
+
+} // end namespace smcsim
 
 #endif // MESSAGE_HPP

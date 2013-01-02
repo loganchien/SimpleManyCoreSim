@@ -4,6 +4,8 @@
 #include "Address.hpp"
 #include <string>
 
+namespace smcsim {
+
 class Program
 {
 public:
@@ -16,5 +18,7 @@ public:
 public:
     Program();
 };
+
+} // end namespace smcsim
 
 #endif // PROGRAM_HPP

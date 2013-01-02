@@ -10,6 +10,8 @@
 #include <assert.h>
 #include <stdint.h>
 
+using namespace smcsim;
+
 /// New custom function that we call during start-up
 void MMU::InitMMU(Tile* tile)
 {

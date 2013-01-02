@@ -3,6 +3,8 @@
 
 #include "Dimension.hpp"
 
+namespace smcsim {
+
 class Address;
 class Processor;
 class TaskBlock;
@@ -68,5 +70,7 @@ public:
     /// stream
     void OnThreadFinished(Thread& thread);
 };
+
+} // end namespace smcsim
 
 #endif // CORE_BLOCK_HPP

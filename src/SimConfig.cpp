@@ -12,9 +12,10 @@
 
 using namespace boost::property_tree;
 using namespace boost::property_tree::ini_parser;
+using namespace smcsim;
 using namespace std;
 
-SimConfig GlobalConfig;
+SimConfig smcsim::GlobalConfig;
 
 SimConfig::SimConfig(): CoreGridLen(0), CoreBlockLen(0), CacheL1Size(0),
     CacheL1Delay(0), CacheL2Size(0), CacheL2Delay(0), CacheMissDelay(0),

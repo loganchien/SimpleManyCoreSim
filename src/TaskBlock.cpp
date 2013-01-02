@@ -6,6 +6,8 @@
 
 #include <assert.h>
 
+using namespace smcsim;
+
 TaskBlock::TaskBlock(Task& task_, CoreBlock& assignedBlock_,
                      const Dim2& taskBlockIdx_)
     : task(&task_), assignedBlock(&assignedBlock_),

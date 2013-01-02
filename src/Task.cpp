@@ -14,6 +14,7 @@
 using namespace boost;
 using namespace boost::property_tree;
 using namespace boost::property_tree::ini_parser;
+using namespace smcsim;
 using namespace std;
 
 

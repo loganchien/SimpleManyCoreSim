@@ -14,6 +14,8 @@
 #include <vector>
 #include <stdint.h>
 
+namespace smcsim {
+
 /// We can have a lot of concurrently outstanding requests
 #define MAX_OUTSTANDING_REQUESTS 8192
 
@@ -113,5 +115,7 @@ public:
     void SendResponse(MessageType type, const Dim2& receiver,
                       const CacheLine &cacheLine, int totalDelay);
 };
+
+} // end namespace smcsim
 
 #endif // MMU_HPP

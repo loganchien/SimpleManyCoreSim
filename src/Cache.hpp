@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdint.h>
 
+namespace smcsim {
+
 class Address;
 
 /// A traditional cache line
@@ -60,5 +62,7 @@ public:
     /// Get the entry of the given address
     bool GetEntry(const Address& addr, CacheLine* line);
 };
+
+} // end namespace smcsim
 
 #endif // CACHE_HPP

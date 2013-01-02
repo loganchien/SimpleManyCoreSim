@@ -7,6 +7,8 @@
 #include <deque>
 #include <stdint.h>
 
+namespace smcsim {
+
 class Processor;
 
 /// The global memory controller simulates transport of packets to and from
@@ -35,5 +37,7 @@ public:
     /// Process the next gmem request
     void DispatchNext();
 };
+
+} // end namespace smcsim
 
 #endif // GLOBAL_MEMORY_CONTROLLER_HPP

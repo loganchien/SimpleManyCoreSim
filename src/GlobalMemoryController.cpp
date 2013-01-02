@@ -7,6 +7,8 @@
 
 #include <string.h>
 
+using namespace smcsim;
+
 GlobalMemoryController::GlobalMemoryController()
 {
     memory.resize(MAX_MEM_SIZE);

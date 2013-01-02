@@ -7,6 +7,8 @@
 
 #include <vector>
 
+namespace smcsim {
+
 class CoreBlock;
 class TaskBlock;
 class Tile;
@@ -75,5 +77,7 @@ public:
     // ########################################################################
     Tile* GetTile(const Dim2& tileIdx);
 };
+
+} // end namespace smcsim
 
 #endif // PROCESSOR_HPP

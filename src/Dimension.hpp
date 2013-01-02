@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+namespace smcsim {
+
 class Dim1
 {
 public:
@@ -107,5 +109,7 @@ public:
         return Dim2(r.quot, r.rem);
     }
 };
+
+} // end namespace smcsim
 
 #endif // DIMENSION_HPP

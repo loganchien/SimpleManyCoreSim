@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 
+using namespace smcsim;
 using namespace std;
 
 int main(int argc, char **argv)

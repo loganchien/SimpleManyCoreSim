@@ -3,6 +3,8 @@
 
 #include "Thread.hpp"
 
+namespace smcsim {
+
 class CoreBlock;
 class Task;
 class Tile;
@@ -45,5 +47,7 @@ public:
     /// Creates the next Thread from this TaskBlock to run on the given tile
     Thread CreateNextThread(Tile& tile);
 };
+
+} // end namespace smcsim
 
 #endif // TASK_BLOCK_HPP

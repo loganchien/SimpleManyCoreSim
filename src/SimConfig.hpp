@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 
+namespace smcsim {
+
 /**
  * All tweakable parameters of the system
  */
@@ -80,5 +82,7 @@ public:
 };
 
 extern SimConfig GlobalConfig;
+
+} // end namespace smcsim
 
 #endif // SIM_CONFIG_HPP
