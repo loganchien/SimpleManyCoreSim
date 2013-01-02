@@ -62,8 +62,8 @@ Task* Task::Create(const std::string& path)
 
     return new Task(name, executable,
                     threadIdxAddr, threadDimAddr, blockIdxAddr, blockDimAddr,
-                    Dim2(threadWidth, threadHeight),
-                    Dim2(blockWidth, blockHeight));
+                    Dim2(threadHeight, threadWidth),
+                    Dim2(blockHeight, blockWidth));
 }
 
 /// Whether this Task still has unscheduled TaskBlocks

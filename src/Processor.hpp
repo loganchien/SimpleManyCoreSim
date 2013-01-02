@@ -16,7 +16,8 @@ class Processor
 {
 public:
     /// The amount and size of blocks on this processor
-    Dim2 coreGridSize, coreBlockSize;
+    Dim2 coreGridSize;
+    Dim2 coreBlockSize;
 
     /// All blocks available on this processor
     CoreBlock* blocks;

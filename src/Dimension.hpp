@@ -1,6 +1,8 @@
 #ifndef DIMENSION_HPP
 #define DIMENSION_HPP
 
+#include <stdlib.h>
+
 class Dim1
 {
 public:
@@ -37,19 +39,19 @@ public:
 class Dim2
 {
 public:
-    int x;
     int y;
+    int x;
 
 public:
-    Dim2(): x(0), y(0)
+    Dim2(): y(0), x(0)
     { }
 
-    Dim2(int x_, int y_): x(x_), y(y_)
+    Dim2(int y_, int x_): y(y_), x(x_)
     { }
 
     int Product() const
     {
-        return x * y;
+        return y * x;
     }
 
     int Area() const
@@ -74,24 +76,35 @@ public:
     /// Component-wise addition
     Dim2 operator+(const Dim2& rhs) const
     {
-        return Dim2(x + rhs.x, y + rhs.y);
+        return Dim2(y + rhs.y, x + rhs.x);
     }
 
     /// Component-wise subtraction
     Dim2 operator-(const Dim2& rhs) const
     {
-        return Dim2(x - rhs.x, y - rhs.y);
+        return Dim2(y - rhs.y, x - rhs.x);
     }
 
     /// Component-wise multiplication
     Dim2 operator*(const Dim2& rhs) const
     {
-        return Dim2(x * rhs.x, y * rhs.y);
+        return Dim2(y * rhs.y, x * rhs.x);
     }
 
     bool operator==(const Dim2& rhs) const
     {
-        return (x == rhs.x && y == rhs.y);
+        return (y == rhs.y && x == rhs.x);
+    }
+
+    static int ToLinear(const Dim2& size, const Dim2& idx)
+    {
+        return idx.y * size.x + idx.x;
+    }
+
+    static Dim2 FromLinear(const Dim2& size, int i)
+    {
+        div_t r = div(i, size.x);
+        return Dim2(r.quot, r.rem);
     }
 };
 

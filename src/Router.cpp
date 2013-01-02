@@ -110,15 +110,15 @@ void Router::RouteToNeighbor(Message& msg)
         {
             //move horizontally to border
             if (x < GlobalConfig.CoreGridLen - x)
-                neighborIdx = Dim2(x-1, y);
+                neighborIdx = Dim2(y, x-1);
             else
-                neighborIdx = Dim2(x+1, y);
+                neighborIdx = Dim2(y, x+1);
         }
         else{	//move vertically
             if (y < GlobalConfig.CoreGridLen - y)
-                neighborIdx = Dim2(x, y-1);
+                neighborIdx = Dim2(y-1, x);
             else
-                neighborIdx = Dim2(x, y+1);
+                neighborIdx = Dim2(y+1, x);
         }
     }
     else
@@ -131,21 +131,21 @@ void Router::RouteToNeighbor(Message& msg)
         if(r==0){ //prefer horizontal movement
             if(msg.receiver.x != tile->tileIdx.x){
                 next = (msg.receiver.x > tile->tileIdx.x) ? tile->tileIdx.x+1 : tile->tileIdx.x-1 ;
-                neighborIdx = Dim2(next,tile->tileIdx.y);
+                neighborIdx = Dim2(tile->tileIdx.y, next);
             }
             else { //already on correct x index, move vertical!
                 next = (msg.receiver.y > tile->tileIdx.y) ? tile->tileIdx.y+1 : tile->tileIdx.y-1 ;
-                neighborIdx = Dim2(tile->tileIdx.x,next);
+                neighborIdx = Dim2(next, tile->tileIdx.x);
             }
         }
         else {	//perfer vertical movement
             if(msg.receiver.y != tile->tileIdx.y){
                 next = (msg.receiver.y > tile->tileIdx.y) ? tile->tileIdx.y+1 : tile->tileIdx.y-1 ;
-                neighborIdx = Dim2(tile->tileIdx.x,next);
+                neighborIdx = Dim2(next, tile->tileIdx.x);
             }
             else{
                 next = (msg.receiver.x > tile->tileIdx.x) ? tile->tileIdx.x+1 : tile->tileIdx.x-1 ;
-                neighborIdx = Dim2(next,tile->tileIdx.y);
+                neighborIdx = Dim2(tile->tileIdx.y, next);
             }
         }
     }
