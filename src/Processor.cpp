@@ -33,7 +33,7 @@ Processor::~Processor()
 }
 
 
-// ################################################## Simulation ##################################################
+// #################### Simulation ############################################
 
 /// The entry point of any simulation: Run a batch of tasks
 void Processor::StartBatch(const std::vector<Task>& tasks)
@@ -132,18 +132,20 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
     // Create TaskBlock
     TaskBlock taskBlock = task.CreateNextTaskBlock(coreBlock);
 
+    PrintLine("TaskBlock starting: " << task.name <<
+              " (" << taskBlock.taskBlockIdx.y << ", "
+                   << taskBlock.taskBlockIdx.x << ") "
+              "on Core Block (" << coreBlock.blockIdx.y << ", " <<
+                                   coreBlock.blockIdx.x << ")");
 
-    PrintLine("TaskBlock starting: " << task.name << " (" << taskBlock.taskBlockIdx.x << ", " << taskBlock.taskBlockIdx.y << ") on Core Block (" <<
-              coreBlock.blockIdx.x << ", " << coreBlock.blockIdx.x << ")");
-
-
-    int tileCount = coreBlock.blockIdx.Area();
+    int tileCount = GlobalConfig.CoreBlockSize().Area();
     int threadCount = task.blockSize.Area();
 
     // Put all initial threads on tiles
     for (int i = 0; i < std::min(tileCount, threadCount); ++i)
     {
-        Tile tile; // TODO: What the hall?
+        Tile& tile = coreBlock.GetTile(
+            Dim2::FromLinear(GlobalConfig.CoreBlockSize(), i));
         coreBlock.ScheduleThread(taskBlock, tile);
     }
 }
@@ -152,7 +154,9 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
 /// Called by a CoreBlock when it finished executing the given TaskBlock
 void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
 {
-    PrintLine("TaskBLock finished: " << taskBlock.task->name << " (" << taskBlock.taskBlockIdx.x << ", " << taskBlock.taskBlockIdx.y << ")");
+    PrintLine("TaskBLock finished: " << taskBlock.task->name <<
+              " (" << taskBlock.taskBlockIdx.y << ", "
+                   << taskBlock.taskBlockIdx.x << ")");
 
     // Collect stats from the functional units of the block
     CollectStats(taskBlock);
@@ -167,7 +171,8 @@ void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
         Task* task = GetNextTask();
         if (task)
         {
-            // Schedule next TaskBlock of a different Task on the now free core block
+            // Schedule next TaskBlock of a different Task on the now free core
+            // block
             ScheduleTaskBlock(*task, *taskBlock.assignedBlock);
         }
 
