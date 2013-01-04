@@ -2,6 +2,8 @@
 #include "error.h"
 #include "ARM.h"
 
+#include <stdio.h>
+
 /**
   * Zero general purpose registers, current process status register, make MMU pointer null.
   */

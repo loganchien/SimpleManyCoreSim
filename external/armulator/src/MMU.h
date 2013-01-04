@@ -6,6 +6,10 @@
 #ifndef __MMU_H__
 #define __MMU_H__
 
+#ifdef SMCSIM
+#include "TileMMU.h"
+#else
+
 /*!
 	\defgroup mmu Memory management module
  */
@@ -254,5 +258,7 @@ public:
 
 
 /*@}*/
+#endif // !defined(SMCSIM)
+
 #endif // __MMU_H__
 

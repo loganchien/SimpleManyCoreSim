@@ -149,8 +149,11 @@ private:
 public:
 	//! Get ELF information from a file
     void get_info(std::ifstream &ifile);
+
+#ifndef SMCSIM
 	//! Transfer the information to MMU module
     void setup_MMU(MMU &aMMU);
+#endif
 
 	//! Give out the entry point of Thumb code
     int getEntryPoint();

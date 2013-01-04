@@ -144,6 +144,7 @@ void elf_file::get_info(std::ifstream &ifile)
     return;
 }
 
+#ifndef SMCSIM
 /**
   * Set up the memory layout of MMU modular 
   * @param aMMU The reference of a MMU modular
@@ -218,6 +219,7 @@ void elf_file::setup_MMU(MMU &aMMU)
     aMMU.setStackSeg(0x200000);
     aMMU.setStackVMA(0x200000);
 }
+#endif
 
 
 /**

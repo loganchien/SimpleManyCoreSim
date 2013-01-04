@@ -2,13 +2,16 @@
 	\brief The implementation of software interrupt handler
  */
 #include "swi_semihost.h"
-#include <iostream>
-#include <time.h>
 #include "error.h"
-#include <fcntl.h>
-#include <cstring>
-#include <cstdlib>
+
+#include <iostream>
+
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 /*! \def O_BINARY
