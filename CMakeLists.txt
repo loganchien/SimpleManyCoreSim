@@ -16,23 +16,24 @@ add_definitions (-DSMCSIM)
 
 add_executable (TileSim
   external/armulator/src/ARM.cpp
+  external/armulator/src/ArmulatorCPU.cpp
   external/armulator/src/Thumb.cpp
   external/armulator/src/TileMMU.cpp
   external/armulator/src/elf_file.cpp
   external/armulator/src/swi_semihost.cpp
   src/Address.cpp
   src/Cache.cpp
+  src/Core.cpp
   src/CoreBlock.cpp
-  src/CPU.cpp
   src/GlobalMemoryController.cpp
-  src/main.cpp
-  src/Message.cpp
   src/MMU.cpp
+  src/Message.cpp
   src/Processor.cpp
   src/Router.cpp
   src/SimConfig.cpp
-  src/TaskBlock.cpp
   src/Task.cpp
+  src/TaskBlock.cpp
   src/Thread.cpp
   src/Tile.cpp
+  src/main.cpp
 )
