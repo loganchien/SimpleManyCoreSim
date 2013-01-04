@@ -29,13 +29,9 @@ public:
     /// The router of this tile
     Router router;
 
-    /// Amount of normalized ticks passed since initialization
-    long long coreTime;
-
-    /// Whether this tile is not currently doing anything
-    bool tileIdle;
-
 public:
+    Tile();
+
     void InitTile(CoreBlock* coreBlock, const Dim2& tileIdx);
 
     /// Whether this tile is at the core's x = 0, y = 0, x = w-1 or y = h-1

@@ -7,8 +7,17 @@
 
 using namespace smcsim;
 
-void Tile::InitTile(CoreBlock* coreBlock, const Dim2& tileIdx)
+Tile::Tile()
+    : coreBlock(0), core(0), mmu(0)
 {
+}
+
+
+void Tile::InitTile(CoreBlock* coreBlock_, const Dim2& tileIdx_)
+{
+    coreBlock = coreBlock_;
+    tileIdx = tileIdx_;
+
     core = new Core(this);
     mmu = &core->mmu;
 }
@@ -19,6 +28,9 @@ bool Tile::IsBoundaryTile()
 {
     Dim2 blockSize = coreBlock->processor->coreBlockSize;
     Dim2 coreOrigin = coreBlock->ComputeCoreBlockOrigin();
-    return tileIdx.x == coreOrigin.x && tileIdx.y == coreOrigin.y &&
-        tileIdx.x == coreOrigin.x + blockSize.x - 1 && tileIdx.y == coreOrigin.y + blockSize.y - 1;
+
+    return (tileIdx.x == coreOrigin.x ||
+            tileIdx.y == coreOrigin.y ||
+            tileIdx.x == coreOrigin.x + blockSize.x - 1 ||
+            tileIdx.y == coreOrigin.y + blockSize.y - 1);
 }
