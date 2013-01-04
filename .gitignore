@@ -7,5 +7,7 @@ ipch
 *.suo
 ~*.pptx
 *.o
+*.swp
+*~
 external/boost_*
 build
