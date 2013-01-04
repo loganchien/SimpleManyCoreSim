@@ -49,9 +49,10 @@ void Router::DispatchNext()
 {
     if (msgQueue.size() == 0) return;
 
-    // TODO: Simulate queueing delay for all waiting packets
-    //msg.totalDelay += GlobalConfig.QueuingDelay;
-
+    // Simulate queueing delay for all waiting packets
+	for(int i=0;i<msgQueue.size();i++){
+		msgQueue.at(i).totalDelay+= 1 ;//TODO: GlobalConfig.QueuingDelay;
+	}
     // Dequeue next message
     Message& msg = msgQueue.front();
     msgQueue.pop_front();

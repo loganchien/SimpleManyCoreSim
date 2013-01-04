@@ -6,22 +6,24 @@ using namespace smcsim;
 
 uint32_t Address::GetL1Index() const
 {
-    return 0; // TODO: Not implemented
+    return raw>>6; // TODO: Check?
 }
 
 uint32_t Address::GetL1Tag() const
 {
-    return 0; // TODO: Not implemented
+	int shift = 6 + int(log(GlobalConfig.CacheL1Size)/log(2));
+    return raw>>shift; // TODO: Check?
 }
 
 uint32_t Address::GetL2Index() const
 {
-    return 0; // TODO: Not implemented
+    return raw>>6; // TODO: Check?
 }
 
 uint32_t Address::GetL2Tag() const
 {
-    return 0; // TODO: Not implemented
+	int shift = 6 + int(log(GlobalConfig.CacheL2Size)/log(2));
+    return raw>>shift; // TODO: Check?
 }
 
 /// The offset of the word that this address is referring to
