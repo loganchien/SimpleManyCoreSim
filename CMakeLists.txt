@@ -17,6 +17,7 @@ add_definitions (-DSMCSIM)
 add_executable (TileSim
   external/armulator/src/ARM.cpp
   external/armulator/src/Thumb.cpp
+  external/armulator/src/TileMMU.cpp
   external/armulator/src/elf_file.cpp
   external/armulator/src/swi_semihost.cpp
   src/Address.cpp
