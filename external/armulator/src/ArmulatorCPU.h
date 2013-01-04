@@ -17,7 +17,7 @@ public:
 
     void reset();
 
-    void sim_step();
+    bool sim_step();
 };
 
 #endif // __ARMULATOR_CPU__

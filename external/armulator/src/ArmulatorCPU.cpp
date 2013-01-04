@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include <stdlib.h>
+
 ArmulatorCPU::ArmulatorCPU(): cpu(0)
 {
 }
@@ -31,25 +33,28 @@ void ArmulatorCPU::reset()
     }
 }
 
-void ArmulatorCPU::sim_step()
+bool ArmulatorCPU::sim_step()
 {
     try
     {
         cpu->fetch();
         cpu->exec();
+        return true;
     }
     catch (Error &e)
     {
-        cpu->DeinitMMU();
         std::cerr << "\nError:" << e.error_name <<std::endl;
+        abort();
     }
     catch (UnexpectInst &e)
     {
         std::cerr << "\nUnexpect Instr:" << e.error_name << std::endl;
+        abort();
     }
     catch (UndefineInst &e)
     {
         std::cerr << "\nUndefine Instr:" << e.error_name << std::endl;
+        abort();
     }
     catch (SwitchMode &e)
     {
@@ -57,9 +62,12 @@ void ArmulatorCPU::sim_step()
         tmp->CopyCPU(cpu);
         delete cpu;
         cpu = tmp;
+        return true;
     }
     catch (ProgramEnd &e)
     {
-        std::cerr << "\nThe Program Ended\n";
+        return false;
     }
+
+    return true;
 }

@@ -3,6 +3,7 @@ cmake_minimum_required (VERSION 2.6)
 project (TileSim)
 
 include_directories (
+  external/armulator/src
   external/boost
 )
 

@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+class ArmulatorCPU;
+
 namespace smcsim {
 
 class Tile;
@@ -26,6 +28,8 @@ public:
     /// The total amount of instructions
     long long simInstructionCount, simLoadInstructionCount;
 
+    ArmulatorCPU* armulator;
+
     // ...
     MMU mmu;
 
@@ -33,18 +37,13 @@ public:
 public:
     Core(Tile* tile);
 
-
     /// This Core starts running the given Thread
     void StartThread(Thread* thread);
 
-
-    /// Dispatches and, if possible, executes one simulated instruction. Returns false, if there are no more instructions to execute (i.e. EOF reached).
+    /// Dispatches and, if possible, executes one simulated instruction.
+    /// Returns false, if there are no more instructions to execute (i.e. EOF
+    /// reached).
     bool DispatchNext();
-
-
-    /// Forwards a load instruction to the MMU
-    void DispatchLoad(int addrWord);
-
 
     /// Called by MMU when it received data that this Core is waiting for
     void CommitLoad(uint32_t data);
