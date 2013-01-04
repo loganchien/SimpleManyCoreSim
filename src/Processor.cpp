@@ -1,10 +1,11 @@
 #include "Processor.hpp"
 
-#include "Dimension.hpp"
-#include "Tile.hpp"
+#include "Core.hpp"
 #include "CoreBlock.hpp"
-#include "TaskBlock.hpp"
 #include "Debug.hpp"
+#include "Dimension.hpp"
+#include "TaskBlock.hpp"
+#include "Tile.hpp"
 
 #include <algorithm>
 

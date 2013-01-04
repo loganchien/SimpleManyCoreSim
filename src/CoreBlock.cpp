@@ -1,7 +1,7 @@
 #include "CoreBlock.hpp"
 
 #include "Address.hpp"
-#include "CPU.hpp"
+#include "Core.hpp"
 #include "Debug.hpp"
 #include "Dimension.hpp"
 #include "Processor.hpp"

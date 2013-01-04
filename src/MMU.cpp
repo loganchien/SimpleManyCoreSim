@@ -1,5 +1,6 @@
 #include "MMU.hpp"
 
+#include "Core.hpp"
 #include "CoreBlock.hpp"
 #include "Debug.hpp"
 #include "Dimension.hpp"

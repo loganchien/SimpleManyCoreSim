@@ -1,8 +1,9 @@
 #include "Router.hpp"
 
+#include "Core.hpp"
+#include "CoreBlock.hpp"
 #include "Debug.hpp"
 #include "Processor.hpp"
-#include "CoreBlock.hpp"
 #include "SimConfig.hpp"
 #include "Tile.hpp"
 

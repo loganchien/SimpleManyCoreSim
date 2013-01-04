@@ -1,5 +1,6 @@
 #include "Tile.hpp"
 
+#include "Core.hpp"
 #include "CoreBlock.hpp"
 #include "Dimension.hpp"
 #include "Processor.hpp"
