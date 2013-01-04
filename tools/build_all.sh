@@ -7,5 +7,13 @@ BUILD_DIR="${ROOT}/build"
 
 mkdir -p "${BUILD_DIR}" || true
 cd "${BUILD_DIR}"
-cmake "${ROOT}"
+
+if [ "$1" = "debug" ]; then
+  echo "Build the debug build ..."
+  cmake -DCMAKE_BUILD_TYPE=Debug "${ROOT}"
+else
+  echo "Build the release build ..."
+  cmake "${ROOT}"
+fi
+
 make -j6
