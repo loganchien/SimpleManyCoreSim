@@ -112,9 +112,10 @@ void Processor::EvaluateStats()
     // TODO: Evaluate and/or write stats to file (for visualization)
 }
 
-// ################################################## Task management ##################################################
+// #################### Task management #######################################
 
-/// Gets the next task that still has unscheduled blocks or null, if there is none
+/// Gets the next task that still has unscheduled blocks or null, if there is
+/// none
 Task* Processor::GetNextTask()
 {
     int t = 0;
@@ -135,11 +136,9 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
     // Create TaskBlock
     TaskBlock* taskBlock = task.CreateNextTaskBlock(coreBlock);
 
-    PrintLine("TaskBlock starting: " << task.name <<
-              " (" << taskBlock->taskBlockIdx.y << ", "
-                   << taskBlock->taskBlockIdx.x << ") "
-              "on Core Block (" << coreBlock.blockIdx.y << ", " <<
-                                   coreBlock.blockIdx.x << ")");
+    PrintLine("TaskBlock starting: " << task.name
+              << " taskBlockIdx=" << taskBlock->taskBlockIdx
+              << " coreBlockIdx=" << coreBlock.blockIdx);
 
     int tileCount = GlobalConfig.CoreBlockSize().Area();
     int threadCount = task.blockSize.Area();
@@ -157,9 +156,9 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
 /// Called by a CoreBlock when it finished executing the given TaskBlock
 void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
 {
-    PrintLine("TaskBLock finished: " << taskBlock.task->name <<
-              " (" << taskBlock.taskBlockIdx.y << ", "
-                   << taskBlock.taskBlockIdx.x << ")");
+    PrintLine("TaskBLock finished: " << taskBlock.task->name
+              << " taskBlockIdx=" << taskBlock.taskBlockIdx
+              << " coreBlockIdx=" << taskBlock.assignedBlock->blockIdx);
 
     // Collect stats from the functional units of the block
     CollectStats(taskBlock);

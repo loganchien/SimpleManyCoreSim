@@ -1,6 +1,8 @@
 #ifndef DIMENSION_HPP
 #define DIMENSION_HPP
 
+#include <iostream>
+
 #include <stdlib.h>
 
 namespace smcsim {
@@ -37,6 +39,12 @@ public:
         return (x == rhs.x);
     }
 };
+
+inline std::ostream &operator<<(std::ostream& os, const Dim1& rhs)
+{
+    os << "(" << rhs.x << ")";
+    return os;
+}
 
 class Dim2
 {
@@ -109,6 +117,12 @@ public:
         return Dim2(r.quot, r.rem);
     }
 };
+
+inline std::ostream &operator<<(std::ostream& os, const Dim2& rhs)
+{
+    os << "(" << rhs.y << ", " << rhs.x << ")";
+    return os;
+}
 
 } // end namespace smcsim
 

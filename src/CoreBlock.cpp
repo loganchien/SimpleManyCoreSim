@@ -96,15 +96,10 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 {
     Thread nextThread = taskBlock.CreateNextThread(tile);
 
-    if (nextThread.threadIdx.Area() % 100)
-    {
-        PrintLine(
-            "Thread starting: " << runningTaskBlock->task->name <<
-            " (" << nextThread.threadIdx.x << ", "
-                 << nextThread.threadIdx.y << ") " <<
-            "on Tile (" << tile.tileIdx.x << ", "
-                        << tile.tileIdx.y << ")");
-    }
+    PrintLine("Thread starting: "
+              << runningTaskBlock->task->name
+              << " threadIdx=" << nextThread.threadIdx
+              << " tileIdx=" << tile.tileIdx);
 
     assert(tile.core != NULL);
     tile.core->StartThread(&nextThread);
@@ -114,6 +109,10 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 /// Is called by Core when it reached the end of it's current instruction stream
 void CoreBlock::OnThreadFinished(Thread& thread)
 {
+    PrintLine("Thread finished: "
+              << runningTaskBlock->task->name
+              << " threadIdx=" << thread.threadIdx);
+
     if (thread.taskBlock->HasMoreThreads())
     {
         // Schedule next thread
@@ -127,6 +126,6 @@ void CoreBlock::OnThreadFinished(Thread& thread)
     else
     {
         // Do nothing: The tile is now idle
-        PrintLine("Tile idle: " << " (" << thread.tile->tileIdx.x << ", " << thread.tile->tileIdx.y << ")");
+        PrintLine("Tile idle: " << thread.tile->tileIdx);
     }
 }
