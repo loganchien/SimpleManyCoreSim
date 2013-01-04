@@ -36,7 +36,7 @@ public:
     bool tileIdle;
 
 public:
-    void InitTile(const Dim2& tileIdx, CoreBlock* coreBlock);
+    void InitTile(CoreBlock* coreBlock, const Dim2& tileIdx);
 
     /// Whether this tile is at the core's x = 0, y = 0, x = w-1 or y = h-1
     bool IsBoundaryTile();

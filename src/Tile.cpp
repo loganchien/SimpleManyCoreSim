@@ -7,9 +7,8 @@
 
 using namespace smcsim;
 
-void Tile::InitTile(const Dim2& tileIdx, CoreBlock* coreBlock)
+void Tile::InitTile(CoreBlock* coreBlock, const Dim2& tileIdx)
 {
-    // TODO: Init index, Core etc.
     core = new Core(this);
     mmu = &core->mmu;
 }

@@ -31,13 +31,11 @@ void CoreBlock::InitCoreBlock(Processor* processor_, const Dim2& blockIdx_)
     blockIdx = blockIdx_;
     processor = processor_;
 
-    /*
-    foreach(tile in tiles)
+    for (int i = 0; i < GlobalConfig.CoreBlockSize().Area(); ++i)
     {
-        // TODO: Pass init parameters to each tile
-        tile.InitTile(...);
+        tiles[i].InitTile(this,
+                          Dim2::FromLinear(GlobalConfig.CoreBlockSize(), i));
     }
-    */
 }
 
 
