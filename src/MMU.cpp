@@ -65,7 +65,7 @@ void MMU::LoadWord(const Address& addr)
         else
         {
             // Get from local L2
-            FetchLocalL2(tile->tileIdx, totalDelay, addr);
+            FetchLocalL2(tile->tileIdx, -1, totalDelay, addr);
         }
     }
     else
@@ -79,12 +79,12 @@ void MMU::LoadWord(const Address& addr)
 int MMU::FetchRemoteL2(const Dim2& holderIdx, int totalDelay,
                        const Address& addr)
 {
-    SendRequest(MessageTypeRequestL2, tile->tileIdx, holderIdx, addr, totalDelay);
+    SendRequest(MessageTypeRequestL2, tile->tileIdx, -1, holderIdx, addr, totalDelay);
 }
 
 
 /// Fetch word from on-tile L2
-void MMU::FetchLocalL2(const Dim2& requesterIdx, int totalDelay,
+void MMU::FetchLocalL2(const Dim2& requesterIdx, int requestId, int totalDelay,
                        const Address& addr)
 {
     // Add hit penalty
@@ -106,17 +106,17 @@ void MMU::FetchLocalL2(const Dim2& requesterIdx, int totalDelay,
         else
         {
             // Send value back to requester
-            SendResponse(MessageTypeResponseCacheline, requesterIdx, *line, totalDelay);
+            SendResponse(MessageTypeResponseCacheline, requesterIdx, requestId, *line, totalDelay);
         }
     }
 }
 
 
 /// Fetch word from memory, when it is missing in this tile's L2
-int MMU::FetchFromMemory(const Dim2& requesterIdx, const Address& addr,
+int MMU::FetchFromMemory(const Dim2& requesterIdx, int requestId,const Address& addr,
                          int totalDelay)
 {
-    SendRequest(MessageTypeRequestMem, requesterIdx, Dim2(GlobalMemoryController::GMemIdx, GlobalMemoryController::GMemIdx), addr, totalDelay);
+    SendRequest(MessageTypeRequestMem, requesterIdx, requestId, Dim2(GlobalMemoryController::GMemIdx, GlobalMemoryController::GMemIdx), addr, totalDelay);
 }
 
 
@@ -137,7 +137,7 @@ void MMU::OnCachelineReceived(int requestId, int totalDelay,
     }
 
 
-    // TODO: Handle coalescing (i.e. multiple requesters request the same line in a single packets)
+    // AdvTODO: Handle coalescing (i.e. multiple requesters request the same line in a single packets)
 
     if (request.requesterIdx == tile->tileIdx)
     {
@@ -152,7 +152,7 @@ void MMU::OnCachelineReceived(int requestId, int totalDelay,
     else
     {
         // CacheLine is a response to an off-tile request -> Send it to requester
-        SendResponse(MessageTypeResponseCacheline, request.requesterIdx, cacheLine, totalDelay);
+        SendResponse(MessageTypeResponseCacheline, request.requesterIdx, request.origRequestId, cacheLine, totalDelay);
     }
 
     // Request buffer entry not in use anymore
@@ -189,7 +189,7 @@ OutstandingRequest& MMU::GetFreeRequest(int& requestId)
 }
 
 /// Creates and sends a new Request Message
-void MMU::SendRequest(MessageType type, const Dim2& requesterIdx,
+void MMU::SendRequest(MessageType type, const Dim2& requesterIdx, int origReqId,
                       const Dim2& receiver, Address addr, int totalDelay)
 {
     // Add request to request buffer
@@ -205,7 +205,7 @@ void MMU::SendRequest(MessageType type, const Dim2& requesterIdx,
     msg.type = type;
     msg.sender = tile->tileIdx;
     msg.receiver = receiver;
-    msg.requestId = requestId;
+    msg.requestId = requestId; 
     msg.totalDelay = totalDelay;
     msg.addr = addr;
 
@@ -215,7 +215,7 @@ void MMU::SendRequest(MessageType type, const Dim2& requesterIdx,
 
 
 /// Creates and sends a new Response Message
-void MMU::SendResponse(MessageType type, const Dim2& receiver,
+void MMU::SendResponse(MessageType type, const Dim2& receiver, const int reqId,
                        const CacheLine& cacheLine, int totalDelay)
 {
     // Create Message object
@@ -223,7 +223,7 @@ void MMU::SendResponse(MessageType type, const Dim2& receiver,
     msg.type = type;
     msg.sender = tile->tileIdx;
     msg.receiver = receiver;
-    msg.requestId = 0; // FIXME: TODO: requestId
+    msg.requestId = reqId; // FIXME: TODO: requestId
     msg.totalDelay = totalDelay;
     msg.addr = Address();
     msg.cacheLine = cacheLine;

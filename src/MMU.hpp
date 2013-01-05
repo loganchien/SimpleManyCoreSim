@@ -29,6 +29,7 @@ public:
     bool pending;
     int totalDelay;
     Dim2 requesterIdx;
+	int origRequestId; //TODO: fill in when OutstandingReq is created
 };
 
 /// A per-tile MMU
@@ -80,12 +81,12 @@ public:
 
 
     /// Fetch word from on-tile L2
-    void FetchLocalL2(const Dim2& requesterIdx, int totalDelay,
+    void FetchLocalL2(const Dim2& requesterIdx, int requestId, int totalDelay,
                       const Address& addr);
 
 
     /// Fetch word from memory, when it is missing in this tile's L2
-    int FetchFromMemory(const Dim2& requesterIdx, const Address& addr,
+    int FetchFromMemory(const Dim2& requesterIdx, int requestId, const Address& addr,
                         int totalDelay);
 
 
@@ -107,12 +108,12 @@ public:
     OutstandingRequest& GetFreeRequest(int& requestId);
 
     /// Creates and sends a new Request Message
-    void SendRequest(MessageType type, const Dim2& requesterIdx,
+    void SendRequest(MessageType type, const Dim2& requesterIdx, int requestId,
                      const Dim2& receiver, Address addr, int totalDelay);
 
 
     /// Creates and sends a new Response Message
-    void SendResponse(MessageType type, const Dim2& receiver,
+    void SendResponse(MessageType type, const Dim2& receiver, const int requestId,
                       const CacheLine &cacheLine, int totalDelay);
 };
 

@@ -12,7 +12,7 @@ class Tile;
 /// Every Task is logically partitioned into TaskBlocks.  One TaskBlock has a
 /// fixed size of threads that can be scheduled on an assigned CoreBlock.
 class TaskBlock
-{
+{ 
 public:
     /// The task to which this block belongs
     Task* task;
