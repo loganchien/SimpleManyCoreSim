@@ -92,6 +92,7 @@ const Tile& CoreBlock::GetTile(const Dim2& tileIdx) const
 /// Put the next thread of the given TaskBlock on the given tile
 void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 {
+    assert(runningTaskBlock != 0);
     Thread nextThread = taskBlock.CreateNextThread(tile);
 
     PrintLine("Thread starting: "
@@ -106,6 +107,7 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 /// Is called by Core when it reached the end of it's current instruction stream
 void CoreBlock::OnThreadFinished(Thread& thread)
 {
+    assert(runningTaskBlock != 0);
     PrintLine("Thread finished: "
               << runningTaskBlock->task->name
               << " threadIdx=" << thread.threadIdx);

@@ -171,6 +171,9 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
     // Create TaskBlock
     TaskBlock* taskBlock = task.CreateNextTaskBlock(coreBlock);
 
+    // Assign this TaskBlock to this CoreBlock
+    coreBlock.runningTaskBlock = taskBlock;
+
     PrintLine("TaskBlock starting: " << task.name
               << " taskBlockIdx=" << taskBlock->taskBlockIdx
               << " coreBlockIdx=" << coreBlock.blockIdx);
