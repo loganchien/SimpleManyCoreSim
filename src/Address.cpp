@@ -8,23 +8,27 @@ using namespace smcsim;
 
 uint32_t Address::GetL1Index() const
 {
-    return (GlobalConfig.CacheL1Size-1 & raw>>CacheLineBits); // TODO: Check?
+    return (GlobalConfig.CacheL1Size-1 &
+            (raw >> GlobalConfig.CacheLineBits)); // TODO: Check?
 }
 
 uint32_t Address::GetL1Tag() const
 {
-	int shift = CacheLineBits + int(log(GlobalConfig.CacheL1Size)/log(2));
+    int shift = GlobalConfig.CacheLineBits +
+                int(log(GlobalConfig.CacheL1Size)/log(2));
     return raw>>shift; // TODO: Check?
 }
 
 uint32_t Address::GetL2Index() const
 {
-    return (GlobalConfig.CacheL2Size-1 & raw>>CacheLineBits); // TODO: Check?
+    return (GlobalConfig.CacheL2Size-1 &
+            (raw >> GlobalConfig.CacheLineBits)); // TODO: Check?
 }
 
 uint32_t Address::GetL2Tag() const
 {
-	int shift = CacheLineBits + int(log(GlobalConfig.CacheL2Size)/log(2));
+    int shift = GlobalConfig.CacheLineBits +
+                int(log(GlobalConfig.CacheL2Size)/log(2));
     return raw>>shift; // TODO: Check?
 }
 
