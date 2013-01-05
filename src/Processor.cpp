@@ -105,8 +105,7 @@ void Processor::CollectStats(TaskBlock& taskBlock)
     // TODO: Collect stats from all tiles (Core, MMU, Cache)
 	taskBlock.task->Stats;
 	int coreBlockArea = GlobalConfig.CoreBlockSize().Area();
-	std::vector<Tile>& t = *taskBlock.assignedBlock->GetTile.tiles;
-	//Tile* t = taskBlock.assignedBlock->tiles;
+	Tile* t = taskBlock.assignedBlock->tiles;
 	
 	Cache *l1,*l2;
 	long long totalL1AccessCount(0),totalL1MissCount(0),avgL1MissRate(0);	// Cache L1 stats

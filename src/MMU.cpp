@@ -94,7 +94,7 @@ void MMU::FetchLocalL2(const Dim2& requesterIdx, int requestId, int totalDelay,
     if (!line)
     {
         // L2 miss
-        FetchFromMemory(requesterIdx, addr, totalDelay);
+        FetchFromMemory(requesterIdx, requestId, addr, totalDelay);
     }
     else
     {
@@ -113,8 +113,8 @@ void MMU::FetchLocalL2(const Dim2& requesterIdx, int requestId, int totalDelay,
 
 
 /// Fetch word from memory, when it is missing in this tile's L2
-int MMU::FetchFromMemory(const Dim2& requesterIdx, int requestId,const Address& addr,
-                         int totalDelay)
+int MMU::FetchFromMemory(const Dim2& requesterIdx, int requestId,
+                         const Address& addr, int totalDelay)
 {
     SendRequest(MessageTypeRequestMem, requesterIdx, requestId, Dim2(GlobalMemoryController::GMemIdx, GlobalMemoryController::GMemIdx), addr, totalDelay);
 }

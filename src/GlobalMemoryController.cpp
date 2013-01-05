@@ -4,6 +4,7 @@
 #include "Processor.hpp"
 #include "Router.hpp"
 #include "SimConfig.hpp"
+#include "Tile.hpp"
 
 #include <string.h>
 
