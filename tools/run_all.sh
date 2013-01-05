@@ -9,6 +9,7 @@ BENCHMARK_DIR="${ROOT}/benchmark"
 
 TASKS="${BENCHMARK_DIR}/matrix_simple.ini"
 
+"${SCRIPT_DIR}/build_all.sh" "$1"
 
 for cfg in ${SIMCONFIG_DIR}/*; do
   echo "### Running ${cfg} ..."
