@@ -58,18 +58,19 @@ fi
 
 ${CC} ${CFLAGS} "${INPUT_FILE}" -o "${OUTPUT_EXECUTABLE}"
 
-echo "[task]" >> ${OUTPUT_CONFIG}
-echo "executable=${OUTPUT_EXECUTABLE}" >> ${OUTPUT_CONFIG}
+rm -f "${OUTPUT_CONFIG}"
+echo "[task]" >> "${OUTPUT_CONFIG}"
+echo "executable=${OUTPUT_EXECUTABLE}" >> "${OUTPUT_CONFIG}"
 
 get_addr () {
   ${OBJDUMP} -t ${OUTPUT_EXECUTABLE} | grep $1 | awk '{ print $1 }'
 }
 
-echo "thread_idx_addr=$(get_addr "threadIdx")" >> ${OUTPUT_CONFIG}
-echo "thread_dim_addr=$(get_addr "threadDim")" >> ${OUTPUT_CONFIG}
-echo "block_idx_addr=$(get_addr "blockIdx")" >> ${OUTPUT_CONFIG}
-echo "block_dim_addr=$(get_addr "blockDim")" >> ${OUTPUT_CONFIG}
-echo "thread_width=${THREAD_WIDTH}" >> ${OUTPUT_CONFIG}
-echo "thread_height=${THREAD_HEIGHT}" >> ${OUTPUT_CONFIG}
-echo "block_width=${BLOCK_WIDTH}" >> ${OUTPUT_CONFIG}
+echo "thread_idx_addr=$(get_addr "threadIdx")" >> "${OUTPUT_CONFIG}"
+echo "thread_dim_addr=$(get_addr "threadDim")" >> "${OUTPUT_CONFIG}"
+echo "block_idx_addr=$(get_addr "blockIdx")" >> "${OUTPUT_CONFIG}"
+echo "block_dim_addr=$(get_addr "blockDim")" >> "${OUTPUT_CONFIG}"
+echo "thread_width=${THREAD_WIDTH}" >> "${OUTPUT_CONFIG}"
+echo "thread_height=${THREAD_HEIGHT}" >> "${OUTPUT_CONFIG}"
+echo "block_width=${BLOCK_WIDTH}" >> "${OUTPUT_CONFIG}"
 echo "block_height=${BLOCK_HEIGHT}" >> ${OUTPUT_CONFIG}

@@ -3,10 +3,10 @@
 #include <unistd.h>
 #include <string.h>
 
-dim3 threadIdx = { 0, 0, 0 };
-dim3 threadDim = { 0, 0, 0 };
-dim3 blockIdx = { 0, 0, 0 };
-dim3 blockDim = { 0, 0, 0 };
+dim2 threadIdx = { 0, 0 };
+dim2 threadDim = { 0, 0 };
+dim2 blockIdx = { 0, 0 };
+dim2 blockDim = { 0, 0 };
 
 void write_uint(int fd, unsigned int val) {
     int i;
