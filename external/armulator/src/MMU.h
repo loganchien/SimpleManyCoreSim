@@ -7,7 +7,7 @@
 #define __MMU_H__
 
 #ifdef SMCSIM
-#include "TileMMU.h"
+#include "ArmulatorMMU.h"
 #else
 
 /*!

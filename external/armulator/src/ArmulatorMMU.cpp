@@ -1,4 +1,4 @@
-#include "TileMMU.h"
+#include "ArmulatorMMU.h"
 
 MMU::MMU(const char *file_name)
 {
