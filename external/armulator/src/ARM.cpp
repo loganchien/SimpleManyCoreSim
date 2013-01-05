@@ -44,7 +44,7 @@ GP_Reg ARM::get_reg_by_name(const char *reg_name)
     return 0;
 }
 
-/** 
+/**
   * Get a 32-bit instruction from MMU modular, and increase PC by 4.
   */
 void ARM::fetch()
@@ -52,6 +52,14 @@ void ARM::fetch()
     cur_instr = my_mmu->getInstr32(rPC);
     rPC += 4;
 }
+/**
+  * Decrease PC by 4.
+  */
+void ARM::unfetch()
+{
+    rPC -= 4;
+}
+
 /** 
   * Execute part of the 32-bit ARM instruction, the instructions are classified by most significant 3 bit.
   * \exception UndefineInst For undefined instructions
