@@ -3,8 +3,15 @@
 
 #include "arch.h"
 
+namespace smcsim {
+    class MMU;
+} // end namespace smcsim
+
 class MMU
 {
+private:
+    smcsim::MMU *mmu;
+
 public:
     MMU(const char *file_name);
 
@@ -14,7 +21,7 @@ public:
     T_INSTR getInstr(int address);
 
     //! Give out the ARM instruction
-    T_INSTR getInstr32(int address);
+    A_INSTR getInstr32(int address);
 
     //! Output byte data by address
     BYTE get_byte(int address);

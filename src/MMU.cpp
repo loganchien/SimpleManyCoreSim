@@ -235,7 +235,7 @@ void MMU::SendResponse(MessageType type, const Dim2& receiver, const int reqId,
 
 /// Load the byte at the address in the memory without stall.  If the byte
 /// can't be retrived without the stall, then return false.
-bool MMU::TryAndLoadByte(uint32_t addr, uint8_t& byte)
+bool MMU::LoadReadyByte(uint32_t addr, uint8_t& byte)
 {
     assert(0 && "Not implemented");
     return false;
@@ -244,7 +244,7 @@ bool MMU::TryAndLoadByte(uint32_t addr, uint8_t& byte)
 
 /// Load the half word at the address in the memory without stall.  If the
 /// half word can't be retrived without the stall, then return false.
-bool MMU::TryAndLoadHalfWord(uint32_t addr, uint16_t& halfword)
+bool MMU::LoadReadyHalfWord(uint32_t addr, uint16_t& halfword)
 {
     assert(0 && "Not implemented");
     return false;
@@ -253,8 +253,26 @@ bool MMU::TryAndLoadHalfWord(uint32_t addr, uint16_t& halfword)
 
 /// Load the word at the address in the memory without stall.  If the word
 /// can't be retrived without the stall, then return false.
-bool MMU::TryAndLoadWord(uint32_t addr, uint32_t& word)
+bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
 {
     assert(0 && "Not implemented");
     return false;
+}
+
+/// Store the byte at the address in the memory.
+void MMU::StoreByte(uint32_t addr, uint8_t byte)
+{
+    assert(0 && "Not implemented");
+}
+
+/// Store the half word at the address in the memory.
+void MMU::StoreHalfWord(uint32_t addr, uint16_t halfword)
+{
+    assert(0 && "Not implemented");
+}
+
+/// Store the word at the address in the memory.
+void MMU::StoreWord(uint32_t addr, uint32_t word)
+{
+    assert(0 && "Not implemented");
 }

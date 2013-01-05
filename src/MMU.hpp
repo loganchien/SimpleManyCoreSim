@@ -57,7 +57,7 @@ public:
     std::vector<OutstandingRequest> requests;
 
 
-    // ######### Simulation stuff #########
+    // #################### Simulation stuff ##################################
 
     /// Total simulated time spent on memory requests
     long long simTime;
@@ -91,7 +91,7 @@ public:
                         int totalDelay);
 
 
-    // ############################################# Handle incoming Messages #############################################
+    // #################### Handle incoming Messages ##########################
 
     /// Called by router when a Cacheline has been sent to this tile
     void OnCachelineReceived(int requestId, int totalDelay,
@@ -103,7 +103,7 @@ public:
 
 
 
-    // ############################################# Handle Request buffer & Send Messages #############################################
+    // #################### Handle Request buffer & Send Messages #############
 
     /// Get a free request buffer entry
     OutstandingRequest& GetFreeRequest(int& requestId);
@@ -114,23 +114,33 @@ public:
 
 
     /// Creates and sends a new Response Message
-    void SendResponse(MessageType type, const Dim2& receiver, const int requestId,
-                      const CacheLine &cacheLine, int totalDelay);
+    void SendResponse(MessageType type, const Dim2& receiver,
+                      const int requestId, const CacheLine &cacheLine,
+                      int totalDelay);
 
 
     // #################### Interfaces for ARMulator ##########################
 
     /// Load the byte at the address in the memory without stall.  If the byte
     /// can't be retrived without the stall, then return false.
-    bool TryAndLoadByte(uint32_t addr, uint8_t& byte);
+    bool LoadReadyByte(uint32_t addr, uint8_t& byte);
 
     /// Load the half word at the address in the memory without stall.  If the
     /// half word can't be retrived without the stall, then return false.
-    bool TryAndLoadHalfWord(uint32_t addr, uint16_t& halfword);
+    bool LoadReadyHalfWord(uint32_t addr, uint16_t& halfword);
 
     /// Load the word at the address in the memory without stall.  If the word
     /// can't be retrived without the stall, then return false.
-    bool TryAndLoadWord(uint32_t addr, uint32_t& word);
+    bool LoadReadyWord(uint32_t addr, uint32_t& word);
+
+    /// Store the byte at the address in the memory.
+    void StoreByte(uint32_t addr, uint8_t byte);
+
+    /// Store the half word at the address in the memory.
+    void StoreHalfWord(uint32_t addr, uint16_t halfword);
+
+    /// Store the word at the address in the memory.
+    void StoreWord(uint32_t addr, uint32_t word);
 };
 
 } // end namespace smcsim
