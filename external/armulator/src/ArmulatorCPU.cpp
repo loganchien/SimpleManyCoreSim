@@ -56,6 +56,11 @@ bool ArmulatorCPU::sim_step()
         std::cerr << "\nUndefine Instr:" << e.error_name << std::endl;
         abort();
     }
+    catch (LoadStall &e)
+    {
+        // OnLoadStall();
+        cpu->unfetch();
+    }
     catch (SwitchMode &e)
     {
         Thumb *tmp = new Thumb();

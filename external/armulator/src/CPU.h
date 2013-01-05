@@ -25,6 +25,8 @@ public:
 public:
 	//! Get instruction from memory, increase PC
     virtual void fetch() = 0;
+	//! decrease PC
+    virtual void unfetch() = 0;
 	//! Execute the current instruction
     virtual STATUS exec() = 0;
 	//! Get the register value by its name

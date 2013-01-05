@@ -36,6 +36,13 @@ void Thumb::fetch()
     cur_instr = my_mmu->getInstr(rPC);
     rPC += 2;
 }
+/**
+  * Decrease PC by 2.
+  */
+void Thumb::unfetch()
+{
+    rPC -= 2;
+}
 
 /**
   * Execute all kinds of 16-bit Thumb instruction, the instructions are classified by most significant 3 bit.

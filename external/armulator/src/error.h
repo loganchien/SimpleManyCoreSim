@@ -67,6 +67,11 @@ public:
     std::string switch_way;
 };
 
+class LoadStall
+{
+public:
+};
+
 /*!	\exception ProgramEnd
 	\brief For ending the program running in the emulator.
 

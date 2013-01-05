@@ -85,6 +85,8 @@ public:
     //inherit
 	//! Fetch a new instruction from MMU module.
     virtual void fetch();
+	//! Unfetch a new instruction.
+    virtual void unfetch();
 	//! Execute current instruction.
     virtual STATUS exec();
 	//! Get register value by its name(future use, not implemented).
