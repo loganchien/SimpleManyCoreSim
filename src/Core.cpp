@@ -1,14 +1,13 @@
 #include "Core.hpp"
 
 #include "Address.hpp"
-#include "ArmulatorCPU.h"
 
 #include <assert.h>
 #include <stdint.h>
 
 using namespace smcsim;
 
-Core::Core(Tile* tile_): tile(tile_)
+Core::Core(Tile* tile_): tile(tile_), currentThread(0), isLoadingData(false)
 {
     // TODO: mmu.InitMMU(thread->tile);
 }

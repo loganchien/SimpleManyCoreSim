@@ -4,6 +4,8 @@
 #include "Dimension.hpp"
 #include "MMU.hpp"
 
+#include "ArmulatorCPU.h"
+
 #include <stdint.h>
 
 class ArmulatorCPU;
@@ -28,11 +30,11 @@ public:
     /// The total amount of instructions
     long long simInstructionCount, simLoadInstructionCount;
 
-    ArmulatorCPU* armulator;
+    /// The ARM/Thumb CPU core provided by ARMulator
+    ArmulatorCPU armulator;
 
-    // ...
+    // The MMU with simple many cores support
     MMU mmu;
-
 
 public:
     Core(Tile* tile);
