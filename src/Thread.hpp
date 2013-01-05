@@ -22,12 +22,8 @@ public:
     /// The index of this thread within it's TaskBlock
     Dim2 threadIdx;
 
-    /// This thread's instruction stream
-    Program* code;
-
 public:
-    void InitThread(TaskBlock* taskBlock, const Dim2& threadIdx, Tile *tile,
-                    Program *code);
+    void InitThread(TaskBlock* taskBlock, const Dim2& threadIdx, Tile *tile);
 };
 
 } // end namespace smcsim

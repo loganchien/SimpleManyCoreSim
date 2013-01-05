@@ -15,14 +15,6 @@ TaskBlock::TaskBlock(Task& task_, CoreBlock& assignedBlock_,
 {
 }
 
-/// Instruments the Task code for this block (i.e. insert block-id, thread-id etc into special placeholders within the code)
-Program *TaskBlock::GetInjectedCode(const Dim2& threadIdx)
-{
-    // TODO: Replace placeholders in constant segment with thread id information
-    return 0;
-}
-
-
 /// Whether this TaskBlock still has unscheduled threads
 bool TaskBlock::HasMoreThreads() const
 {
@@ -41,7 +33,7 @@ Thread TaskBlock::CreateNextThread(Tile& tile)
     assert(HasMoreThreads());
 
     Thread nextThread;
-    nextThread.InitThread(this, nextThreadIdx, &tile, GetInjectedCode(nextThreadIdx));
+    nextThread.InitThread(this, nextThreadIdx, &tile);
 
     nextThreadIdx.Inc(1);
 

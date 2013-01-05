@@ -34,10 +34,6 @@ public:
     /// Initializes this TaskBlock
     void InitTaskBlock();
 
-    /// Instruments the Task code for this block (i.e. insert block-id,
-    /// thread-id etc into special placeholders within the code)
-    Program *GetInjectedCode(const Dim2& threadIdx);
-
     /// Whether this TaskBlock still has unscheduled threads
     bool HasMoreThreads() const;
 
