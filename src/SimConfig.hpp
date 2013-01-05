@@ -50,6 +50,7 @@ public:
 
     /// 64 bytes per cache line (64 bytes = 16 x 4 byte words)
     static const int CacheLineSize = 64;
+	static const int numbCacheLineBits = 6; //log2(64)
 
     static const int CacheLineBits = 0x3f;
 

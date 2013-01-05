@@ -8,24 +8,24 @@ using namespace smcsim;
 
 uint32_t Address::GetL1Index() const
 {
-    return (GlobalConfig.CacheL1Size-1 & raw>>CacheLineBits); // TODO: Check?
+    return (GlobalConfig.CacheL1Size-1 & (raw>>SimConfig::numbCacheLineBits));
 }
 
 uint32_t Address::GetL1Tag() const
 {
-	int shift = CacheLineBits + int(log(GlobalConfig.CacheL1Size)/log(2));
-    return raw>>shift; // TODO: Check?
+	int shift = SimConfig::numbCacheLineBits + int(log(GlobalConfig.CacheL1Size)/log(2));
+    return raw>>shift; 
 }
 
 uint32_t Address::GetL2Index() const
 {
-    return (GlobalConfig.CacheL2Size-1 & raw>>CacheLineBits); // TODO: Check?
+    return (GlobalConfig.CacheL2Size-1 & (raw>>SimConfig::numbCacheLineBits)); 
 }
 
 uint32_t Address::GetL2Tag() const
 {
-	int shift = CacheLineBits + int(log(GlobalConfig.CacheL2Size)/log(2));
-    return raw>>shift; // TODO: Check?
+	int shift = SimConfig::numbCacheLineBits + int(log(GlobalConfig.CacheL2Size)/log(2));
+    return raw>>shift;
 }
 
 /// The offset of the word that this address is referring to
