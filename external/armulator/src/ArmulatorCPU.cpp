@@ -5,6 +5,8 @@
 #include "Thumb.h"
 #include "error.h"
 
+#include "../../../src/Core.hpp"
+
 #include <iostream>
 
 #include <stdlib.h>
@@ -58,7 +60,6 @@ bool ArmulatorCPU::sim_step()
     }
     catch (LoadStall &e)
     {
-        // OnLoadStall();
         cpu->unfetch();
     }
     catch (SwitchMode &e)
