@@ -8,7 +8,7 @@
 using namespace smcsim;
 
 Tile::Tile()
-    : coreBlock(0), core(0), mmu(0)
+    : coreBlock(0), core(this, &mmu)
 {
 }
 
@@ -17,9 +17,6 @@ void Tile::InitTile(CoreBlock* coreBlock_, const Dim2& tileIdx_)
 {
     coreBlock = coreBlock_;
     tileIdx = tileIdx_;
-
-    core = new Core(this);
-    mmu = &core->mmu;
 }
 
 
@@ -31,12 +28,12 @@ bool Tile::IsBoundaryTile()
 
     return (tileIdx.x == 0 ||
             tileIdx.y == 0 ||
-			tileIdx.x == GlobalConfig.TotalCoreLength() - 1 ||
+            tileIdx.x == GlobalConfig.TotalCoreLength() - 1 ||
             tileIdx.y == GlobalConfig.TotalCoreLength() - 1);
 }
 
 Dim2 Tile::ComputeLocalIndex(){
-	int x = tileIdx.x % GlobalConfig.CoreBlockLen;
-	int y = tileIdx.y % GlobalConfig.CoreBlockLen;
-	return Dim2(y,x);
+    int x = tileIdx.x % GlobalConfig.CoreBlockLen;
+    int y = tileIdx.y % GlobalConfig.CoreBlockLen;
+    return Dim2(y,x);
 }

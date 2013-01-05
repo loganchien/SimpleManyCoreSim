@@ -165,7 +165,7 @@ void MMU::CommitLoad(CacheLine* line, int totalDelay, const Address& addr)
 {
     // Add time spent on this request to total sim time
     simTime += totalDelay;
-    tile->core->CommitLoad(line->GetWord(addr));
+    tile->core.CommitLoad(line->GetWord(addr));
 }
 
 

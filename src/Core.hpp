@@ -2,7 +2,6 @@
 #define CPU_HPP
 
 #include "Dimension.hpp"
-#include "MMU.hpp"
 
 #include "ArmulatorCPU.h"
 
@@ -12,8 +11,9 @@ class ArmulatorCPU;
 
 namespace smcsim {
 
-class Tile;
+class MMU;
 class Thread;
+class Tile;
 
 class Core
 {
@@ -33,11 +33,8 @@ public:
     /// The ARM/Thumb CPU core provided by ARMulator
     ArmulatorCPU armulator;
 
-    // The MMU with simple many cores support
-    MMU mmu;
-
 public:
-    Core(Tile* tile);
+    Core(Tile* tile, MMU* mmu);
 
     /// This Core starts running the given Thread
     void StartThread(Thread* thread);

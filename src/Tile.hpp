@@ -1,7 +1,9 @@
 #ifndef TILE_HPP
 #define TILE_HPP
 
+#include "Core.hpp"
 #include "Dimension.hpp"
+#include "MMU.hpp"
 #include "Router.hpp"
 
 namespace smcsim {
@@ -20,14 +22,14 @@ public:
     /// The block to which this tile belongs
     CoreBlock* coreBlock;
 
-    /// The core of this tile (ARMUlator class)
-    Core* core;
-
     /// The MMU of the core (modified ARMUlator class)
-    MMU* mmu;
+    MMU mmu;
 
     /// The router of this tile
     Router router;
+
+    /// The core of this tile (ARMUlator class)
+    Core core;
 
 public:
     Tile();
@@ -36,7 +38,8 @@ public:
 
     /// Whether this tile is at the core's x = 0, y = 0, x = w-1 or y = h-1
     bool IsBoundaryTile();
-	Dim2 ComputeLocalIndex();
+
+    Dim2 ComputeLocalIndex();
 };
 
 } // end namespace smcsim

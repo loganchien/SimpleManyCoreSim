@@ -99,8 +99,7 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
               << " threadIdx=" << nextThread.threadIdx
               << " tileIdx=" << tile.tileIdx);
 
-    assert(tile.core != NULL);
-    tile.core->StartThread(&nextThread);
+    tile.core.StartThread(&nextThread);
 }
 
 

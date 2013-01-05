@@ -27,12 +27,12 @@ void Router::HandleIncomingMessage(Message& msg)
     {
     case MessageTypeResponseCacheline:
         // Requested cacheline arrived
-        tile->core->mmu.OnCachelineReceived(msg.requestId, msg.totalDelay, msg.cacheLine);
+        tile->mmu.OnCachelineReceived(msg.requestId, msg.totalDelay, msg.cacheLine);
         break;
 
     case MessageTypeRequestL2:
         // Sender is requesting shared cache entry
-        tile->core->mmu.FetchLocalL2(msg.sender,msg.requestId, msg.totalDelay, msg.addr);
+        tile->mmu.FetchLocalL2(msg.sender,msg.requestId, msg.totalDelay, msg.addr);
         break;
 
     default:

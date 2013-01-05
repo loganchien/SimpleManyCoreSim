@@ -91,7 +91,7 @@ void Processor::SimSteps()
             Tile& tile = block.tiles[i];
             //for (int s = 0; s < !tile.cpu->isLoadingData && !tile.; ++s)
             {
-                tile.core->DispatchNext();
+                tile.core.DispatchNext();
                 tile.router.DispatchNext();
             }
         }
@@ -117,19 +117,19 @@ void Processor::CollectStats(TaskBlock& taskBlock)
 	
 	for(int i=0; i < coreBlockArea; i++){	// iterate over each tile in CoreBlock to get statistics:
 		/// Cache and Router statistics:
-		avgSimTime+=t[i].mmu->simTime/coreBlockArea; //normalize to get average
-		maxSimTime=std::max(maxSimTime,t[i].mmu->simTime);
-		l1 = &t[i].mmu->l1;		
+		avgSimTime+=t[i].mmu.simTime/coreBlockArea; //normalize to get average
+		maxSimTime=std::max(maxSimTime,t[i].mmu.simTime);
+		l1 = &t[i].mmu.l1;
 		totalL1AccessCount+=l1->simAccessCount;	//or better to directly take averages?
 		totalL1MissCount+=l1->simMissCount;
-		l2 = &t[i].mmu->l2;
+		l2 = &t[i].mmu.l2;
 		totalL2AccessCount+=l2->simAccessCount;
 		totalL2MissCount+=l2->simMissCount;
 		avgPacketsReceived+= t[i].router.simTotalPacketsReceived/coreBlockArea;
 
 		/// CPU (Core) statistics:
-		avgInstructions=t[i].core->simInstructionCount/coreBlockArea;
-		avgLoadInstructions=t[i].core->simLoadInstructionCount/coreBlockArea;
+		avgInstructions=t[i].core.simInstructionCount/coreBlockArea;
+		avgLoadInstructions=t[i].core.simLoadInstructionCount/coreBlockArea;
 	}
 
 	// Calculate averages out of totals:

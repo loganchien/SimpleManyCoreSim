@@ -7,9 +7,9 @@
 
 using namespace smcsim;
 
-Core::Core(Tile* tile_): tile(tile_), currentThread(0), isLoadingData(false)
+Core::Core(Tile* tile_, MMU* mmu_)
+    : tile(tile_), currentThread(0), isLoadingData(false)
 {
-    // TODO: mmu.InitMMU(thread->tile);
 }
 
 
@@ -20,8 +20,6 @@ void Core::StartThread(Thread* thread)
 
     isLoadingData = false;
     simInstructionCount = simLoadInstructionCount = 0;
-
-    mmu.ResetMMU();
 }
 
 
