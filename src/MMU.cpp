@@ -231,3 +231,30 @@ void MMU::SendResponse(MessageType type, const Dim2& receiver, const int reqId,
     // Send the message
     tile->router.EnqueueMessage(msg);
 }
+
+
+/// Load the byte at the address in the memory without stall.  If the byte
+/// can't be retrived without the stall, then return false.
+bool MMU::TryAndLoadByte(uint32_t addr, uint8_t& byte)
+{
+    assert(0 && "Not implemented");
+    return false;
+}
+
+
+/// Load the half word at the address in the memory without stall.  If the
+/// half word can't be retrived without the stall, then return false.
+bool MMU::TryAndLoadHalfWord(uint32_t addr, uint16_t& halfword)
+{
+    assert(0 && "Not implemented");
+    return false;
+}
+
+
+/// Load the word at the address in the memory without stall.  If the word
+/// can't be retrived without the stall, then return false.
+bool MMU::TryAndLoadWord(uint32_t addr, uint32_t& word)
+{
+    assert(0 && "Not implemented");
+    return false;
+}

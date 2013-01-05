@@ -62,6 +62,7 @@ public:
     /// Total simulated time spent on memory requests
     long long simTime;
 
+public:
     /// New custom function that we call during start-up
     void InitMMU(Tile* tile);
 
@@ -115,6 +116,21 @@ public:
     /// Creates and sends a new Response Message
     void SendResponse(MessageType type, const Dim2& receiver, const int requestId,
                       const CacheLine &cacheLine, int totalDelay);
+
+
+    // #################### Interfaces for ARMulator ##########################
+
+    /// Load the byte at the address in the memory without stall.  If the byte
+    /// can't be retrived without the stall, then return false.
+    bool TryAndLoadByte(uint32_t addr, uint8_t& byte);
+
+    /// Load the half word at the address in the memory without stall.  If the
+    /// half word can't be retrived without the stall, then return false.
+    bool TryAndLoadHalfWord(uint32_t addr, uint16_t& halfword);
+
+    /// Load the word at the address in the memory without stall.  If the word
+    /// can't be retrived without the stall, then return false.
+    bool TryAndLoadWord(uint32_t addr, uint32_t& word);
 };
 
 } // end namespace smcsim
