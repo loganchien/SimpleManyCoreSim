@@ -2,6 +2,8 @@
 
 #include "SimConfig.hpp"
 
+#include <math.h>
+
 using namespace smcsim;
 
 uint32_t Address::GetL1Index() const
