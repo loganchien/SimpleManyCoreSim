@@ -32,7 +32,7 @@ void Router::HandleIncomingMessage(Message& msg)
 
     case MessageTypeRequestL2:
         // Sender is requesting shared cache entry
-        tile->core->mmu.FetchLocalL2(msg.sender, msg.totalDelay, msg.addr);
+        tile->core->mmu.FetchLocalL2(msg.sender,msg.requestId, msg.totalDelay, msg.addr);
         break;
 
     default:
@@ -51,7 +51,7 @@ void Router::DispatchNext()
 
     // Simulate queueing delay for all waiting packets
 	for(int i=0;i<msgQueue.size();i++){
-		msgQueue.at(i).totalDelay+= 1 ;//TODO: GlobalConfig.QueuingDelay;
+		msgQueue.at(i).totalDelay+= GlobalConfig.QueuingDelay;
 	}
     // Dequeue next message
     Message& msg = msgQueue.front();
@@ -107,28 +107,26 @@ void Router::RouteToNeighbor(Message& msg)
 
         // TODO: Shortest path to memory is always path to shortest boundary,
         // i.e. min(x, y, width-x, width-y)
-        int x = tile->tileIdx.x;
-        int y = tile->tileIdx.y;
-        if (std::min(x, GlobalConfig.CoreGridLen - x) <
-            std::min(y, GlobalConfig.CoreGridLen - y))
+        if (std::min(tile->tileIdx.x, GlobalConfig.TotalCoreLength() - tile->tileIdx.x) <
+            std::min(tile->tileIdx.y, GlobalConfig.TotalCoreLength() - tile->tileIdx.y))
         {
             //move horizontally to border
-            if (x < GlobalConfig.CoreGridLen - x)
-                neighborIdx = Dim2(y, x-1);
+            if (tile->tileIdx.x < GlobalConfig.TotalCoreLength() - tile->tileIdx.x)
+                neighborIdx = Dim2(tile->tileIdx.y, tile->tileIdx.x-1);
             else
-                neighborIdx = Dim2(y, x+1);
+                neighborIdx = Dim2(tile->tileIdx.y, tile->tileIdx.x+1);
         }
         else{	//move vertically
-            if (y < GlobalConfig.CoreGridLen - y)
-                neighborIdx = Dim2(y-1, x);
+            if (tile->tileIdx.y < GlobalConfig.TotalCoreLength() - tile->tileIdx.y)
+                neighborIdx = Dim2(tile->tileIdx.y-1, tile->tileIdx.x);
             else
-                neighborIdx = Dim2(y+1, x);
+                neighborIdx = Dim2(tile->tileIdx.y+1, tile->tileIdx.x);
         }
     }
     else
     {
         // Message is sent to tile
-        // TODO: Shortest path between two routers often allows for 2 choices
+        // Shortest path between two routers often allows for 2 choices
         // at any point - Select one of the choices at random
         int r = rand() % 2;
         int next;

@@ -29,8 +29,14 @@ bool Tile::IsBoundaryTile()
     Dim2 blockSize = coreBlock->processor->coreBlockSize;
     Dim2 coreOrigin = coreBlock->ComputeCoreBlockOrigin();
 
-    return (tileIdx.x == coreOrigin.x ||
-            tileIdx.y == coreOrigin.y ||
-            tileIdx.x == coreOrigin.x + blockSize.x - 1 ||
-            tileIdx.y == coreOrigin.y + blockSize.y - 1);
+    return (tileIdx.x == 0 ||
+            tileIdx.y == 0 ||
+			tileIdx.x == GlobalConfig.TotalCoreLength() - 1 ||
+            tileIdx.y == GlobalConfig.TotalCoreLength() - 1);
+}
+
+Dim2 Tile::ComputeLocalIndex(){
+	int x = tileIdx.x % GlobalConfig.CoreBlockLen;
+	int y = tileIdx.y % GlobalConfig.CoreBlockLen;
+	return Dim2(y,x);
 }

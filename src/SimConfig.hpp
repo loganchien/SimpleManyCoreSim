@@ -25,7 +25,8 @@ public:
     /// Total amount of core blocks on the processor
     Dim2 CoreGridSize();
 
-
+	/// Total amount of cores (or tiles) in the processor
+	int TotalCoreLength();
 
     // #################### Core Blocks #######################################
 
@@ -75,6 +76,8 @@ public:
     ///
     int MemDelay;
 
+	// Simulate queueing delay for all waiting packets
+	int QueuingDelay; 
 public:
     SimConfig();
 

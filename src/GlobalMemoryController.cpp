@@ -43,7 +43,6 @@ void GlobalMemoryController::DispatchNext()
     memcpy(&*response.cacheLine.bytes.begin(), &memory[request.addr.raw], sizeof(uint32_t) * GlobalConfig.CacheLineSize);
 
     // Compute index of boundary router, closest to destination router
-	// TODO: index sender is what exactly, coreblock, index in coreblock, .. ?
 	Dim2 nearestRouterId;
 	int gridLen = GlobalConfig.CoreGridLen*GlobalConfig.CoreBlockLen-1;
 	if(std::min(request.sender.x,gridLen-request.sender.x)<std::min(request.sender.y,gridLen-request.sender.y)){
@@ -56,7 +55,7 @@ void GlobalMemoryController::DispatchNext()
 		nearestRouterId.y = request.sender.y<gridLen-request.sender.y ? 0 : gridLen;
 	}
 
-    Router nearestRouter ; // = processor->GetTile(nearestRouterId)->router; // TODO: fix?
+    Router nearestRouter = processor->GetTile(nearestRouterId)->router; // TODO: fix?
 
     // Send out new response Message
     nearestRouter.EnqueueMessage(response);

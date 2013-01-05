@@ -14,7 +14,7 @@ class MMU;
 class Tile
 {
 public:
-    /// Index of this tile within the core block
+    /// Index of this tile GLOBALLY!
     Dim2 tileIdx;
 
     /// The block to which this tile belongs
@@ -36,6 +36,7 @@ public:
 
     /// Whether this tile is at the core's x = 0, y = 0, x = w-1 or y = h-1
     bool IsBoundaryTile();
+	Dim2 ComputeLocalIndex();
 };
 
 } // end namespace smcsim

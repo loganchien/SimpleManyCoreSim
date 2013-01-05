@@ -19,7 +19,7 @@ SimConfig smcsim::GlobalConfig;
 
 SimConfig::SimConfig(): CoreGridLen(0), CoreBlockLen(0), CacheL1Size(0),
     CacheL1Delay(0), CacheL2Size(0), CacheL2Delay(0), CacheMissDelay(0),
-    DispatchDelay(0), Route1Delay(0), MemDelay(0)
+    DispatchDelay(0), Route1Delay(0), MemDelay(0), QueuingDelay(0)
 {
 }
 
@@ -38,6 +38,7 @@ bool SimConfig::LoadConfig(const string& path)
     DispatchDelay = pt.get("setting.DISPATCH_DELAY", 5);
     Route1Delay = pt.get("setting.ROUTE_1_DELAY", 10);
     MemDelay = pt.get("setting.MEM_DELAY", 50);
+	QueuingDelay = pt.get("setting.QUEUING_DELAY", 1);
 
     PrintLine("CONFIG: Core Grid Len:    " << CoreGridLen);
     PrintLine("CONFIG: Core Block Len:   " << CoreBlockLen);
@@ -49,6 +50,7 @@ bool SimConfig::LoadConfig(const string& path)
     PrintLine("CONFIG: Dispatch Delay:   " << DispatchDelay);
     PrintLine("CONFIG: Route 1 Delay:    " << Route1Delay);
     PrintLine("CONFIG: Mem Delay:        " << MemDelay);
+	PrintLine("CONFIG: Queuing Delay:    " << QueuingDelay);
 
     return true;
 }
@@ -67,6 +69,10 @@ Dim2 SimConfig::ComputeInCoreBlockIdx2(int inCoreBlockIdx1)
 {
     div_t d = div(inCoreBlockIdx1, CoreBlockLen);
     return Dim2(d.quot, d.rem);
+}
+
+int SimConfig::TotalCoreLength(){
+	return (CoreBlockLen*CoreGridLen);
 }
 
 int SimConfig::ComputeInCoreBlockIdx1(const Dim2& inCoreBlockIdx2)
