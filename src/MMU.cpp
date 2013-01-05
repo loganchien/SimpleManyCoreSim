@@ -6,6 +6,9 @@
 #include "Dimension.hpp"
 #include "GlobalMemoryController.hpp"
 #include "SimConfig.hpp"
+#include "Task.hpp"
+#include "TaskBlock.hpp"
+#include "Thread.hpp"
 #include "Tile.hpp"
 
 #include <assert.h>
@@ -255,6 +258,28 @@ bool MMU::LoadReadyHalfWord(uint32_t addr, uint16_t& halfword)
 /// can't be retrived without the stall, then return false.
 bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
 {
+    // If the addr is mapped to special range, then return the special value,
+    // such as threadIdx, threadDim, blockIdx, blockDim.
+    Thread* thread = tile->core.currentThread;
+    TaskBlock* taskBlock = thread->taskBlock;
+    Task* task = taskBlock->task;
+
+#define VAR_VALUE_MAP(ADDR, VAR, SIZE)                                        \
+    if (addr >= (ADDR) && addr < ((ADDR) + (SIZE)))                           \
+    {                                                                         \
+        uint32_t* var = reinterpret_cast<uint32_t*>(&(VAR));                  \
+        word = var[(addr - (ADDR)) / sizeof(uint32_t)];                       \
+        return true;                                                          \
+    }
+
+    VAR_VALUE_MAP(task->threadIdxAddr, thread->threadIdx, sizeof(Dim2));
+    VAR_VALUE_MAP(task->threadDimAddr, task->taskSize, sizeof(Dim2));
+    VAR_VALUE_MAP(task->blockIdxAddr, taskBlock->taskBlockIdx, sizeof(Dim2));
+    VAR_VALUE_MAP(task->blockDimAddr, task->blockSize, sizeof(Dim2));
+
+#undef VAR_VALUE_MAP
+
+    // Load the real values
     assert(0 && "Not implemented");
     return false;
 }
