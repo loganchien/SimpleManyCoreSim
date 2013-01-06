@@ -34,7 +34,7 @@ public:
     ArmulatorCPU armulator;
 
 public:
-    Core(Tile* tile, MMU* mmu);
+    Core(Tile* tile);
 
     /// This Core starts running the given Thread
     void StartThread(Thread* thread);

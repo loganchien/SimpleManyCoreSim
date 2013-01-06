@@ -9,7 +9,7 @@
 using namespace smcsim;
 
 Tile::Tile()
-    : coreBlock(0), core(this, &mmu)
+    : coreBlock(0), mmu(this), core(this)
 {
 }
 
@@ -18,7 +18,7 @@ void Tile::InitTile(CoreBlock* coreBlock_, const Dim2& tileIdx_)
 {
     coreBlock = coreBlock_;
     tileIdx = tileIdx_;
-    mmu.InitMMU(this);
+    mmu.InitMMU();
 }
 
 

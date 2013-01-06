@@ -17,11 +17,12 @@
 
 using namespace smcsim;
 
-/// New custom function that we call during start-up
-void MMU::InitMMU(Tile* tile)
-{
-    this->tile = tile;
+MMU::MMU(Tile* tile_): tile(tile_)
+{ }
 
+/// New custom function that we call during start-up
+void MMU::InitMMU()
+{
     // Initialize Caches
     //l2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(tile->tileIdx);
 

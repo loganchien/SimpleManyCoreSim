@@ -63,8 +63,10 @@ public:
     long long simTime;
 
 public:
+    MMU(Tile* tile);
+
     /// New custom function that we call during start-up
-    void InitMMU(Tile* tile);
+    void InitMMU();
 
 
     /// Reset MMU to initial state

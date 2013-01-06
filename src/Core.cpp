@@ -6,11 +6,13 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 using namespace smcsim;
 
-Core::Core(Tile* tile_, MMU* mmu_)
-    : tile(tile_), currentThread(0), isLoadingData(false)
+Core::Core(Tile* tile_)
+    : tile(tile_), currentThread(NULL), isLoadingData(false),
+      simInstructionCount(0), simLoadInstructionCount(0)
 {
 }
 
