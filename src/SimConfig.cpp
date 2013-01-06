@@ -42,7 +42,7 @@ bool SimConfig::LoadConfig(const string& path)
     DispatchDelay = pt.get("setting.DISPATCH_DELAY", 5);
     Route1Delay = pt.get("setting.ROUTE_1_DELAY", 10);
     MemDelay = pt.get("setting.MEM_DELAY", 50);
-	QueuingDelay = pt.get("setting.QUEUING_DELAY", 1);
+    QueuingDelay = pt.get("setting.QUEUING_DELAY", 1);
 
     PrintLine("CONFIG: Core Grid Len:    " << CoreGridLen);
     PrintLine("CONFIG: Core Block Len:   " << CoreBlockLen);
@@ -54,7 +54,7 @@ bool SimConfig::LoadConfig(const string& path)
     PrintLine("CONFIG: Dispatch Delay:   " << DispatchDelay);
     PrintLine("CONFIG: Route 1 Delay:    " << Route1Delay);
     PrintLine("CONFIG: Mem Delay:        " << MemDelay);
-	PrintLine("CONFIG: Queuing Delay:    " << QueuingDelay);
+    PrintLine("CONFIG: Queuing Delay:    " << QueuingDelay);
 
     return true;
 }
