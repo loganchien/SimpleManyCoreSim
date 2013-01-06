@@ -2,12 +2,11 @@ TARGETS := matrix_simple helloworld
 
 all: $(TARGETS)
 
-%: %.c
+matrix_simple: matrix_simple.c rt/lib.c
 	tools/compile_executable.sh $@ $< 16 16 1 1
 
-matrix_simple: matrix_simple.c rt/lib.c
-
 helloworld: helloworld.c rt/lib.c
+	tools/compile_executable.sh $@ $< 4 4 4 4
 
 .PHONY: clean
 clean:

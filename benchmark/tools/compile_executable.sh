@@ -46,7 +46,7 @@ RT_DIR="$(cd "${SCRIPT_DIR}/../rt"; pwd)"
 
 
 CC="arm-none-eabi-gcc"
-CFLAGS="-static -mthumb -Bstatic
+CFLAGS="-static -mthumb -Bstatic -O0
         -include ${RT_DIR}/lib.h ${RT_DIR}/lib.c"
 
 OBJDUMP="arm-none-eabi-objdump"
