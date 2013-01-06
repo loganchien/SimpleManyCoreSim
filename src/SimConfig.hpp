@@ -22,6 +22,9 @@ public:
     /// Stack size per core (bytes)
     int StackSize;
 
+    /// Heap size
+    int HeapSize;
+
     // #################### Tile Grid #########################################
 
     /// Length of the grid of core blocks
