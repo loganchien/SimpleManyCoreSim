@@ -13,8 +13,6 @@ IF (WINDOWS)
   )
 ENDIF (WINDOWS)
 
-add_definitions (-DSMCSIM)
-
 add_executable (TileSim
   external/armulator/src/ARM.cpp
   external/armulator/src/ArmulatorCPU.cpp
@@ -47,3 +45,14 @@ add_executable (TileSim
   src/Tile.cpp
   src/main.cpp
 )
+
+set_target_properties(TileSim PROPERTIES COMPILE_FLAGS -DSMCSIM)
+
+#add_executable (armulator
+#  external/armulator/src/ARM.cpp
+#  external/armulator/src/Thumb.cpp
+#  external/armulator/src/MMU.cpp
+#  external/armulator/src/elf_file.cpp
+#  external/armulator/src/main.cpp
+#  external/armulator/src/swi_semihost.cpp
+#)
