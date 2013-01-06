@@ -8,7 +8,8 @@
 
 #include <iomanip>
 #include <sstream>
-
+#include <iostream>
+#include <fstream>
 #include <assert.h>
 #include <stdint.h>
 
@@ -89,4 +90,24 @@ TaskBlock* Task::CreateNextTaskBlock(CoreBlock& coreBlock)
     TaskBlock* nextBlock = new TaskBlock(*this, coreBlock, nextBlockIdx);
     nextBlockIdx.Inc(blockSize.x);
     return nextBlock;
+}
+
+void Task::WriteTaskStatsToFile(){
+	ofstream statFile;
+	char path[] = "//results//taskstats.txt";
+	statFile.open (path,ios::out | ios::app);
+	statFile << name << "," << Stats.TotalThreadCount 
+		<< "," << Stats.InstructionCount.TotalCount
+	    << "," << Stats.LoadInstructionCount.TotalCount
+		<< "," << Stats.TotalSimulationTime.TotalCount
+		<< "," << Stats.AverageSimulationTimeTile.TotalCount
+		<< "," << Stats.MemAccessTime.TotalCount
+		<< "," << Stats.TotalRouterPackets.TotalCount
+		<< "," << Stats.L1AccessCount.TotalCount 
+		<< "," << Stats.L1MissCount.TotalCount
+		<< "," << Stats.L2AccessCount.TotalCount
+		<< "," << Stats.L2MissCount.TotalCount
+		<< endl ;
+	
+	statFile.close();
 }

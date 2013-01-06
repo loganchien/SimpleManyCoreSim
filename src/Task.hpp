@@ -40,8 +40,17 @@ public:
     /// # of load instructions
     TaskStat LoadInstructionCount;
 
+	/// Simulation time (total) of a task
+	TaskStat TotalSimulationTime;
+
+	/// Average simulation time of each core in the coreblock(busy period) -> find avg idle time from (max - avg)?
+	TaskStat AverageSimulationTimeTile;
+
     /// Simulation time spent on memory access
     TaskStat MemAccessTime;
+
+	/// Total number of packets received in router
+	TaskStat TotalRouterPackets;
 
     /// # of L1 accesses & misses
     TaskStat L1AccessCount, L1MissCount;
@@ -100,6 +109,9 @@ public:
 
     /// Load the task configuration from the configuration file
     static Task* Create(const std::string& path);
+
+	/// Write stats of task to CSV file
+	void WriteTaskStatsToFile();
 
 private:
     Task(const std::string& name,
