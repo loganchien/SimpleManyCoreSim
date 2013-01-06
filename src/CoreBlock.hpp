@@ -19,6 +19,9 @@ public:
     /// The index of this core block inside the grid
     Dim2 blockIdx;
 
+    /// The dimension of this core block
+    Dim2 coreBlockSize;
+
     /// The processor to which this block belongs
     Processor* processor;
 
@@ -56,10 +59,10 @@ public:
 
 
     /// Get the Tile by local tileIdx
-    Tile& GetTile(const Dim2& tileIdx);
+    Tile& GetLocalTile(const Dim2& localTileIdx);
 
     /// Get the Tile by local tileIdx
-    const Tile& GetTile(const Dim2& tileIdx) const;
+    const Tile& GetLocalTile(const Dim2& localTileIdx) const;
 
 
     /// Put the next thread of the given TaskBlock on the given tile

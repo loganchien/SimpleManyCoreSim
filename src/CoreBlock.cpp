@@ -10,13 +10,15 @@
 #include "Thread.hpp"
 #include "Tile.hpp"
 
-#include "assert.h"
+#include <assert.h>
+#include <stddef.h>
 
 using namespace smcsim;
 
 CoreBlock::CoreBlock()
+    : coreBlockSize(GlobalConfig.CoreBlockSize()), runningTaskBlock(NULL)
 {
-    tiles = new Tile[GlobalConfig.CoreBlockSize().Area()];
+    tiles = new Tile[coreBlockSize.Area()];
 }
 
 CoreBlock::~CoreBlock()
@@ -30,13 +32,14 @@ void CoreBlock::InitCoreBlock(Processor* processor_, const Dim2& blockIdx_)
 {
     blockIdx = blockIdx_;
     processor = processor_;
+    runningTaskBlock = NULL;
 
-    for (int i = 0; i < GlobalConfig.CoreBlockSize().Area(); ++i)
+    for (int i = 0; i < coreBlockSize.Area(); ++i)
     {
-        Dim2 tileLocalIdx(Dim2::FromLinear(GlobalConfig.CoreBlockSize(), i));
-        Dim2 tileGlobalIdx(blockIdx.y * GlobalConfig.CoreBlockLen + tileLocalIdx.y,
-                           blockIdx.x * GlobalConfig.CoreBlockLen + tileLocalIdx.x);
-        tiles[i].InitTile(this, tileGlobalIdx);
+        Dim2 localTileIdx(Dim2::FromLinear(coreBlockSize, i));
+        Dim2 globalTileIdx(blockIdx.y * coreBlockSize.y + localTileIdx.y,
+                           blockIdx.x * coreBlockSize.x + localTileIdx.x);
+        tiles[i].InitTile(this, globalTileIdx);
     }
 }
 
@@ -78,16 +81,16 @@ int CoreBlock::ComputeL2ChunkID(const Dim2& inCoreBlockIdx2) const
 
 
 /// Get the Tile by tileIdx
-Tile& CoreBlock::GetTile(const Dim2& tileIdx)
+Tile& CoreBlock::GetLocalTile(const Dim2& localTileIdx)
 {
-    return tiles[Dim2::ToLinear(GlobalConfig.CoreBlockSize(), tileIdx)];
+    return tiles[Dim2::ToLinear(coreBlockSize, localTileIdx)];
 }
 
 
 /// Get the Tile by tileIdx
-const Tile& CoreBlock::GetTile(const Dim2& tileIdx) const
+const Tile& CoreBlock::GetLocalTile(const Dim2& localTileIdx) const
 {
-    return tiles[Dim2::ToLinear(GlobalConfig.CoreBlockSize(), tileIdx)];
+    return tiles[Dim2::ToLinear(coreBlockSize, localTileIdx)];
 }
 
 
