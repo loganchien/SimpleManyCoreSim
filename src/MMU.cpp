@@ -5,6 +5,7 @@
 #include "Debug.hpp"
 #include "Dimension.hpp"
 #include "GlobalMemoryController.hpp"
+#include "Processor.hpp"
 #include "SimConfig.hpp"
 #include "Task.hpp"
 #include "TaskBlock.hpp"
@@ -240,8 +241,11 @@ void MMU::SendResponse(MessageType type, const Dim2& receiver, const int reqId,
 /// can't be retrived without the stall, then return false.
 bool MMU::LoadReadyByte(uint32_t addr, uint8_t& byte)
 {
-    assert(0 && "Not implemented");
-    return false;
+    bool ready = true;
+    // TODO: Should look for cache line instead
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    byte = gmc.LoadByte(addr);
+    return ready;
 }
 
 
@@ -249,8 +253,11 @@ bool MMU::LoadReadyByte(uint32_t addr, uint8_t& byte)
 /// half word can't be retrived without the stall, then return false.
 bool MMU::LoadReadyHalfWord(uint32_t addr, uint16_t& halfword)
 {
-    assert(0 && "Not implemented");
-    return false;
+    bool ready = true;
+    // TODO: Should look for cache line instead
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    halfword = gmc.LoadHalfWord(addr);
+    return ready;
 }
 
 
@@ -280,24 +287,30 @@ bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
 #undef VAR_VALUE_MAP
 
     // Load the real values
-    assert(0 && "Not implemented");
-    return false;
+    bool ready = true;
+    // TODO: Should look for cache line instead
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    word = gmc.LoadWord(addr);
+    return ready;
 }
 
 /// Store the byte at the address in the memory.
 void MMU::StoreByte(uint32_t addr, uint8_t byte)
 {
-    assert(0 && "Not implemented");
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    gmc.StoreByte(addr, byte);
 }
 
 /// Store the half word at the address in the memory.
 void MMU::StoreHalfWord(uint32_t addr, uint16_t halfword)
 {
-    assert(0 && "Not implemented");
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    gmc.StoreHalfWord(addr, halfword);
 }
 
 /// Store the word at the address in the memory.
 void MMU::StoreWord(uint32_t addr, uint32_t word)
 {
-    assert(0 && "Not implemented");
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    gmc.StoreWord(addr, word);
 }
