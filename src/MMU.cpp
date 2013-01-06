@@ -14,6 +14,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <stdio.h>
 
 using namespace smcsim;
 
@@ -245,7 +246,7 @@ bool MMU::LoadReadyByte(uint32_t addr, uint8_t& byte)
     bool ready = true;
     // TODO: Should look for cache line instead
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    byte = gmc.LoadByte(addr);
+    byte = gmc.LoadByte(addr, tile);
     return ready;
 }
 
@@ -257,7 +258,7 @@ bool MMU::LoadReadyHalfWord(uint32_t addr, uint16_t& halfword)
     bool ready = true;
     // TODO: Should look for cache line instead
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    halfword = gmc.LoadHalfWord(addr);
+    halfword = gmc.LoadHalfWord(addr, tile);
     return ready;
 }
 
@@ -272,18 +273,21 @@ bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
     TaskBlock* taskBlock = thread->taskBlock;
     Task* task = taskBlock->task;
 
-#define VAR_VALUE_MAP(ADDR, VAR, SIZE)                                        \
-    if (addr >= (ADDR) && addr < ((ADDR) + (SIZE)))                           \
-    {                                                                         \
-        uint32_t* var = reinterpret_cast<uint32_t*>(&(VAR));                  \
-        word = var[(addr - (ADDR)) / sizeof(uint32_t)];                       \
-        return true;                                                          \
+#define VAR_VALUE_MAP(ADDR, VAR)                                        \
+    if (addr == (ADDR)) \
+    { \
+        word = (VAR); \
+        return true; \
     }
 
-    VAR_VALUE_MAP(task->threadIdxAddr, thread->threadIdx, sizeof(Dim2));
-    VAR_VALUE_MAP(task->threadDimAddr, task->threadDim, sizeof(Dim2));
-    VAR_VALUE_MAP(task->blockIdxAddr, taskBlock->taskBlockIdx, sizeof(Dim2));
-    VAR_VALUE_MAP(task->blockDimAddr, task->blockDim, sizeof(Dim2));
+    VAR_VALUE_MAP(task->threadIdxAddr + 0, thread->threadIdx.y);
+    VAR_VALUE_MAP(task->threadIdxAddr + 4, thread->threadIdx.x);
+    VAR_VALUE_MAP(task->threadDimAddr + 0, task->threadDim.y);
+    VAR_VALUE_MAP(task->threadDimAddr + 4, task->threadDim.x);
+    VAR_VALUE_MAP(task->blockIdxAddr + 0, taskBlock->taskBlockIdx.y);
+    VAR_VALUE_MAP(task->blockIdxAddr + 4, taskBlock->taskBlockIdx.x);
+    VAR_VALUE_MAP(task->blockDimAddr + 0, task->blockDim.y);
+    VAR_VALUE_MAP(task->blockDimAddr + 4, task->blockDim.x);
 
 #undef VAR_VALUE_MAP
 
@@ -291,7 +295,7 @@ bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
     bool ready = true;
     // TODO: Should look for cache line instead
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    word = gmc.LoadWord(addr);
+    word = gmc.LoadWord(addr, tile);
     return ready;
 }
 
@@ -299,21 +303,21 @@ bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
 void MMU::StoreByte(uint32_t addr, uint8_t byte)
 {
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    gmc.StoreByte(addr, byte);
+    gmc.StoreByte(addr, byte, tile);
 }
 
 /// Store the half word at the address in the memory.
 void MMU::StoreHalfWord(uint32_t addr, uint16_t halfword)
 {
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    gmc.StoreHalfWord(addr, halfword);
+    gmc.StoreHalfWord(addr, halfword, tile);
 }
 
 /// Store the word at the address in the memory.
 void MMU::StoreWord(uint32_t addr, uint32_t word)
 {
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    gmc.StoreWord(addr, word);
+    gmc.StoreWord(addr, word, tile);
 }
 
 int MMU::GetEntry()
@@ -325,9 +329,7 @@ int MMU::GetEntry()
 int MMU::GetStackTop()
 {
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    // Note: Stack top is at the high address side, so we have to "+1".
-    return gmc.stackBeginVMA +
-           GlobalConfig.StackSize * (tile->GetGlobalLinearIndex() + 1);
+    return gmc.stackBeginVMA + gmc.stackBeginSize;
 }
 
 int MMU::GetStackSize()

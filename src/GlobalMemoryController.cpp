@@ -143,10 +143,19 @@ void GlobalMemoryController::LoadExecutable(Task* task_)
     stream.seekg(textOffset + entryPointVMA);
     stream.read(reinterpret_cast<char*>(text), textSize);
 
+    size_t totalNumCores = GlobalConfig.CoreBlockSize().Area() *
+                           GlobalConfig.CoreGridSize().Area();
+
+    PrintLine("totalNumCores= " << totalNumCores);
+
     // Allocate the .data section
-    data = new uint8_t[dataSize];
-    stream.seekg(dataOffset + entryPointVMA);
-    stream.read(reinterpret_cast<char*>(data), dataSize);
+    dataAlignSize = (dataSize + 1023) / 1024 * 1024;
+    data = new uint8_t[dataAlignSize * totalNumCores];
+    for (size_t i = 0; i < totalNumCores; ++i)
+    {
+        stream.seekg(dataOffset + entryPointVMA);
+        stream.read(reinterpret_cast<char*>(data + dataAlignSize * i), dataSize);
+    }
 
     // Allocate the .rodata section
     rodata = new uint8_t[rodataSize];
@@ -154,27 +163,32 @@ void GlobalMemoryController::LoadExecutable(Task* task_)
     stream.read(reinterpret_cast<char*>(rodata), rodataSize);
 
     // Allocate the .rodata section
-    bss = new uint8_t[bssSize];
+    bssAlignSize = (bssSize + 1023) / 1024 * 1024;
+    bss = new uint8_t[bssAlignSize * totalNumCores];
 
     // Allocate the heap
     heapSize = GlobalConfig.HeapSize;
-    heapVMA = 0x80000000u;
-    heap = new uint8_t[heapSize];
+    heapAlignSize = (heapSize + 1023) / 1024 * 1024;
+    heapVMA = 0xa0000000u;
+    heap = new uint8_t[heapAlignSize * totalNumCores];
 
     // Allocate the stack for multiple cores
-    stackBeginSize = GlobalConfig.StackSize *
-                     GlobalConfig.CoreBlockSize().Area() *
-                     GlobalConfig.CoreGridSize().Area();
+    stackBeginSize = GlobalConfig.StackSize;
+    stackBeginAlignSize = (stackBeginSize + 1023) / 1024 * 1024;
     stackBeginVMA = heapVMA + heapSize;
-    stackBegin = new uint8_t[stackBeginSize];
-    stackVMA = stackBeginVMA + stackBeginSize;
-    stack = stackBegin + stackBeginSize;
+    stackBegin = new uint8_t[stackBeginAlignSize * totalNumCores];
 
-    PrintLine("Address Space: textVMA=" << hex << textVMA << dec);
-    PrintLine("Address Space: dataVMA=" << hex << dataVMA << dec);
-    PrintLine("Address Space: rodataVMA=" << hex << rodataVMA << dec);
-    PrintLine("Address Space: bssVMA=" << hex << bssVMA << dec);
-    PrintLine("Address Space: stackBeginVMA=" << hex << stackBeginVMA << dec);
+    PrintLine("Address Space: textVMA="
+              << hex << (textVMA) << ", " << (textVMA + textSize) << dec);
+    PrintLine("Address Space: rodataVMA="
+              << hex << (rodataVMA) << ", " << (rodataVMA + rodataSize) << dec);
+    PrintLine("Address Space: dataVMA="
+              << hex << (dataVMA) << ", " << (dataVMA + dataSize) << dec);
+    PrintLine("Address Space: bssVMA="
+              << hex << (bssVMA) << ", " << (bssVMA + bssSize) << dec);
+    PrintLine("Address Space: stackBeginVMA="
+              << hex << (stackBeginVMA)
+              << ", " << (stackBeginVMA + stackBeginSize) << dec);
 
     // Load Entry Point
     entryPointVMA = elf.getEntryPoint();
@@ -248,7 +262,8 @@ void GlobalMemoryController::DispatchNext()
     response.requestId = request.requestId;
     response.totalDelay = request.totalDelay + GlobalConfig.MemDelay;
     memcpy(&*response.cacheLine.bytes.begin(),
-           GetMemory(request.addr.raw, GlobalConfig.CacheLineSize),
+           GetMemory(request.addr.raw, GlobalConfig.CacheLineSize,
+                     processor->GetTile(request.sender)),
            GlobalConfig.CacheLineSize);
 
     // Compute index of boundary router, closest to destination router
@@ -271,37 +286,41 @@ void GlobalMemoryController::DispatchNext()
 }
 
 /// Interface to access the memory
-uint8_t GlobalMemoryController::LoadByte(uint32_t addr)
+uint8_t GlobalMemoryController::LoadByte(uint32_t addr, Tile* tile)
 {
-    return *GetMemory(addr, 1);
+    return *GetMemory(addr, 1, tile);
 }
 
-uint16_t GlobalMemoryController::LoadHalfWord(uint32_t addr)
+uint16_t GlobalMemoryController::LoadHalfWord(uint32_t addr, Tile* tile)
 {
-    return *reinterpret_cast<uint16_t*>(GetMemory(addr, 2));
+    return *reinterpret_cast<uint16_t*>(GetMemory(addr, 2, tile));
 }
 
-uint32_t GlobalMemoryController::LoadWord(uint32_t addr)
+uint32_t GlobalMemoryController::LoadWord(uint32_t addr, Tile* tile)
 {
-    return *reinterpret_cast<uint32_t*>(GetMemory(addr, 4));
+    return *reinterpret_cast<uint32_t*>(GetMemory(addr, 4, tile));
 }
 
-void GlobalMemoryController::StoreByte(uint32_t addr, uint8_t byte)
+void GlobalMemoryController::StoreByte(uint32_t addr, uint8_t byte,
+                                       Tile* tile)
 {
-    *GetMemory(addr, 1) = byte;
+    *GetMemory(addr, 1, tile) = byte;
 }
 
-void GlobalMemoryController::StoreHalfWord(uint32_t addr, uint16_t halfword)
+void GlobalMemoryController::StoreHalfWord(uint32_t addr, uint16_t halfword,
+                                           Tile* tile)
 {
-    *reinterpret_cast<uint16_t*>(GetMemory(addr, 2)) = halfword;
+    *reinterpret_cast<uint16_t*>(GetMemory(addr, 2, tile)) = halfword;
 }
 
-void GlobalMemoryController::StoreWord(uint32_t addr, uint32_t word)
+void GlobalMemoryController::StoreWord(uint32_t addr, uint32_t word,
+                                       Tile* tile)
 {
-    *reinterpret_cast<uint32_t*>(GetMemory(addr, 4)) = word;
+    *reinterpret_cast<uint32_t*>(GetMemory(addr, 4, tile)) = word;
 }
 
-uint8_t* GlobalMemoryController::GetMemory(uint32_t addr, uint32_t size)
+uint8_t* GlobalMemoryController::GetMemory(uint32_t addr, uint32_t size,
+                                           Tile* tile)
 {
 #define MEMORY_RANGE(NAME) \
     if (addr >= (NAME##VMA) && addr < ((NAME##VMA) + (NAME##Size))) \
@@ -311,12 +330,22 @@ uint8_t* GlobalMemoryController::GetMemory(uint32_t addr, uint32_t size)
     }
 
     MEMORY_RANGE(text);
-    MEMORY_RANGE(data);
     MEMORY_RANGE(rodata);
+
+#undef MEMORY_RANGE
+
+#define MEMORY_RANGE(NAME) \
+    if (addr >= (NAME##VMA) && addr < ((NAME##VMA) + (NAME##Size))) \
+    { \
+        assert(addr + size <= ((NAME##VMA) + (NAME##Size))); \
+        return (NAME + (addr - (NAME##VMA)) + \
+                tile->GetGlobalLinearIndex() * (NAME##AlignSize)); \
+    }
+
+    MEMORY_RANGE(data);
     MEMORY_RANGE(bss);
     MEMORY_RANGE(heap);
     MEMORY_RANGE(stackBegin);
-
 #undef MEMORY_RANGE
 
     std::stringstream ss;

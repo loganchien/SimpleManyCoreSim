@@ -13,6 +13,7 @@ namespace smcsim {
 
 class Processor;
 class Task;
+class Tile;
 
 /// The global memory controller simulates transport of packets to and from
 /// main memory
@@ -36,6 +37,7 @@ public:
     uint32_t dataOffset;
     uint32_t dataVMA;
     uint32_t dataSize;
+    uint32_t dataAlignSize;
 
     uint8_t* rodata;
     uint32_t rodataOffset;
@@ -45,17 +47,21 @@ public:
     uint8_t* bss;
     uint32_t bssVMA;
     uint32_t bssSize;
+    uint32_t bssAlignSize;
 
     uint8_t* heap;
     uint32_t heapVMA;
     uint32_t heapSize;
+    uint32_t heapAlignSize;
 
     uint8_t* stackBegin;
     uint32_t stackBeginVMA;
     uint32_t stackBeginSize;
+    uint32_t stackBeginAlignSize;
 
     uint8_t* stack;
     uint32_t stackVMA;
+    uint32_t stackSize;
 
     uint32_t entryPointVMA;
 
@@ -83,20 +89,20 @@ public:
     void DispatchNext();
 
     /// Interface to access the memory
-    uint8_t LoadByte(uint32_t addr);
+    uint8_t LoadByte(uint32_t addr, Tile* requestTile);
 
-    uint16_t LoadHalfWord(uint32_t addr);
+    uint16_t LoadHalfWord(uint32_t addr, Tile* requestTile);
 
-    uint32_t LoadWord(uint32_t addr);
+    uint32_t LoadWord(uint32_t addr, Tile* requestTile);
 
-    void StoreByte(uint32_t addr, uint8_t byte);
+    void StoreByte(uint32_t addr, uint8_t byte, Tile* requestTile);
 
-    void StoreHalfWord(uint32_t addr, uint16_t halfword);
+    void StoreHalfWord(uint32_t addr, uint16_t halfword, Tile* requestTile);
 
-    void StoreWord(uint32_t addr, uint32_t word);
+    void StoreWord(uint32_t addr, uint32_t word, Tile* requestTile);
 
 private:
-    uint8_t* GetMemory(uint32_t addr, uint32_t size);
+    uint8_t* GetMemory(uint32_t addr, uint32_t size, Tile* requestTile);
 
     void SetTextSeg(uint32_t offset, uint32_t size, uint32_t vma);
     void SetDataSeg(uint32_t offset, uint32_t size, uint32_t vma);
