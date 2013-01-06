@@ -97,6 +97,7 @@ public:
     //about MMU
 	//! Initialize the MMU module.
     void InitMMU(const char *file_name);
+    void InitMMU(MMU *mmu);
 	//! Deinitialize the MMU module.
     void DeinitMMU();
 

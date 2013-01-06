@@ -4,8 +4,7 @@
 
 using namespace smcsim;
 
-void Thread::InitThread(TaskBlock* taskBlock, const Dim2& threadIdx,
-                        Tile *tile)
+Thread::Thread(TaskBlock* taskBlock_, const Dim2& threadIdx_, Tile *tile_)
+    : taskBlock(taskBlock_), threadIdx(threadIdx_), tile(tile_)
 {
-    // TODO: Init thread
 }

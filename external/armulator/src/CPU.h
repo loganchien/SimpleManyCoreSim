@@ -43,6 +43,7 @@ public:
     virtual GP_Reg get_reg_by_code(int reg_code) = 0;
 	//! Initialize the MMU module
     virtual void InitMMU(const char *file_name) = 0;
+    virtual void InitMMU(MMU *mmu) = 0;
 	//! Deinitialize the MMU module
     virtual void DeinitMMU() = 0;
 	//! Copy CPU content from another cpu

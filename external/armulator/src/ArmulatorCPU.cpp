@@ -1,6 +1,7 @@
 #include "ArmulatorCPU.h"
 
 #include "ARM.h"
+#include "ArmulatorMMU.h"
 #include "CPU.h"
 #include "Thumb.h"
 #include "error.h"
@@ -20,9 +21,10 @@ ArmulatorCPU::~ArmulatorCPU()
     reset();
 }
 
-void ArmulatorCPU::init()
+void ArmulatorCPU::init(smcsim::MMU *tileMMU)
 {
     cpu = new ARM();
+    cpu->InitMMU(new MMU(tileMMU));
 }
 
 void ArmulatorCPU::reset()
@@ -37,6 +39,7 @@ void ArmulatorCPU::reset()
 
 bool ArmulatorCPU::sim_step()
 {
+    assert(cpu);
     try
     {
         cpu->fetch();

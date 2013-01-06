@@ -23,12 +23,12 @@ void MMU::InitMMU(Tile* tile)
     this->tile = tile;
 
     // Initialize Caches
-    l2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(tile->tileIdx);
+    //l2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(tile->tileIdx);
 
-    l1.InitCache(GlobalConfig.CacheL1Size);
-    l2.InitCache(GlobalConfig.CacheL2Size, l2ChunkIdx * GlobalConfig.CacheL2Size);
+    //l1.InitCache(GlobalConfig.CacheL1Size);
+    //l2.InitCache(GlobalConfig.CacheL2Size, l2ChunkIdx * GlobalConfig.CacheL2Size);
 
-    ResetMMU();
+    //ResetMMU();
 }
 
 
@@ -270,6 +270,16 @@ bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
     Thread* thread = tile->core.currentThread;
     TaskBlock* taskBlock = thread->taskBlock;
     Task* task = taskBlock->task;
+
+    PrintLine("DEBUG: tile: " << tile);
+    PrintLine("DEBUG: thread: " << thread);
+    PrintLine("DEBUG: taskBlock: " << taskBlock);
+    PrintLine("DEBUG: task: " << task);
+
+    PrintLine("DEBUG: threadIdx: " << thread->threadIdx);
+    PrintLine("DEBUG: threadDim: " << task->taskSize);
+    PrintLine("DEBUG: blockIdx: " << taskBlock->taskBlockIdx);
+    PrintLine("DEBUG: blockDim: " << task->blockSize);
 
 #define VAR_VALUE_MAP(ADDR, VAR, SIZE)                                        \
     if (addr >= (ADDR) && addr < ((ADDR) + (SIZE)))                           \

@@ -15,6 +15,8 @@ private:
 public:
     MMU(const char *file_name);
 
+    MMU(smcsim::MMU *tileMMU);
+
     ~MMU();
 
     //! Give out the Thumb instruction

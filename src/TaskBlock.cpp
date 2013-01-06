@@ -1,6 +1,7 @@
 #include "TaskBlock.hpp"
 
 #include "CoreBlock.hpp"
+#include "Debug.hpp"
 #include "Dimension.hpp"
 #include "Task.hpp"
 
@@ -28,14 +29,13 @@ bool TaskBlock::IsFinished()
 }
 
 /// Creates the next Thread from this TaskBlock to run on the given tile
-Thread TaskBlock::CreateNextThread(Tile& tile)
+Thread* TaskBlock::CreateNextThread(Tile& tile)
 {
     assert(HasMoreThreads());
 
-    Thread nextThread;
-    nextThread.InitThread(this, nextThreadIdx, &tile);
+    Thread *nextThread = new Thread(this, nextThreadIdx, &tile);
 
-    nextThreadIdx.Inc(1);
+    nextThreadIdx.Inc(task->taskSize.x);
 
     return nextThread;
 }

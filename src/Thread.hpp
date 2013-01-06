@@ -13,17 +13,17 @@ class Tile;
 class Thread
 {
 public:
-    /// The tile on which this Thread runs
-    Tile* tile;
-
     /// The TaskBlock to which this Thread belongs
     TaskBlock* taskBlock;
 
     /// The index of this thread within it's TaskBlock
     Dim2 threadIdx;
 
+    /// The tile on which this Thread runs
+    Tile* tile;
+
 public:
-    void InitThread(TaskBlock* taskBlock, const Dim2& threadIdx, Tile *tile);
+    Thread(TaskBlock* taskBlock, const Dim2& threadIdx, Tile *tile);
 };
 
 } // end namespace smcsim
