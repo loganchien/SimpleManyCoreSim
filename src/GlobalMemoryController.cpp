@@ -79,7 +79,7 @@ void GlobalMemoryController::Reset()
 
 void GlobalMemoryController::LoadExecutable(Task* task_)
 {
-    Task* task = task_;
+    task = task_;
 
     ifstream stream;
     stream.open(task->elfFilePath.c_str(), ios_base::in | ios_base::binary);
