@@ -103,41 +103,40 @@ void Processor::SimSteps()
 void Processor::CollectStats(TaskBlock& taskBlock)
 {
     // TODO: Collect stats from all tiles (Core, MMU, Cache)
-	taskBlock.task->Stats;
-	int coreBlockArea = GlobalConfig.CoreBlockSize().Area();
-	Tile* t = taskBlock.assignedBlock->tiles;
-	
-	Cache *l1,*l2;
-	long long totalL1AccessCount(0),totalL1MissCount(0),avgL1MissRate(0);	// Cache L1 stats
-	long long totalL2AccessCount(0),totalL2MissCount(0),avgL2MissRate(0);	// Cache L1 stats
-	long long avgInstructions(0),avgLoadInstructions(0);					// Core (CPU) stats
-	long long avgSimTime(0), maxSimTime(0);									// MMU stats
-	long long avgPacketsReceived(0);										// Router stats
+    taskBlock.task->Stats;
+    int coreBlockArea = GlobalConfig.CoreBlockSize().Area();
+    Tile* t = taskBlock.assignedBlock->tiles;
 
-	
-	for(int i=0; i < coreBlockArea; i++){	// iterate over each tile in CoreBlock to get statistics:
-		/// Cache and Router statistics:
-		avgSimTime+=t[i].mmu.simTime/coreBlockArea; //normalize to get average
-		maxSimTime=std::max(maxSimTime,t[i].mmu.simTime);
-		l1 = &t[i].mmu.l1;
-		totalL1AccessCount+=l1->simAccessCount;	//or better to directly take averages?
-		totalL1MissCount+=l1->simMissCount;
-		l2 = &t[i].mmu.l2;
-		totalL2AccessCount+=l2->simAccessCount;
-		totalL2MissCount+=l2->simMissCount;
-		avgPacketsReceived+= t[i].router.simTotalPacketsReceived/coreBlockArea;
+    Cache *l1,*l2;
+    long long totalL1AccessCount(0),totalL1MissCount(0),avgL1MissRate(0);	// Cache L1 stats
+    long long totalL2AccessCount(0),totalL2MissCount(0),avgL2MissRate(0);	// Cache L1 stats
+    long long avgInstructions(0),avgLoadInstructions(0);			// Core (CPU) stats
+    long long avgSimTime(0), maxSimTime(0);					// MMU stats
+    long long avgPacketsReceived(0);						// Router stats
 
-		/// CPU (Core) statistics:
-		avgInstructions=t[i].core.simInstructionCount/coreBlockArea;
-		avgLoadInstructions=t[i].core.simLoadInstructionCount/coreBlockArea;
-	}
 
-	// Calculate averages out of totals:
-	avgL1MissRate = totalL1MissCount/(totalL1MissCount+totalL1AccessCount);
-	avgL2MissRate = totalL2MissCount/(totalL2MissCount+totalL2AccessCount);
-	
-	// writeStatsToFile(taskBlock.task->name,avgL1MissRate,avgL2MissRate,avgPacketsReceived,avgInstructions,avgLoadInstructions);
+    for(int i=0; i < coreBlockArea; i++){	// iterate over each tile in CoreBlock to get statistics:
+        /// Cache and Router statistics:
+        avgSimTime+=t[i].mmu.simTime/coreBlockArea; //normalize to get average
+        maxSimTime=std::max(maxSimTime,t[i].mmu.simTime);
+        l1 = &t[i].mmu.l1;
+        totalL1AccessCount+=l1->simAccessCount;	//or better to directly take averages?
+        totalL1MissCount+=l1->simMissCount;
+        l2 = &t[i].mmu.l2;
+        totalL2AccessCount+=l2->simAccessCount;
+        totalL2MissCount+=l2->simMissCount;
+        avgPacketsReceived+= t[i].router.simTotalPacketsReceived/coreBlockArea;
 
+        /// CPU (Core) statistics:
+        avgInstructions=t[i].core.simInstructionCount/coreBlockArea;
+        avgLoadInstructions=t[i].core.simLoadInstructionCount/coreBlockArea;
+    }
+
+    // Calculate averages out of totals:
+    avgL1MissRate = totalL1MissCount/(totalL1MissCount+totalL1AccessCount);
+    avgL2MissRate = totalL2MissCount/(totalL2MissCount+totalL2AccessCount);
+
+    // writeStatsToFile(taskBlock.task->name,avgL1MissRate,avgL2MissRate,avgPacketsReceived,avgInstructions,avgLoadInstructions);
 }
 
 
@@ -251,9 +250,9 @@ void Processor::OnBatchFinished()
 /// Get the tile
 Tile* Processor::GetTile(const Dim2& tileIdx)
 {
-	div_t dx = div(tileIdx.x,coreBlockSize.x);
-	div_t dy = div(tileIdx.y,coreBlockSize.y);
-	int blockIdx = dx.quot+dy.quot*coreGridSize.x;
-	CoreBlock& cb = blocks[blockIdx];
-	return &cb.tiles[dx.rem+dy.rem*coreBlockSize.x];
+    div_t dx = div(tileIdx.x, coreBlockSize.x);
+    div_t dy = div(tileIdx.y, coreBlockSize.y);
+    int blockIdx = dx.quot + dy.quot * coreGridSize.x;
+    CoreBlock& cb = blocks[blockIdx];
+    return &cb.tiles[dx.rem + dy.rem * coreBlockSize.x];
 }
