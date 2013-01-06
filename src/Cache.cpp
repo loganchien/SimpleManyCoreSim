@@ -50,8 +50,7 @@ CacheLine& Cache::UpdateLine(const Address& addr, const CacheLine &cacheLine)
 
 CacheLine* Cache::GetLine(const Address& addr)
 {
-    // TODO: Not implemented.
-    return 0;
+	return &lines[addr.GetL1Index() - offset];
 }
 
 
