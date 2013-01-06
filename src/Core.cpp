@@ -29,9 +29,18 @@ void Core::StartThread(Thread* thread)
 /// false, if there are no more instructions to execute (i.e. EOF reached).
 bool Core::DispatchNext()
 {
+    if (!currentThread) return false;
     if (isLoadingData) return true;
     ++simInstructionCount;
-    return armulator.sim_step();
+
+    if (!armulator.sim_step())
+    {
+        // Program ends.
+        currentThread = NULL;
+        return false;
+    }
+
+    return true;
 }
 
 
