@@ -17,6 +17,11 @@ namespace smcsim {
 class SimConfig
 {
 public:
+    // #################### Memory ############################################
+
+    /// Stack size per core (bytes)
+    int StackSize;
+
     // #################### Tile Grid #########################################
 
     /// Length of the grid of core blocks
@@ -25,8 +30,8 @@ public:
     /// Total amount of core blocks on the processor
     Dim2 CoreGridSize();
 
-	/// Total amount of cores (or tiles) in the processor
-	int TotalCoreLength();
+    /// Total amount of cores (or tiles) in the processor
+    int TotalCoreLength();
 
     // #################### Core Blocks #######################################
 
@@ -50,7 +55,7 @@ public:
 
     /// 64 bytes per cache line (64 bytes = 16 x 4 byte words)
     static const int CacheLineSize = 64;
-	static const int numbCacheLineBits = 6; //log2(64)
+    static const int numbCacheLineBits = 6; //log2(64)
 
     static const int CacheLineBits = 0x3f;
 
@@ -77,8 +82,9 @@ public:
     ///
     int MemDelay;
 
-	// Simulate queueing delay for all waiting packets
-	int QueuingDelay; 
+    // Simulate queueing delay for all waiting packets
+    int QueuingDelay;
+
 public:
     SimConfig();
 

@@ -17,9 +17,10 @@ using namespace std;
 
 SimConfig smcsim::GlobalConfig;
 
-SimConfig::SimConfig(): CoreGridLen(0), CoreBlockLen(0), CacheL1Size(0),
-    CacheL1Delay(0), CacheL2Size(0), CacheL2Delay(0), CacheMissDelay(0),
-    DispatchDelay(0), Route1Delay(0), MemDelay(0), QueuingDelay(0)
+SimConfig::SimConfig()
+    : StackSize(0), CoreGridLen(0), CoreBlockLen(0), CacheL1Size(0),
+      CacheL1Delay(0), CacheL2Size(0), CacheL2Delay(0), CacheMissDelay(0),
+      DispatchDelay(0), Route1Delay(0), MemDelay(0), QueuingDelay(0)
 {
 }
 
@@ -28,6 +29,7 @@ bool SimConfig::LoadConfig(const string& path)
     ptree pt;
     read_ini(path, pt);
 
+    StackSize = pt.get("setting.STACK_SIZE", 1 * 1024 * 1024);
     CoreGridLen = pt.get("setting.CORE_GRID_LEN", 2);
     CoreBlockLen = pt.get("setting.CORE_BLOCK_LEN", 2);
     CacheL1Size = pt.get("setting.CACHE_L1_SIZE", 32 * 1024);
