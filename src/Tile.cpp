@@ -16,10 +16,8 @@ Tile::Tile()
 
 void Tile::InitTile(CoreBlock* coreBlock_, const Dim2& tileIdx_)
 {
-    PrintLine("InitTile: " << tileIdx_);
     coreBlock = coreBlock_;
     tileIdx = tileIdx_;
-    PrintLine("InitMMU: " << tileIdx_);
     mmu.InitMMU(this);
 }
 

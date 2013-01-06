@@ -83,10 +83,10 @@ public:
     uint32_t blockDimAddr;
 
     /// Thread dimension specified by the programmer.
-    Dim2 taskSize; // TODO: Rename this to threadDim.
+    Dim2 threadDim;
 
     /// Task block dimension specified by the programmer.
-    Dim2 blockSize; // TODO: Rename this to blockDim.
+    Dim2 blockDim;
 
     /// The index of the TaskBlock that is to be scheduled next
     Dim2 nextBlockIdx;

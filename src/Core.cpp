@@ -1,6 +1,7 @@
 #include "Core.hpp"
 
 #include "Address.hpp"
+#include "Debug.hpp"
 #include "Tile.hpp"
 
 #include <assert.h>

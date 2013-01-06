@@ -1,5 +1,6 @@
 #include "Task.hpp"
 
+#include "Debug.hpp"
 #include "TaskBlock.hpp"
 
 #include <boost/property_tree/ptree.hpp>
@@ -37,11 +38,11 @@ Task::Task(const std::string& name_,
            const std::string& elfFilePath_,
            uint32_t threadIdxAddr_, uint32_t threadDimAddr_,
            uint32_t blockIdxAddr_, uint32_t blockDimAddr_,
-           const Dim2& taskSize_, const Dim2& blockSize_)
+           const Dim2& threadDim_, const Dim2& blockDim_)
     : name(name_), elfFilePath(elfFilePath_),
       threadIdxAddr(threadIdxAddr_), threadDimAddr(threadDimAddr_),
       blockIdxAddr(blockIdxAddr_), blockDimAddr(blockDimAddr_),
-      taskSize(taskSize_), blockSize(blockSize_), finishedCount(0)
+      threadDim(threadDim_), blockDim(blockDim_), finishedCount(0)
 {
 }
 
@@ -65,22 +66,27 @@ Task* Task::Create(const std::string& taskConfigPath)
     int blockWidth(pt.get<int>("task.block_width"));
     int blockHeight(pt.get<int>("task.block_height"));
 
+    Dim2 threadDim(threadHeight, threadWidth);
+    Dim2 blockDim(blockHeight, blockWidth);
+
+    PrintLine("TASK: " << name << "  threadDim=" << threadDim
+                               << "  blockDim=" << blockDim);
+
     return new Task(name, executablePath.string(),
                     threadIdxAddr, threadDimAddr, blockIdxAddr, blockDimAddr,
-                    Dim2(threadHeight, threadWidth),
-                    Dim2(blockHeight, blockWidth));
+                    threadDim, blockDim);
 }
 
 /// Whether this Task still has unscheduled TaskBlocks
 bool Task::HasMoreBlocks() const
 {
-    return nextBlockIdx.Area() <= taskSize.Area();
+    return nextBlockIdx.ToLinear(blockDim) < blockDim.Area();
 }
 
 /// Whether all TaskBlocks of this Task have already finished running
 bool Task::IsFinished()
 {
-    return finishedCount == taskSize.Area();
+    return finishedCount == blockDim.Area();
 }
 
 /// Creates the next TaskBlock in this task
@@ -88,7 +94,7 @@ TaskBlock* Task::CreateNextTaskBlock(CoreBlock& coreBlock)
 {
     assert(HasMoreBlocks());
     TaskBlock* nextBlock = new TaskBlock(*this, coreBlock, nextBlockIdx);
-    nextBlockIdx.Inc(blockSize.x);
+    nextBlockIdx.Inc(blockDim.x);
     return nextBlock;
 }
 

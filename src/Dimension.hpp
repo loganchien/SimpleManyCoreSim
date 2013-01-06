@@ -106,6 +106,11 @@ public:
         return (y == rhs.y && x == rhs.x);
     }
 
+    int ToLinear(const Dim2& size) const
+    {
+        return ToLinear(size, *this);
+    }
+
     static int ToLinear(const Dim2& size, const Dim2& idx)
     {
         return idx.y * size.x + idx.x;

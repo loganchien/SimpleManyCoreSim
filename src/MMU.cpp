@@ -280,9 +280,9 @@ bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
     }
 
     VAR_VALUE_MAP(task->threadIdxAddr, thread->threadIdx, sizeof(Dim2));
-    VAR_VALUE_MAP(task->threadDimAddr, task->taskSize, sizeof(Dim2));
+    VAR_VALUE_MAP(task->threadDimAddr, task->threadDim, sizeof(Dim2));
     VAR_VALUE_MAP(task->blockIdxAddr, taskBlock->taskBlockIdx, sizeof(Dim2));
-    VAR_VALUE_MAP(task->blockDimAddr, task->blockSize, sizeof(Dim2));
+    VAR_VALUE_MAP(task->blockDimAddr, task->blockDim, sizeof(Dim2));
 
 #undef VAR_VALUE_MAP
 
@@ -324,7 +324,9 @@ int MMU::GetEntry()
 int MMU::GetStackTop()
 {
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    return gmc.stackVMA + GlobalConfig.StackSize * tile->GetGlobalLinearIndex();
+    // Note: Stack top is at the high address side, so we have to "+1".
+    return gmc.stackBeginVMA +
+           GlobalConfig.StackSize * (tile->GetGlobalLinearIndex() + 1);
 }
 
 int MMU::GetStackSize()

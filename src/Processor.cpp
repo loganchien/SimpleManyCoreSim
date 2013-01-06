@@ -189,13 +189,12 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
               << " coreBlockIdx=" << coreBlock.blockIdx);
 
     int tileCount = GlobalConfig.CoreBlockSize().Area();
-    int threadCount = task.blockSize.Area();
+    int threadCount = task.threadDim.Area();
 
     // Put all initial threads on tiles
     for (int i = 0; i < std::min(tileCount, threadCount); ++i)
     {
-        Tile& tile = coreBlock.GetTile(
-            Dim2::FromLinear(GlobalConfig.CoreBlockSize(), i));
+        Tile& tile = coreBlock.tiles[i];
         coreBlock.ScheduleThread(*taskBlock, tile);
     }
 }
