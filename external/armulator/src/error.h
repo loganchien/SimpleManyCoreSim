@@ -23,6 +23,12 @@ class InstructionExcept
 public:
 	//! The string stores the error information.
     std::string error_name;
+
+    InstructionExcept()
+    { }
+
+    InstructionExcept(const std::string &name) : error_name(name)
+    { }
 };
 
 /*!	\exception UndefineInst
@@ -32,6 +38,13 @@ public:
  */
 class UndefineInst: public InstructionExcept
 {
+public:
+
+    UndefineInst()
+    { }
+
+    UndefineInst(const std::string &name) : InstructionExcept(name)
+    { }
 };
 
 /*!	\exception UnexpectInst
@@ -41,6 +54,12 @@ class UndefineInst: public InstructionExcept
  */
 class UnexpectInst: public InstructionExcept
 {
+public:
+    UnexpectInst()
+    { }
+
+    UnexpectInst(const std::string &name) : InstructionExcept(name)
+    { }
 };
 
 /*!	\exception Error
