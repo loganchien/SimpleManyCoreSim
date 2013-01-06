@@ -62,13 +62,17 @@ void Processor::StartBatch(const std::vector<Task>& tasks)
     }
 
     // Start running the simulation
+    long long clock = 0;
     while (!batchFinished)
     {
         SimSteps();
+        clock++;
     }
 
     // Done!
     EvaluateStats();
+
+    PrintLine("Clock used: " << clock);
 }
 
 
