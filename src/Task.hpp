@@ -103,6 +103,8 @@ public:
     /// Whether all TaskBlocks of this Task have already finished running
     bool IsFinished();
 
+    void OnTaskBlockFinished(TaskBlock& taskBlock);
+
 public:
     /// Creates the next TaskBlock in this task
     TaskBlock* CreateNextTaskBlock(CoreBlock& coreBlock);

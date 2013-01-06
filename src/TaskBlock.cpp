@@ -28,6 +28,13 @@ bool TaskBlock::IsFinished()
     return finishedCount == task->threadDim.Area();
 }
 
+/// Update the finished thread counter
+void TaskBlock::OnThreadFinished(Thread& finishedThread)
+{
+    ++finishedCount;
+    delete &finishedThread;
+}
+
 /// Creates the next Thread from this TaskBlock to run on the given tile
 Thread* TaskBlock::CreateNextThread(Tile& tile)
 {

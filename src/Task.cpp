@@ -89,6 +89,13 @@ bool Task::IsFinished()
     return finishedCount == blockDim.Area();
 }
 
+/// Update the finished task block counter
+void Task::OnTaskBlockFinished(TaskBlock& taskBlock)
+{
+    ++finishedCount;
+    delete &taskBlock;
+}
+
 /// Creates the next TaskBlock in this task
 TaskBlock* Task::CreateNextTaskBlock(CoreBlock& coreBlock)
 {

@@ -110,28 +110,34 @@ void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 
 
 /// Is called by Core when it reached the end of it's current instruction stream
-void CoreBlock::OnThreadFinished(Thread& thread)
+void CoreBlock::OnThreadFinished(Thread& finishedThread)
 {
     assert(runningTaskBlock != 0);
+    assert(runningTaskBlock == finishedThread.taskBlock);
+
     PrintLine("Thread finished: "
               << runningTaskBlock->task->name
-              << " threadIdx=" << thread.threadIdx);
+              << " threadIdx=" << finishedThread.threadIdx);
 
-    if (thread.taskBlock->HasMoreThreads())
+    // Keep the tile to schedule next thread
+    Tile* tile = finishedThread.tile;
+
+    // Notify the task block that this thread is finished
+    runningTaskBlock->OnThreadFinished(finishedThread);
+
+    if (runningTaskBlock->HasMoreThreads())
     {
         // Schedule next thread
-        ScheduleThread(*thread.taskBlock, *thread.tile);
-        delete &thread;
+        ScheduleThread(*runningTaskBlock, *tile);
     }
-    else if (thread.taskBlock->IsFinished())
+    else if (runningTaskBlock->IsFinished())
     {
         // All blocks of this task have already been scheduled
-        processor->OnTaskBlockFinished(*thread.taskBlock);
-        delete &thread;
+        processor->OnTaskBlockFinished(*runningTaskBlock);
     }
     else
     {
         // Do nothing: The tile is now idle
-        PrintLine("Tile idle: " << thread.tile->tileIdx);
+        PrintLine("Tile idle: " << tile->tileIdx);
     }
 }

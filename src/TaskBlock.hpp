@@ -40,6 +40,9 @@ public:
     /// Whether all TaskBlocks of this Task have already finished running
     bool IsFinished();
 
+    /// Update the finished thread counter
+    void OnThreadFinished(Thread& finishedThread);
+
     /// Creates the next Thread from this TaskBlock to run on the given tile
     Thread* CreateNextThread(Tile& tile);
 };

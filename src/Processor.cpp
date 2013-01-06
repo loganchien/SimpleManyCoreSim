@@ -211,36 +211,44 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
 /// Called by a CoreBlock when it finished executing the given TaskBlock
 void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
 {
-    PrintLine("TaskBLock finished: " << taskBlock.task->name
+    Task* task = taskBlock.task;
+    CoreBlock* coreBlock = taskBlock.assignedBlock;
+
+    assert(task);
+    assert(coreBlock);
+
+    PrintLine("TaskBLock finished: " << task->name
               << " taskBlockIdx=" << taskBlock.taskBlockIdx
-              << " coreBlockIdx=" << taskBlock.assignedBlock->blockIdx);
+              << " coreBlockIdx=" << coreBlock->blockIdx);
 
     // Collect stats from the functional units of the block
     CollectStats(taskBlock);
 
-    if (taskBlock.task->HasMoreBlocks())
+    // Update the finished task counter
+    task->OnTaskBlockFinished(taskBlock);
+
+    if (task->HasMoreBlocks())
     {
         // Schedule next TaskBlock on the now free core block
-        ScheduleTaskBlock(*taskBlock.task, *taskBlock.assignedBlock);
+        ScheduleTaskBlock(*task, *coreBlock);
     }
     else
     {
-        Task* task = GetNextTask();
+        if (task->IsFinished())
+        {
+            // All blocks of this task have already been scheduled
+            OnTaskFinished(*task);
+        }
+
+        // Schedule a new TaskBlock of the other task to coreBlock.
+        task = GetNextTask();
         if (task)
         {
             // Schedule next TaskBlock of a different Task on the now free core
             // block
-            ScheduleTaskBlock(*task, *taskBlock.assignedBlock);
-        }
-
-        if (taskBlock.task->IsFinished())
-        {
-            // All blocks of this task have already been scheduled
-            OnTaskFinished(*taskBlock.task);
+            ScheduleTaskBlock(*task, *coreBlock);
         }
     }
-
-    delete &taskBlock;
 }
 
 
@@ -248,7 +256,9 @@ void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
 void Processor::OnTaskFinished(Task& task)
 {
     PrintLine("Task finished: " << task.name);
-	task.WriteTaskStatsToFile();
+
+    task.WriteTaskStatsToFile();
+
     if (!GetNextTask())
     {
         // The batch has finished

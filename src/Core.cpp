@@ -1,6 +1,7 @@
 #include "Core.hpp"
 
 #include "Address.hpp"
+#include "CoreBlock.hpp"
 #include "Debug.hpp"
 #include "Tile.hpp"
 
@@ -39,7 +40,14 @@ bool Core::DispatchNext()
     if (!armulator.sim_step())
     {
         // Program ends.
+        assert(tile);
+        assert(tile->coreBlock);
+        assert(currentThread);
+
+        Thread* finishedThread = currentThread;
         currentThread = NULL;
+        tile->coreBlock->OnThreadFinished(*finishedThread);
+
         return false;
     }
 
