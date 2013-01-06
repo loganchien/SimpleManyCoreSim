@@ -129,20 +129,28 @@ void Processor::CollectStats(TaskBlock& taskBlock)
     }
 
     // Calculate averages out of totals:
-    avgL1MissRate = totalL1MissCount/(totalL1MissCount+totalL1AccessCount);
-    avgL2MissRate = totalL2MissCount/(totalL2MissCount+totalL2AccessCount);
+    if (totalL1MissCount + totalL1AccessCount > 0)
+    {
+        // TODO: Change to use "double" as the type.
+        avgL1MissRate = totalL1MissCount/(totalL1MissCount+totalL1AccessCount);
+    }
+    if (totalL2MissCount + totalL2AccessCount > 0)
+    {
+        // TODO: Change to use "double" as the type.
+        avgL2MissRate = totalL2MissCount/(totalL2MissCount+totalL2AccessCount);
+    }
 
-	taskBlock.task->Stats.InstructionCount.TotalCount += totalInstructions;
-	taskBlock.task->Stats.LoadInstructionCount.TotalCount += totalLoadInstructions;
-	taskBlock.task->Stats.L1AccessCount.TotalCount +=totalL1AccessCount;
-	taskBlock.task->Stats.L1MissCount.TotalCount +=totalL1MissCount;
-	taskBlock.task->Stats.L2AccessCount.TotalCount +=totalL2AccessCount;
-	taskBlock.task->Stats.L2MissCount.TotalCount +=totalL2MissCount;
-	taskBlock.task->Stats.TotalSimulationTime.TotalCount += maxSimTime;
-	taskBlock.task->Stats.AverageSimulationTimeTile.TotalCount += avgSimTime;
-	taskBlock.task->Stats.MemAccessTime.TotalCount ; // TODO ADD!
-	taskBlock.task->Stats.TotalRouterPackets.TotalCount += totalPacketsReceived;
-	taskBlock.task->Stats.TotalThreadCount++;
+    taskBlock.task->Stats.InstructionCount.TotalCount += totalInstructions;
+    taskBlock.task->Stats.LoadInstructionCount.TotalCount += totalLoadInstructions;
+    taskBlock.task->Stats.L1AccessCount.TotalCount +=totalL1AccessCount;
+    taskBlock.task->Stats.L1MissCount.TotalCount +=totalL1MissCount;
+    taskBlock.task->Stats.L2AccessCount.TotalCount +=totalL2AccessCount;
+    taskBlock.task->Stats.L2MissCount.TotalCount +=totalL2MissCount;
+    taskBlock.task->Stats.TotalSimulationTime.TotalCount += maxSimTime;
+    taskBlock.task->Stats.AverageSimulationTimeTile.TotalCount += avgSimTime;
+    taskBlock.task->Stats.MemAccessTime.TotalCount ; // TODO ADD!
+    taskBlock.task->Stats.TotalRouterPackets.TotalCount += totalPacketsReceived;
+    taskBlock.task->Stats.TotalThreadCount++;
 }
 
 
