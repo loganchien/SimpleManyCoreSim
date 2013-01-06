@@ -5,6 +5,7 @@
 #include "error.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -49,7 +50,7 @@ static int previous_errno = 0;
 /**
   * Nothing to be done.
   */
- swi_semihost::swi_semihost()
+ swi_semihost::swi_semihost() : arg_len(0)
 {
     //fopen_mode[12][4]={"r","rb","r+","r+b","w","wb","w+","w+b","a","ab","a+","a+b"};
 }
@@ -217,11 +218,11 @@ void swi_semihost::sys_heapinfo()
   */
 void swi_semihost::sys_get_cmdline()
 {
-    char cmdline[arg_len + 1];
+    char cmdline[sizeof(argv)];
     int cmd_pointer = my_mmu->get_word(parameter[1]);
 
-    memset(cmdline, 0, arg_len + 1);
-    memcpy(cmdline, argv, arg_len);
+    memset(cmdline, 0, sizeof(cmdline));
+    memcpy(cmdline, argv, std::min((size_t)arg_len, sizeof(cmdline) - 1));
 
     for (int i = 0; i < strlen(cmdline); i++)
         my_mmu->set_byte(cmd_pointer + i, cmdline[i]);
@@ -552,11 +553,11 @@ void swi_semihost::sys_tickfreq()
 
 void swi_semihost::getArg(char *arg, int len)
 {
-    memset(argv, 0, 100);
-    
-    for (int i = 0; i < len; i++)
+    memset(argv, 0, sizeof(argv));
+
+    for (int i = 0; i < std::min(len, (int)(sizeof(argv) - 1)); i++)
         argv[i] = arg[i];
 
-    arg_len = len;
+    arg_len = std::min(len, (int)(sizeof(argv) - 1));
 }
 
