@@ -33,8 +33,10 @@ void CoreBlock::InitCoreBlock(Processor* processor_, const Dim2& blockIdx_)
 
     for (int i = 0; i < GlobalConfig.CoreBlockSize().Area(); ++i)
     {
-        tiles[i].InitTile(this,
-                          Dim2::FromLinear(GlobalConfig.CoreBlockSize(), i));
+        Dim2 tileLocalIdx(Dim2::FromLinear(GlobalConfig.CoreBlockSize(), i));
+        Dim2 tileGlobalIdx(blockIdx.y * GlobalConfig.CoreBlockLen + tileLocalIdx.y,
+                           blockIdx.x * GlobalConfig.CoreBlockLen + tileLocalIdx.x);
+        tiles[i].InitTile(this, tileGlobalIdx);
     }
 }
 
