@@ -141,6 +141,16 @@ public:
 
     /// Store the word at the address in the memory.
     void StoreWord(uint32_t addr, uint32_t word);
+
+    int GetEntry();
+
+    int GetStackTop();
+
+    int GetStackSize();
+
+    int GetHeapTop();
+
+    int GetHeapSize();
 };
 
 } // end namespace smcsim

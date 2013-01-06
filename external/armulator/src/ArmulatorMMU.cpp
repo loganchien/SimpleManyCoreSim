@@ -89,29 +89,29 @@ void MMU::set_word(int address, WORD data)
 //! Give out the starting PC
 int MMU::getEntry()
 {
-    return 0;
+    return mmu->GetEntry();
 }
 
 //! Give out the high address of stack
 int MMU::getStackTop()
 {
-    return 0;
+    return mmu->GetStackTop();
 }
 
 //! Give out the size of stack
 int MMU::getStackSz()
 {
-    return 0;
+    return mmu->GetStackSize();
 }
 
 //! Give out the address of heap
 int MMU::getHeapTop()
 {
-    return 0;
+    return mmu->GetHeapTop();
 }
 
 //! Give out the size of heap
 int MMU::getHeapSz()
 {
-    return 0;
+    return mmu->GetHeapSize();
 }

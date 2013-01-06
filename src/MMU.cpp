@@ -314,3 +314,31 @@ void MMU::StoreWord(uint32_t addr, uint32_t word)
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
     gmc.StoreWord(addr, word);
 }
+
+int MMU::GetEntry()
+{
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    return static_cast<int>(gmc.entryPointVMA);
+}
+
+int MMU::GetStackTop()
+{
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    return gmc.stackVMA + GlobalConfig.StackSize * tile->GetGlobalLinearIndex();
+}
+
+int MMU::GetStackSize()
+{
+    return GlobalConfig.StackSize;
+}
+
+int MMU::GetHeapTop()
+{
+    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
+    return static_cast<int>(gmc.heapVMA);
+}
+
+int MMU::GetHeapSize()
+{
+    return GlobalConfig.HeapSize;
+}
