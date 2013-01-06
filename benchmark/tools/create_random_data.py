@@ -2,7 +2,7 @@
 
 import random
 
-SIZE = 16
+SIZE = 256
 
 for i in range(SIZE):
     for j in range(SIZE):

@@ -7,6 +7,13 @@ THREAD_HEIGHT="${4}"
 BLOCK_WIDTH="${5}"
 BLOCK_HEIGHT="${6}"
 
+shift
+shift
+shift
+shift
+shift
+shift
+
 if [ -z "${OUTPUT_NAME}" ]; then
   echo "ERROR: OUTPUT_NAME is not available."
   exit 1
@@ -47,7 +54,7 @@ RT_DIR="$(cd "${SCRIPT_DIR}/../rt"; pwd)"
 
 CC="arm-none-eabi-gcc"
 CFLAGS="-static -mthumb -Bstatic -O0
-        -include ${RT_DIR}/lib.h ${RT_DIR}/lib.c"
+        -include ${RT_DIR}/lib.h ${RT_DIR}/lib.c $*"
 
 OBJDUMP="arm-none-eabi-objdump"
 

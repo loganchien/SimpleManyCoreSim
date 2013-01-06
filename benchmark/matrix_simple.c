@@ -1,11 +1,13 @@
-#define SIZE 16
+#include "matrix_config.h"
 
 const int A[SIZE][SIZE] = {
-#include "inputs/matrixA.txt"
+#include MATRIX_A_INPUT_FILE
 };
+
 const int B[SIZE][SIZE] = {
-#include "inputs/matrixB.txt"
+#include MATRIX_B_INPUT_FILE
 };
+
 int C[SIZE][SIZE] = { 0 };
 
 int main() {
