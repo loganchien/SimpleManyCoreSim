@@ -94,7 +94,7 @@ TaskBlock* Task::CreateNextTaskBlock(CoreBlock& coreBlock)
 
 void Task::WriteTaskStatsToFile(){
 	ofstream statFile;
-	string path = "//results//taskstats.txt";
+	char path[] = "//results//taskstats.txt";
 	statFile.open (path,ios::out | ios::app);
 	statFile << name << "," << Stats.TotalThreadCount 
 		<< "," << Stats.InstructionCount.TotalCount

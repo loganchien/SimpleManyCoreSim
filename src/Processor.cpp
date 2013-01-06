@@ -241,7 +241,7 @@ void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
 void Processor::OnTaskFinished(Task& task)
 {
     PrintLine("Task finished: " << task.name);
-	WriteTaskStatsToFile(task.Stats);
+	task.WriteTaskStatsToFile();
     if (!GetNextTask())
     {
         // The batch has finished
