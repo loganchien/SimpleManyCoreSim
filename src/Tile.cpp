@@ -37,3 +37,8 @@ Dim2 Tile::ComputeLocalIndex(){
     int y = tileIdx.y % GlobalConfig.CoreBlockLen;
     return Dim2(y,x);
 }
+
+int Tile::GetGlobalLinearIndex() const
+{
+    return tileIdx.y * GlobalConfig.TotalCoreLength() + tileIdx.x;
+}

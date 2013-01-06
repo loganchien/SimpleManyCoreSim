@@ -40,6 +40,8 @@ public:
     bool IsBoundaryTile();
 
     Dim2 ComputeLocalIndex();
+
+    int GetGlobalLinearIndex() const;
 };
 
 } // end namespace smcsim
