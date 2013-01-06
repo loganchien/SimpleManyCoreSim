@@ -72,6 +72,19 @@ public:
     /// Process the next gmem request
     void DispatchNext();
 
+    /// Interface to access the memory
+    uint8_t LoadByte(uint32_t addr);
+
+    uint16_t LoadHalfWord(uint32_t addr);
+
+    uint32_t LoadWord(uint32_t addr);
+
+    void StoreByte(uint32_t addr, uint8_t byte);
+
+    void StoreHalfWord(uint32_t addr, uint16_t halfword);
+
+    void StoreWord(uint32_t addr, uint32_t word);
+
 private:
     uint8_t* GetMemory(uint32_t addr, uint32_t size);
 };

@@ -6,6 +6,12 @@
 #include "SimConfig.hpp"
 #include "Tile.hpp"
 
+#include "ArmulatorError.h"
+
+#include <iomanip>
+#include <sstream>
+#include <string>
+
 #include <assert.h>
 #include <string.h>
 
@@ -118,6 +124,37 @@ void GlobalMemoryController::DispatchNext()
     nearestRouter.EnqueueMessage(response);
 }
 
+/// Interface to access the memory
+uint8_t GlobalMemoryController::LoadByte(uint32_t addr)
+{
+    return *GetMemory(addr, 1);
+}
+
+uint16_t GlobalMemoryController::LoadHalfWord(uint32_t addr)
+{
+    return *reinterpret_cast<uint16_t*>(GetMemory(addr, 2));
+}
+
+uint32_t GlobalMemoryController::LoadWord(uint32_t addr)
+{
+    return *reinterpret_cast<uint32_t*>(GetMemory(addr, 4));
+}
+
+void GlobalMemoryController::StoreByte(uint32_t addr, uint8_t byte)
+{
+    *GetMemory(addr, 1) = byte;
+}
+
+void GlobalMemoryController::StoreHalfWord(uint32_t addr, uint16_t halfword)
+{
+    *reinterpret_cast<uint16_t*>(GetMemory(addr, 2)) = halfword;
+}
+
+void GlobalMemoryController::StoreWord(uint32_t addr, uint32_t word)
+{
+    *reinterpret_cast<uint32_t*>(GetMemory(addr, 4)) = word;
+}
+
 uint8_t* GlobalMemoryController::GetMemory(uint32_t addr, uint32_t size)
 {
 #define MEMORY_RANGE(NAME) \
@@ -136,5 +173,7 @@ uint8_t* GlobalMemoryController::GetMemory(uint32_t addr, uint32_t size)
 
 #undef MEMORY_RANGE
 
-    return NULL;
+    std::stringstream ss;
+    ss << "Segmentation fault: 0x" << std::hex << addr;
+    throw UnexpectInst(ss.str());
 }
