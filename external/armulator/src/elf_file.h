@@ -126,7 +126,7 @@ public:
     elf_file();
 	//!A destructor
     ~elf_file();
-private:
+public:
 	//! The ELF header container
     Elf32_Ehdr elf_header;
 	//! The pointer to array of program header
@@ -142,7 +142,7 @@ private:
 	//! The file offset of Thumb code
     int code_offset;
 
-private:
+public:
 	//! Transformation from file offset to virtual address
     int FileOff2VMA(int FileOff);
 
