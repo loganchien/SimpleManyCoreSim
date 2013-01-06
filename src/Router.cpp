@@ -92,7 +92,7 @@ void Router::RouteToNeighbor(Message& msg)
     Dim2 blockSize = processor.coreBlockSize;
     Dim2 coreOrigin = tile->coreBlock->ComputeCoreBlockOrigin();
 
-    // TODO: Shortest path computation below (Hint: See Tile::IsBoundaryTile()
+    // Shortest path computation below (Hint: See Tile::IsBoundaryTile()
     // for more information)
 
     if (!msg.IsReceiverTile())
@@ -105,7 +105,7 @@ void Router::RouteToNeighbor(Message& msg)
             return;
         }
 
-        // TODO: Shortest path to memory is always path to shortest boundary,
+        // Shortest path to memory is always path to shortest boundary,
         // i.e. min(x, y, width-x, width-y)
         if (std::min(tile->tileIdx.x, GlobalConfig.TotalCoreLength() - tile->tileIdx.x) <
             std::min(tile->tileIdx.y, GlobalConfig.TotalCoreLength() - tile->tileIdx.y))

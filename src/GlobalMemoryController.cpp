@@ -279,7 +279,7 @@ void GlobalMemoryController::DispatchNext()
 		nearestRouterId.y = request.sender.y<gridLen-request.sender.y ? 0 : gridLen;
 	}
 
-    Router nearestRouter = processor->GetTile(nearestRouterId)->router; // TODO: fix?
+    Router nearestRouter = processor->GetTile(nearestRouterId)->router; 
 
     // Send out new response Message
     nearestRouter.EnqueueMessage(response);

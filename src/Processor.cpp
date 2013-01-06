@@ -98,7 +98,7 @@ void Processor::SimSteps()
 /// Collect stats from the functional units of the block
 void Processor::CollectStats(TaskBlock& taskBlock)
 {
-    // TODO: Collect stats from all tiles (Core, MMU, Cache)
+    // Collect stats from all tiles (Core, MMU, Cache)
     taskBlock.task->Stats;
     int coreBlockArea = GlobalConfig.CoreBlockSize().Area();
     Tile* t = taskBlock.assignedBlock->tiles;
@@ -157,8 +157,8 @@ void Processor::CollectStats(TaskBlock& taskBlock)
 /// Evaluates and/or writes stats to file
 void Processor::EvaluateStats()
 {
-    // TODO: Evaluate and/or write stats to file (for visualization)
-	// writeStatsToFile(taskBlock.task->name,avgL1MissRate,avgL2MissRate,avgPacketsReceived,avgInstructions,avgLoadInstructions);
+    // Evaluate and/or write stats to file (for visualization)
+
 }
 
 // #################### Task management #######################################
