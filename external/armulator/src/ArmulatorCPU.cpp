@@ -64,6 +64,7 @@ bool ArmulatorCPU::sim_step()
     catch (LoadStall &e)
     {
         cpu->unfetch();
+        return true;
     }
     catch (SwitchMode &e)
     {
@@ -75,6 +76,7 @@ bool ArmulatorCPU::sim_step()
     }
     catch (ProgramEnd &e)
     {
+        reset();
         return false;
     }
 
