@@ -11,3 +11,6 @@ ipch
 *~
 external/boost_*
 build
+*.vcxproj
+*.sln
+*.vcxproj.filters

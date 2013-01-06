@@ -106,9 +106,9 @@ void Processor::CollectStats(TaskBlock& taskBlock)
     Cache *l1,*l2;
     long long totalL1AccessCount(0),totalL1MissCount(0),avgL1MissRate(0);	// Cache L1 stats
     long long totalL2AccessCount(0),totalL2MissCount(0),avgL2MissRate(0);	// Cache L1 stats
-    long long avgInstructions(0),avgLoadInstructions(0);			// Core (CPU) stats
+    long long totalInstructions(0),totalLoadInstructions(0);			// Core (CPU) stats
     long long avgSimTime(0), maxSimTime(0);					// MMU stats
-    long long avgPacketsReceived(0);						// Router stats
+    long long totalPacketsReceived(0);						// Router stats
 
 
     for(int i=0; i < coreBlockArea; i++){	// iterate over each tile in CoreBlock to get statistics:
@@ -121,18 +121,28 @@ void Processor::CollectStats(TaskBlock& taskBlock)
         l2 = &t[i].mmu.l2;
         totalL2AccessCount+=l2->simAccessCount;
         totalL2MissCount+=l2->simMissCount;
-        avgPacketsReceived+= t[i].router.simTotalPacketsReceived/coreBlockArea;
+        totalPacketsReceived+= t[i].router.simTotalPacketsReceived; 
 
         /// CPU (Core) statistics:
-        avgInstructions=t[i].core.simInstructionCount/coreBlockArea;
-        avgLoadInstructions=t[i].core.simLoadInstructionCount/coreBlockArea;
+        totalInstructions=t[i].core.simInstructionCount;
+        totalLoadInstructions=t[i].core.simLoadInstructionCount;
     }
 
     // Calculate averages out of totals:
     avgL1MissRate = totalL1MissCount/(totalL1MissCount+totalL1AccessCount);
     avgL2MissRate = totalL2MissCount/(totalL2MissCount+totalL2AccessCount);
 
-    // writeStatsToFile(taskBlock.task->name,avgL1MissRate,avgL2MissRate,avgPacketsReceived,avgInstructions,avgLoadInstructions);
+	taskBlock.task->Stats.InstructionCount.TotalCount += totalInstructions;
+	taskBlock.task->Stats.LoadInstructionCount.TotalCount += totalLoadInstructions;
+	taskBlock.task->Stats.L1AccessCount.TotalCount +=totalL1AccessCount;
+	taskBlock.task->Stats.L1MissCount.TotalCount +=totalL1MissCount;
+	taskBlock.task->Stats.L2AccessCount.TotalCount +=totalL2AccessCount;
+	taskBlock.task->Stats.L2MissCount.TotalCount +=totalL2MissCount;
+	taskBlock.task->Stats.TotalSimulationTime.TotalCount += maxSimTime;
+	taskBlock.task->Stats.AverageSimulationTimeTile.TotalCount += avgSimTime;
+	taskBlock.task->Stats.MemAccessTime.TotalCount ; // TODO ADD!
+	taskBlock.task->Stats.TotalRouterPackets.TotalCount += totalPacketsReceived;
+	taskBlock.task->Stats.TotalThreadCount++;
 }
 
 
@@ -140,6 +150,7 @@ void Processor::CollectStats(TaskBlock& taskBlock)
 void Processor::EvaluateStats()
 {
     // TODO: Evaluate and/or write stats to file (for visualization)
+	// writeStatsToFile(taskBlock.task->name,avgL1MissRate,avgL2MissRate,avgPacketsReceived,avgInstructions,avgLoadInstructions);
 }
 
 // #################### Task management #######################################
@@ -230,7 +241,7 @@ void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
 void Processor::OnTaskFinished(Task& task)
 {
     PrintLine("Task finished: " << task.name);
-
+	WriteTaskStatsToFile(task.Stats);
     if (!GetNextTask())
     {
         // The batch has finished
