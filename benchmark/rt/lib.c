@@ -58,13 +58,30 @@ void write_pair(int fd, const char *str, unsigned int val) {
     write(fd, buf, buf_ptr - buf);
 }
 
-void write_thread_info(int fd) {
-    char buf[] = "[threadIdx: XXXXXXXX XXXXXXXX , blockIdx: XXXXXXXX XXXXXXXX]\n";
-
+static void replace_thread_info(char *buf) {
     utoa_hex(buf + 12, threadIdx.y);
     utoa_hex(buf + 21, threadIdx.x);
     utoa_hex(buf + 42, blockIdx.y);
     utoa_hex(buf + 51, blockIdx.x);
+}
 
+void write_thread_info(int fd) {
+    char buf[] = "[threadIdx: XXXXXXXX XXXXXXXX , blockIdx: XXXXXXXX XXXXXXXX]\n";
+    replace_thread_info(buf);
+    write(fd, buf, sizeof(buf) - 1);
+}
+
+void dump1(int fd, unsigned int val1) {
+    char buf[] = "[threadIdx: XXXXXXXX XXXXXXXX , blockIdx: XXXXXXXX XXXXXXXX] XXXXXXXX\n";
+    replace_thread_info(buf);
+    utoa_hex(buf + 61, val1);
+    write(fd, buf, sizeof(buf) - 1);
+}
+
+void dump2(int fd, unsigned int val1, unsigned val2) {
+    char buf[] = "[threadIdx: XXXXXXXX XXXXXXXX , blockIdx: XXXXXXXX XXXXXXXX] XXXXXXXX XXXXXXXX\n";
+    replace_thread_info(buf);
+    utoa_hex(buf + 61, val1);
+    utoa_hex(buf + 70, val1);
     write(fd, buf, sizeof(buf) - 1);
 }

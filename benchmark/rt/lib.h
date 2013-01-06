@@ -14,6 +14,9 @@ extern void write_pair(int fd, const char *str, unsigned int val);
 
 extern void write_thread_info(int fd);
 
+extern void dump1(int fd, unsigned int val1);
+extern void dump2(int fd, unsigned int val1, unsigned int val2);
+
 extern dim2 threadIdx;
 extern dim2 threadDim;
 extern dim2 blockIdx;
