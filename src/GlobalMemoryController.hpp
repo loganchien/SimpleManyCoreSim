@@ -51,6 +51,8 @@ public:
     uint8_t* stack;
     uint32_t stackVMA;
 
+    uint32_t entryPointVMA;
+
     std::deque<Message> msgQueue;
 
     /// The sim time of the mem controller

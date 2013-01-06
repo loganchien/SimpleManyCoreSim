@@ -28,7 +28,7 @@ GlobalMemoryController::GlobalMemoryController()
       bss(NULL), bssVMA(0), bssSize(0),
       heap(NULL), heapVMA(0), heapSize(0),
       stackBegin(NULL), stackBeginVMA(0), stackBeginSize(0),
-      stack(NULL), stackVMA(0)
+      stack(NULL), stackVMA(0), entryPointVMA(0)
 {
 }
 
@@ -72,6 +72,8 @@ void GlobalMemoryController::Reset()
 
     stack = NULL;
     stackVMA = 0;
+
+    entryPointVMA = 0;
 }
 
 void GlobalMemoryController::LoadExecutable(std::ifstream& stream)
@@ -139,6 +141,9 @@ void GlobalMemoryController::LoadExecutable(std::ifstream& stream)
     PrintLine("Address Space: rodataVMA=" << rodataVMA);
     PrintLine("Address Space: bssVMA=" << bssVMA);
     PrintLine("Address Space: stackBeginVMA=" << stackBeginVMA);
+
+    // Load Entry Point
+    entryPointVMA = elf.getEntryPoint();
 }
 
 void GlobalMemoryController::StoreCoreDump()
