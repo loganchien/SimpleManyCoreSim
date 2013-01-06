@@ -19,9 +19,10 @@
 #include <string.h>
 
 using namespace smcsim;
+using namespace std;
 
 GlobalMemoryController::GlobalMemoryController()
-    : processor(NULL),
+    : processor(NULL), task(NULL),
       text(NULL), textVMA(0), textSize(0),
       data(NULL), dataVMA(0), dataSize(0),
       rodata(NULL), rodataVMA(0), rodataSize(0),
@@ -76,8 +77,19 @@ void GlobalMemoryController::Reset()
     entryPointVMA = 0;
 }
 
-void GlobalMemoryController::LoadExecutable(std::ifstream& stream)
+void GlobalMemoryController::LoadExecutable(Task* task_)
 {
+    Task* task = task_;
+
+    ifstream stream;
+    stream.open(task->elfFilePath.c_str(), ios_base::in | ios_base::binary);
+    if (!stream)
+    {
+        cerr << "ERROR: Unable to load the executable: "
+             << task->elfFilePath << endl;
+        abort();
+    }
+
     elf_file elf;
     elf.get_info(stream);
 

@@ -7,11 +7,13 @@
 #include "TaskBlock.hpp"
 #include "Tile.hpp"
 
+#include <iostream>
 #include <algorithm>
 
 #include <assert.h>
 
 using namespace smcsim;
+using namespace std;
 
 Processor::Processor()
 {
@@ -51,7 +53,6 @@ void Processor::StartBatch(const std::vector<Task>& tasks)
     this->tasks = tasks;
 
     // Assign initial task blocks in round-robin fashion
-    int t = 0;
     for (int i = 0; i < coreGridSize.Area(); ++i)
     {
         Task* task = GetNextTask();
@@ -78,8 +79,6 @@ void Processor::SimSteps()
     gMemController.DispatchNext();
 
     // Simulate one step for each tile
-    // Run on all available cores, using OpenMP
-    //#pragma omp parallel for private(i, tile, s)
     for (int bi = 0; bi < coreGridSize.Area(); ++bi)
     {
         // One iteration per block
@@ -89,11 +88,8 @@ void Processor::SimSteps()
         {
             // One iteration per tile
             Tile& tile = block.tiles[i];
-            //for (int s = 0; s < !tile.cpu->isLoadingData && !tile.; ++s)
-            {
-                tile.core.DispatchNext();
-                tile.router.DispatchNext();
-            }
+            tile.core.DispatchNext();
+            tile.router.DispatchNext();
         }
     }
 }
@@ -157,6 +153,10 @@ Task* Processor::GetNextTask()
     {
         if (it->HasMoreBlocks())
         {
+            if (gMemController.task != &*it)
+            {
+                gMemController.LoadExecutable(&*it);
+            }
             return &*it;
         }
     }

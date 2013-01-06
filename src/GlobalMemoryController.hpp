@@ -12,6 +12,7 @@ class elf_file;
 namespace smcsim {
 
 class Processor;
+class Task;
 
 /// The global memory controller simulates transport of packets to and from
 /// main memory
@@ -23,6 +24,8 @@ public:
     static const int GMemIdx = 1024 * 64 - 1;
 
     Processor* processor;
+
+    Task* task;
 
     uint8_t* text;
     uint32_t textVMA;
@@ -69,7 +72,7 @@ public:
 
     /// Load/Store Memory Image
 
-    void LoadExecutable(std::ifstream &stream);
+    void LoadExecutable(Task* task);
 
     void StoreCoreDump();
 

@@ -4,6 +4,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include <iomanip>
 #include <sstream>
@@ -11,12 +12,12 @@
 #include <assert.h>
 #include <stdint.h>
 
-using namespace boost;
-using namespace boost::property_tree;
-using namespace boost::property_tree::ini_parser;
 using namespace smcsim;
 using namespace std;
 
+using boost::filesystem::path;
+using boost::property_tree::ptree;
+using boost::property_tree::ini_parser::read_ini;
 
 namespace {
 
@@ -43,13 +44,15 @@ Task::Task(const std::string& name_,
 {
 }
 
-Task* Task::Create(const std::string& path)
+Task* Task::Create(const std::string& taskConfigPath)
 {
     ptree pt;
-    read_ini(path, pt);
+    read_ini(taskConfigPath, pt);
 
     string name(pt.get<string>("task.executable")); // TODO: Change to name
-    string executable(pt.get<string>("task.executable"));
+
+    path executablePath(taskConfigPath);
+    executablePath.remove_filename() /= pt.get<string>("task.executable");
 
     uint32_t threadIdxAddr(GetHexValue(pt.get<string>("task.thread_idx_addr")));
     uint32_t threadDimAddr(GetHexValue(pt.get<string>("task.thread_dim_addr")));
@@ -61,7 +64,7 @@ Task* Task::Create(const std::string& path)
     int blockWidth(pt.get<int>("task.block_width"));
     int blockHeight(pt.get<int>("task.block_height"));
 
-    return new Task(name, executable,
+    return new Task(name, executablePath.string(),
                     threadIdxAddr, threadDimAddr, blockIdxAddr, blockDimAddr,
                     Dim2(threadHeight, threadWidth),
                     Dim2(blockHeight, blockWidth));
