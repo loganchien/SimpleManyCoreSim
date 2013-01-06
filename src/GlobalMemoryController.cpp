@@ -1,14 +1,17 @@
 #include "GlobalMemoryController.hpp"
 
 #include "Address.hpp"
+#include "Debug.hpp"
 #include "Processor.hpp"
 #include "Router.hpp"
 #include "SimConfig.hpp"
 #include "Tile.hpp"
 
 #include "ArmulatorError.h"
+#include "elf_file.h"
 
 #include <iomanip>
+#include <fstream>
 #include <sstream>
 #include <string>
 
@@ -71,8 +74,71 @@ void GlobalMemoryController::Reset()
     stackVMA = 0;
 }
 
-void GlobalMemoryController::LoadExecutable(elf_file* file)
+void GlobalMemoryController::LoadExecutable(std::ifstream& stream)
 {
+    elf_file elf;
+    elf.get_info(stream);
+
+    for (int i = 0; i < elf.elf_header.e_shnum; i++)
+    {
+        int name_offset = elf.sec_header[i].sh_name;
+        const char* name = &elf.sec_name[name_offset];
+
+        int sh_offset = elf.sec_header[i].sh_offset;
+        int sh_vma = elf.FileOff2VMA(sh_offset);
+        int sh_size = elf.sec_header[i].sh_size;
+
+        if (strcmp(name, ".text") == 0)
+        {
+            text = new uint8_t[sh_size];
+            textVMA = sh_vma;
+            textSize = sh_size;
+            stream.seekg(sh_offset, std::ios_base::beg);
+            stream.read(reinterpret_cast<char*>(text), sh_size);
+        }
+        else if (strcmp(name, ".data") == 0)
+        {
+            data = new uint8_t[sh_size];
+            dataVMA = sh_vma;
+            dataSize = sh_size;
+            stream.seekg(sh_offset, std::ios_base::beg);
+            stream.read(reinterpret_cast<char*>(data), sh_size);
+        }
+        else if (strcmp(name, ".rodata") == 0)
+        {
+            rodata = new uint8_t[sh_size];
+            rodataVMA = sh_vma;
+            rodataSize = sh_size;
+            stream.seekg(sh_offset, std::ios_base::beg);
+            stream.read(reinterpret_cast<char*>(rodata), sh_size);
+        }
+        else if (strcmp(name, ".bss") == 0)
+        {
+            bss = new uint8_t[sh_size];
+            bssVMA = sh_vma;
+            bssSize = sh_size;
+        }
+    }
+
+    // Allocate the heap
+    heapSize = GlobalConfig.HeapSize;
+    heapVMA = 0x80000000u;
+    heap = new uint8_t[heapSize];
+
+    // Allocate the stack for multiple cores
+    stackBeginSize = GlobalConfig.StackSize *
+                     GlobalConfig.CoreBlockSize().Area() *
+                     GlobalConfig.CoreGridSize().Area();
+    stackBeginVMA = heapVMA + heapSize;
+    stackBegin = new uint8_t[stackBeginSize];
+    stackVMA = stackBeginVMA + stackBeginSize;
+    stack = stackBegin + stackBeginSize;
+
+    PrintLine("Address Space: textVMA=" << textVMA);
+    PrintLine("Address Space: dataVMA=" << dataVMA);
+    PrintLine("Address Space: rodataVMA=" << rodataVMA);
+    PrintLine("Address Space: bssVMA=" << bssVMA);
+    PrintLine("Address Space: stackBeginVMA=" << stackBeginVMA);
 }
 
 void GlobalMemoryController::StoreCoreDump()

@@ -63,11 +63,13 @@ public:
 
     void Reset();
 
-    void LoadExecutable(elf_file* file);
+    void EnqueueRequest(const Message& msg);
+
+    /// Load/Store Memory Image
+
+    void LoadExecutable(std::ifstream &stream);
 
     void StoreCoreDump();
-
-    void EnqueueRequest(const Message& msg);
 
     /// Process the next gmem request
     void DispatchNext();
