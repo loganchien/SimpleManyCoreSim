@@ -22,6 +22,15 @@ add_executable (TileSim
   external/armulator/src/Thumb.cpp
   external/armulator/src/elf_file.cpp
   external/armulator/src/swi_semihost.cpp
+  external/boost/libs/filesystem/src/path_traits.cpp
+  external/boost/libs/filesystem/src/portability.cpp
+  external/boost/libs/filesystem/src/unique_path.cpp
+  external/boost/libs/filesystem/src/utf8_codecvt_facet.cpp
+  external/boost/libs/filesystem/src/windows_file_codecvt.cpp
+  external/boost/libs/filesystem/src/path.cpp
+  external/boost/libs/filesystem/src/operations.cpp
+  external/boost/libs/filesystem/src/codecvt_error_category.cpp
+  external/boost/libs/system/src/error_code.cpp
   src/Address.cpp
   src/Cache.cpp
   src/Core.cpp
