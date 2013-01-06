@@ -93,46 +93,68 @@ void GlobalMemoryController::LoadExecutable(Task* task_)
     elf_file elf;
     elf.get_info(stream);
 
+    // Initialize the value
+    assert(!text && !data && !rodata && !heap && !stack);
+
+    textOffset = 0xffffffffu;
+    textVMA = 0xffffffffu;
+    textSize = 0;
+
+    dataOffset = 0xffffffffu;
+    dataVMA = 0xffffffffu;
+    dataSize = 0;
+
+    rodataOffset = 0xffffffffu;
+    rodataVMA = 0xffffffffu;
+    rodataSize = 0;
+
     for (int i = 0; i < elf.elf_header.e_shnum; i++)
     {
-        int name_offset = elf.sec_header[i].sh_name;
-        const char* name = &elf.sec_name[name_offset];
+        uint32_t sh_name_idx = elf.sec_header[i].sh_name;
+        uint32_t sh_flags = elf.sec_header[i].sh_flags;
+        uint32_t sh_size = elf.sec_header[i].sh_size;
+        uint32_t sh_offset = static_cast<uint32_t>(elf.sec_header[i].sh_offset);
+        uint32_t sh_vma = static_cast<uint32_t>(elf.FileOff2VMA(sh_offset));
+        const char* name = &elf.sec_name[sh_name_idx];
 
-        int sh_offset = elf.sec_header[i].sh_offset;
-        int sh_vma = elf.FileOff2VMA(sh_offset);
-        int sh_size = elf.sec_header[i].sh_size;
+        if (sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+        {
+            SetTextSeg(sh_offset, sh_size, sh_vma);
+        }
 
-        if (strcmp(name, ".text") == 0)
+        if (sh_flags == (SHF_ALLOC | SHF_WRITE) && strcmp(name, ".bss") != 0)
         {
-            text = new uint8_t[sh_size];
-            textVMA = sh_vma;
-            textSize = sh_size;
-            stream.seekg(sh_offset, std::ios_base::beg);
-            stream.read(reinterpret_cast<char*>(text), sh_size);
+            SetDataSeg(sh_offset, sh_size, sh_vma);
         }
-        else if (strcmp(name, ".data") == 0)
+
+        if (sh_flags == (SHF_ALLOC))
         {
-            data = new uint8_t[sh_size];
-            dataVMA = sh_vma;
-            dataSize = sh_size;
-            stream.seekg(sh_offset, std::ios_base::beg);
-            stream.read(reinterpret_cast<char*>(data), sh_size);
+            SetRodataSeg(sh_offset, sh_size, sh_vma);
         }
-        else if (strcmp(name, ".rodata") == 0)
+
+        if (strcmp(name, ".bss") == 0)
         {
-            rodata = new uint8_t[sh_size];
-            rodataVMA = sh_vma;
-            rodataSize = sh_size;
-            stream.seekg(sh_offset, std::ios_base::beg);
-            stream.read(reinterpret_cast<char*>(rodata), sh_size);
-        }
-        else if (strcmp(name, ".bss") == 0)
-        {
-            bss = new uint8_t[sh_size];
-            bssVMA = sh_vma;
-            bssSize = sh_size;
+            SetBssSeg(sh_offset, sh_size, sh_vma);
         }
     }
+
+    // Allocate the .init, .text, .fini section
+    text = new uint8_t[textSize];
+    stream.seekg(textOffset + entryPointVMA);
+    stream.read(reinterpret_cast<char*>(text), textSize);
+
+    // Allocate the .data section
+    data = new uint8_t[dataSize];
+    stream.seekg(dataOffset + entryPointVMA);
+    stream.read(reinterpret_cast<char*>(data), dataSize);
+
+    // Allocate the .rodata section
+    rodata = new uint8_t[rodataSize];
+    stream.seekg(rodataOffset + entryPointVMA);
+    stream.read(reinterpret_cast<char*>(rodata), rodataSize);
+
+    // Allocate the .rodata section
+    bss = new uint8_t[bssSize];
 
     // Allocate the heap
     heapSize = GlobalConfig.HeapSize;
@@ -148,14 +170,55 @@ void GlobalMemoryController::LoadExecutable(Task* task_)
     stackVMA = stackBeginVMA + stackBeginSize;
     stack = stackBegin + stackBeginSize;
 
-    PrintLine("Address Space: textVMA=" << textVMA);
-    PrintLine("Address Space: dataVMA=" << dataVMA);
-    PrintLine("Address Space: rodataVMA=" << rodataVMA);
-    PrintLine("Address Space: bssVMA=" << bssVMA);
-    PrintLine("Address Space: stackBeginVMA=" << stackBeginVMA);
+    PrintLine("Address Space: textVMA=" << hex << textVMA << dec);
+    PrintLine("Address Space: dataVMA=" << hex << dataVMA << dec);
+    PrintLine("Address Space: rodataVMA=" << hex << rodataVMA << dec);
+    PrintLine("Address Space: bssVMA=" << hex << bssVMA << dec);
+    PrintLine("Address Space: stackBeginVMA=" << hex << stackBeginVMA << dec);
 
     // Load Entry Point
     entryPointVMA = elf.getEntryPoint();
+}
+
+void GlobalMemoryController::SetTextSeg(uint32_t offset,
+                                        uint32_t size,
+                                        uint32_t vma)
+{
+    if (offset < textOffset)
+        textOffset = offset;
+    if (vma < textVMA)
+        textVMA = vma;
+    textSize += size;
+}
+
+void GlobalMemoryController::SetDataSeg(uint32_t offset,
+                                        uint32_t size,
+                                        uint32_t vma)
+{
+    if (offset < dataOffset)
+        dataOffset = offset;
+    if (vma < dataVMA)
+        dataVMA = vma;
+    dataSize += size;
+}
+
+void GlobalMemoryController::SetRodataSeg(uint32_t offset,
+                                          uint32_t size,
+                                          uint32_t vma)
+{
+    if (offset < rodataOffset)
+        rodataOffset = offset;
+    if (vma < rodataVMA)
+        rodataVMA = vma;
+    rodataSize += size;
+}
+
+void GlobalMemoryController::SetBssSeg(uint32_t offset,
+                                       uint32_t size,
+                                       uint32_t vma)
+{
+    bssVMA = vma;
+    bssSize = size;
 }
 
 void GlobalMemoryController::StoreCoreDump()

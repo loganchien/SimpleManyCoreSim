@@ -28,14 +28,17 @@ public:
     Task* task;
 
     uint8_t* text;
+    uint32_t textOffset;
     uint32_t textVMA;
     uint32_t textSize;
 
     uint8_t* data;
+    uint32_t dataOffset;
     uint32_t dataVMA;
     uint32_t dataSize;
 
     uint8_t* rodata;
+    uint32_t rodataOffset;
     uint32_t rodataVMA;
     uint32_t rodataSize;
 
@@ -94,6 +97,11 @@ public:
 
 private:
     uint8_t* GetMemory(uint32_t addr, uint32_t size);
+
+    void SetTextSeg(uint32_t offset, uint32_t size, uint32_t vma);
+    void SetDataSeg(uint32_t offset, uint32_t size, uint32_t vma);
+    void SetRodataSeg(uint32_t offset, uint32_t size, uint32_t vma);
+    void SetBssSeg(uint32_t offset, uint32_t size, uint32_t vma);
 };
 
 } // end namespace smcsim
