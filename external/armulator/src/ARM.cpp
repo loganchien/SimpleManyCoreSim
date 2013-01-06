@@ -1449,7 +1449,12 @@ MMU * ARM::get_mmu()
   */
 void ARM::InitMMU(const char *file_name)
 {
-    my_mmu = new MMU(file_name);
+    InitMMU(new MMU(file_name));
+}
+
+void ARM::InitMMU(MMU *mmu)
+{
+    my_mmu = mmu;
 
     rSP = my_mmu->getStackTop();
     rPC = my_mmu->getEntry();

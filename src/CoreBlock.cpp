@@ -93,14 +93,14 @@ const Tile& CoreBlock::GetTile(const Dim2& tileIdx) const
 void CoreBlock::ScheduleThread(TaskBlock& taskBlock, Tile& tile)
 {
     assert(runningTaskBlock != 0);
-    Thread nextThread = taskBlock.CreateNextThread(tile);
+    Thread* nextThread = taskBlock.CreateNextThread(tile);
 
     PrintLine("Thread starting: "
               << runningTaskBlock->task->name
-              << " threadIdx=" << nextThread.threadIdx
+              << " threadIdx=" << nextThread->threadIdx
               << " tileIdx=" << tile.tileIdx);
 
-    tile.core.StartThread(&nextThread);
+    tile.core.StartThread(nextThread);
 }
 
 
@@ -116,11 +116,13 @@ void CoreBlock::OnThreadFinished(Thread& thread)
     {
         // Schedule next thread
         ScheduleThread(*thread.taskBlock, *thread.tile);
+        delete &thread;
     }
     else if (thread.taskBlock->IsFinished())
     {
         // All blocks of this task have already been scheduled
         processor->OnTaskBlockFinished(*thread.taskBlock);
+        delete &thread;
     }
     else
     {

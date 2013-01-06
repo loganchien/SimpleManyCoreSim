@@ -1582,7 +1582,12 @@ MMU * Thumb::get_mmu()
   */
 void Thumb::InitMMU(const char *file_name)
 {
-    my_mmu = new MMU(file_name);
+    InitMMU(new MMU(file_name));
+}
+
+void Thumb::InitMMU(MMU *mmu)
+{
+    my_mmu = mmu;
 
     rSP = my_mmu->getStackTop();
     rPC = my_mmu->getEntry();

@@ -3,6 +3,7 @@
 
 namespace smcsim {
     class Core;
+    class MMU;
 }
 
 class CPU;
@@ -21,7 +22,7 @@ public:
 
     ~ArmulatorCPU();
 
-    void init();
+    void init(smcsim::MMU *mmu);
 
     void reset();
 

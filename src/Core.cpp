@@ -1,6 +1,7 @@
 #include "Core.hpp"
 
 #include "Address.hpp"
+#include "Tile.hpp"
 
 #include <assert.h>
 #include <stdint.h>
@@ -20,6 +21,7 @@ void Core::StartThread(Thread* thread)
 
     isLoadingData = false;
     simInstructionCount = simLoadInstructionCount = 0;
+    armulator.init(&tile->mmu);
 }
 
 
@@ -28,16 +30,8 @@ void Core::StartThread(Thread* thread)
 bool Core::DispatchNext()
 {
     if (isLoadingData) return true;
-
     ++simInstructionCount;
-
-    // TODO: Only run/start a single instruction
-
-    // TODO: Call DispatchLoad when encountering a load instruction
-
-    // TODO: If the current instruction was the last instruction (or EOF), call
-    // tile->coreBlock->OnThreadFinished(*currentThread);
-    return true;
+    return armulator.sim_step();
 }
 
 

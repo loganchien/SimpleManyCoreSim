@@ -76,7 +76,7 @@ void Processor::StartBatch(const std::vector<Task>& tasks)
 void Processor::SimSteps()
 {
     // Simulate one GMem step
-    gMemController.DispatchNext();
+    //gMemController.DispatchNext();
 
     // Simulate one step for each tile
     for (int bi = 0; bi < coreGridSize.Area(); ++bi)
@@ -89,7 +89,7 @@ void Processor::SimSteps()
             // One iteration per tile
             Tile& tile = block.tiles[i];
             tile.core.DispatchNext();
-            tile.router.DispatchNext();
+            //tile.router.DispatchNext();
         }
     }
 }

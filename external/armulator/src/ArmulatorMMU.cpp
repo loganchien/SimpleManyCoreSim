@@ -8,6 +8,11 @@ MMU::MMU(const char *file_name)
 {
 }
 
+MMU::MMU(smcsim::MMU* tileMMU)
+    : mmu(tileMMU)
+{
+}
+
 MMU::~MMU()
 {
 }

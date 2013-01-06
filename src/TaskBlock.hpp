@@ -41,7 +41,7 @@ public:
     bool IsFinished();
 
     /// Creates the next Thread from this TaskBlock to run on the given tile
-    Thread CreateNextThread(Tile& tile);
+    Thread* CreateNextThread(Tile& tile);
 };
 
 } // end namespace smcsim
