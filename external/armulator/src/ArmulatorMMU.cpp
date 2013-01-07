@@ -18,76 +18,51 @@ MMU::~MMU()
 }
 
 //! Give out the Thumb instruction
-T_INSTR MMU::getInstr(int address)
+T_INSTR MMU::getInstr(int address, bool simulate_delay)
 {
-    T_INSTR instr = 0u;
-    if (!mmu->LoadReadyHalfWord(address, instr))
-    {
-        throw LoadStall();
-    }
-    return instr;
+    return mmu->GetHalfWord(address, false);
 }
 
 //! Give out the ARM instruction
-A_INSTR MMU::getInstr32(int address)
+A_INSTR MMU::getInstr32(int address, bool simulate_delay)
 {
-    A_INSTR instr = 0u;
-    if (!mmu->LoadReadyWord(address, instr))
-    {
-        throw LoadStall();
-    }
-    return instr;
+    return mmu->GetWord(address, false);
 }
 
 //! Output byte data by address
-BYTE MMU::get_byte(int address)
+BYTE MMU::get_byte(int address, bool simulate_delay)
 {
-    BYTE result = 0;
-    if (!mmu->LoadReadyByte(address, result))
-    {
-        throw LoadStall();
-    }
-    return result;
+    return mmu->GetByte(address, simulate_delay);
 }
 
 //! Output halfword data by address
-HALFWORD MMU::get_halfword(int address)
+HALFWORD MMU::get_halfword(int address, bool simulate_delay)
 {
-    HALFWORD result = 0;
-    if (!mmu->LoadReadyHalfWord(address, result))
-    {
-        throw LoadStall();
-    }
-    return result;
+    return mmu->GetHalfWord(address, simulate_delay);
 }
 
 //! Output word data by address
-WORD MMU::get_word(int address)
+WORD MMU::get_word(int address, bool simulate_delay)
 {
-    WORD result = 0;
-    if (!mmu->LoadReadyWord(address, result))
-    {
-        throw LoadStall();
-    }
-    return result;
+    return mmu->GetWord(address, simulate_delay);
 }
 
 //! Input byte data by address
-void MMU::set_byte(int address, BYTE data)
+void MMU::set_byte(int address, BYTE data, bool simulate_delay)
 {
-    mmu->StoreByte(address, data);
+    mmu->SetByte(address, data, simulate_delay);
 }
 
 //! Input halfword data by address
-void MMU::set_halfword(int address, HALFWORD data)
+void MMU::set_halfword(int address, HALFWORD data, bool simulate_delay)
 {
-    mmu->StoreHalfWord(address, data);
+    mmu->SetHalfWord(address, data, simulate_delay);
 }
 
 //! Input word data by address
-void MMU::set_word(int address, WORD data)
+void MMU::set_word(int address, WORD data, bool simulate_delay)
 {
-    mmu->StoreWord(address, data);
+    mmu->SetWord(address, data, simulate_delay);
 }
 
 

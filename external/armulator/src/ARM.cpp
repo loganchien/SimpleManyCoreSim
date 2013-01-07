@@ -1271,7 +1271,7 @@ void ARM::ld_str_imm_off(A_INSTR instruction)
 
     if (L == 1 && B == 0)//LDR
     {
-        int data = my_mmu->get_word(operand);
+        int data = my_mmu->get_word(operand, true);
         if (Rd == 15)
         {
             rPC = data & 0xfffffffc;
@@ -1282,7 +1282,7 @@ void ARM::ld_str_imm_off(A_INSTR instruction)
 
     if (L == 1 && B == 1)//LDRB
     {
-        r[Rd] = my_mmu->get_byte(operand);
+        r[Rd] = my_mmu->get_byte(operand, true);
     }
 
     if (L == 0 && B == 0)//str

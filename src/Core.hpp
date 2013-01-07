@@ -24,11 +24,11 @@ public:
     /// The currently running thread
     Thread* currentThread;
 
-    /// Whether this Core is currently waiting for off-chip data
-    bool isLoadingData;
-
     /// The total amount of instructions
     long long simInstructionCount, simLoadInstructionCount;
+
+    /// The counter for load stall
+    int loadStallDelay;
 
     /// The ARM/Thumb CPU core provided by ARMulator
     ArmulatorCPU armulator;
@@ -46,6 +46,8 @@ public:
 
     /// Called by MMU when it received data that this Core is waiting for
     void CommitLoad(uint32_t data);
+
+    void OnLoadStall(int delay);
 };
 
 } // end namespace smcsim

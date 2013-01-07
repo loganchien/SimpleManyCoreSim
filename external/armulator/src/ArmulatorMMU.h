@@ -20,28 +20,28 @@ public:
     ~MMU();
 
     //! Give out the Thumb instruction
-    T_INSTR getInstr(int address);
+    T_INSTR getInstr(int address, bool simulate_delay = false);
 
     //! Give out the ARM instruction
-    A_INSTR getInstr32(int address);
+    A_INSTR getInstr32(int address, bool simulate_delay = false);
 
     //! Output byte data by address
-    BYTE get_byte(int address);
+    BYTE get_byte(int address, bool simulate_delay = false);
 
     //! Output halfword data by address
-    HALFWORD get_halfword(int address);
+    HALFWORD get_halfword(int address, bool simulate_delay = false);
 
     //! Output word data by address
-    WORD get_word(int address);
+    WORD get_word(int address, bool simulate_delay = false);
 
     //! Input byte data by address
-    void set_byte(int address, BYTE data);
+    void set_byte(int address, BYTE data, bool simulate_delay = false);
 
     //! Input halfword data by address
-    void set_halfword(int address, HALFWORD data);
+    void set_halfword(int address, HALFWORD data, bool simulate_delay = false);
 
     //! Input word data by address
-    void set_word(int address, WORD data);
+    void set_word(int address, WORD data, bool simulate_delay = false);
 
     //! Give out the starting PC
     int getEntry();

@@ -12,13 +12,15 @@
 #include "Thread.hpp"
 #include "Tile.hpp"
 
+#include "ArmulatorError.h"
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 
 using namespace smcsim;
 
-MMU::MMU(Tile* tile_): tile(tile_)
+MMU::MMU(Tile* tile_): tile(tile_), loadStallAddr(0)
 { }
 
 /// New custom function that we call during start-up
@@ -239,33 +241,31 @@ void MMU::SendResponse(MessageType type, const Dim2& receiver, const int reqId,
 }
 
 
-/// Load the byte at the address in the memory without stall.  If the byte
-/// can't be retrived without the stall, then return false.
-bool MMU::LoadReadyByte(uint32_t addr, uint8_t& byte)
+/// Load the byte at the address in the memory.  If the byte can't be
+/// retrived without the stall, then throw LoadStall exception.
+uint8_t MMU::GetByte(uint32_t addr, bool simulateDelay)
 {
-    bool ready = true;
     // TODO: Should look for cache line instead
+    SimulateLoadStall(simulateDelay, addr);
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    byte = gmc.LoadByte(addr, tile);
-    return ready;
+    return gmc.LoadByte(addr, tile);
 }
 
 
-/// Load the half word at the address in the memory without stall.  If the
-/// half word can't be retrived without the stall, then return false.
-bool MMU::LoadReadyHalfWord(uint32_t addr, uint16_t& halfword)
+/// Load the half word at the address in the memory.  If the half word
+/// can't be retrived without the stall, then throw LoadStall exception.
+uint16_t MMU::GetHalfWord(uint32_t addr, bool simulateDelay)
 {
-    bool ready = true;
     // TODO: Should look for cache line instead
+    SimulateLoadStall(simulateDelay, addr);
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    halfword = gmc.LoadHalfWord(addr, tile);
-    return ready;
+    return gmc.LoadHalfWord(addr, tile);
 }
 
 
-/// Load the word at the address in the memory without stall.  If the word
-/// can't be retrived without the stall, then return false.
-bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
+/// Load the word at the address in the memory.  If the word can't be
+/// retrived without the stall, then throw LoadStall exception.
+uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
 {
     // If the addr is mapped to special range, then return the special value,
     // such as threadIdx, threadDim, blockIdx, blockDim.
@@ -273,12 +273,8 @@ bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
     TaskBlock* taskBlock = thread->taskBlock;
     Task* task = taskBlock->task;
 
-#define VAR_VALUE_MAP(ADDR, VAR)                                        \
-    if (addr == (ADDR)) \
-    { \
-        word = (VAR); \
-        return true; \
-    }
+#define VAR_VALUE_MAP(ADDR, VAR) \
+    if (addr == (ADDR)) { return (VAR); }
 
     VAR_VALUE_MAP(task->threadIdxAddr + 0, thread->threadIdx.y);
     VAR_VALUE_MAP(task->threadIdxAddr + 4, thread->threadIdx.x);
@@ -291,33 +287,55 @@ bool MMU::LoadReadyWord(uint32_t addr, uint32_t& word)
 
 #undef VAR_VALUE_MAP
 
-    // Load the real values
-    bool ready = true;
+    // Load word from memory
+    SimulateLoadStall(simulateDelay, addr);
     // TODO: Should look for cache line instead
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    word = gmc.LoadWord(addr, tile);
-    return ready;
+    return gmc.LoadWord(addr, tile);
 }
 
 /// Store the byte at the address in the memory.
-void MMU::StoreByte(uint32_t addr, uint8_t byte)
+void MMU::SetByte(uint32_t addr, uint8_t byte, bool simulateDelay)
 {
+    assert(!simulateDelay && "Simulate delay for store is not implemented");
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
     gmc.StoreByte(addr, byte, tile);
 }
 
 /// Store the half word at the address in the memory.
-void MMU::StoreHalfWord(uint32_t addr, uint16_t halfword)
+void MMU::SetHalfWord(uint32_t addr, uint16_t halfword, bool simulateDelay)
 {
+    assert(!simulateDelay && "Simulate delay for store is not implemented");
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
     gmc.StoreHalfWord(addr, halfword, tile);
 }
 
 /// Store the word at the address in the memory.
-void MMU::StoreWord(uint32_t addr, uint32_t word)
+void MMU::SetWord(uint32_t addr, uint32_t word, bool simulateDelay)
 {
+    assert(!simulateDelay && "Simulate delay for store is not implemented");
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
     gmc.StoreWord(addr, word, tile);
+}
+
+void MMU::SimulateLoadStall(bool simulateDelay, uint32_t addr)
+{
+    if (simulateDelay && GlobalConfig.MemDelay > 1)
+    {
+        if (addr == loadStallAddr)
+        {
+            // Second trail after the load stall.  Reset the address and serve
+            // the request.
+            loadStallAddr = 0;
+        }
+        else
+        {
+            // The CPU will execute the load instruction again after (MEM_DELAY
+            // - 2) clock so that it can load the data.
+            loadStallAddr = addr;
+            throw LoadStall(GlobalConfig.MemDelay - 2);
+        }
+    }
 }
 
 int MMU::GetEntry()

@@ -12,7 +12,7 @@
 using namespace smcsim;
 
 Core::Core(Tile* tile_)
-    : tile(tile_), currentThread(NULL), isLoadingData(false),
+    : tile(tile_), currentThread(NULL), loadStallDelay(0),
       simInstructionCount(0), simLoadInstructionCount(0)
 {
 }
@@ -22,10 +22,9 @@ Core::Core(Tile* tile_)
 void Core::StartThread(Thread* thread)
 {
     currentThread = thread;
-
-    isLoadingData = false;
-    simInstructionCount = simLoadInstructionCount = 0;
-    armulator.init(&tile->mmu);
+    simInstructionCount = 0;
+    simLoadInstructionCount = 0;
+    armulator.init(this, &tile->mmu);
 }
 
 
@@ -33,8 +32,15 @@ void Core::StartThread(Thread* thread)
 /// false, if there are no more instructions to execute (i.e. EOF reached).
 bool Core::DispatchNext()
 {
-    if (!currentThread) return false;
-    if (isLoadingData) return true;
+    if (!currentThread)
+    {
+        return false;
+    }
+    if (loadStallDelay > 0)
+    {
+        --loadStallDelay;
+        return true;
+    }
     ++simInstructionCount;
 
     if (!armulator.sim_step())
@@ -55,11 +61,16 @@ bool Core::DispatchNext()
 }
 
 
+void Core::OnLoadStall(int delay)
+{
+    assert(delay >= 0);
+    loadStallDelay = delay;
+}
+
+
 /// Called by MMU when it received data that this Core is waiting for
 void Core::CommitLoad(uint32_t data)
 {
-    assert(isLoadingData);
-
     // TODO: Separate LOAD instruction into two parts:
     // 1. The instruction handler calls MMU.LoadWord(address)
     // 2. This function is called by MMU upon request completion (might be
@@ -69,6 +80,4 @@ void Core::CommitLoad(uint32_t data)
     // TODO: Figure out which part of the requested word is needed (which byte,
     // which half-word, or the entire word?) Possibly by just storing the
     // requested length in a variable before in DispatchLoad
-
-    isLoadingData = false;
 }

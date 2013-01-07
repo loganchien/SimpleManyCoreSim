@@ -507,7 +507,7 @@ void Thumb::ld_str_reg_offset(const T_INSTR instruction)
     	{
             int addr = r[Rm] + r[Rn];
             if ((addr & MASK_2BIT) == 0)
-                r[Rd] = my_mmu->get_word(addr);
+                r[Rd] = my_mmu->get_word(addr, true);
             else
             {
                 UnexpectInst e;
@@ -521,7 +521,7 @@ void Thumb::ld_str_reg_offset(const T_INSTR instruction)
         case 6://LDRB
         {
             int addr = r[Rn] + r[Rm];
-            r[Rd] = my_mmu->get_byte(addr) & 0xff;//return is unsigned, automatically zero extend
+            r[Rd] = my_mmu->get_byte(addr, true) & 0xff;//return is unsigned, automatically zero extend
 
             break;
         }
@@ -529,7 +529,7 @@ void Thumb::ld_str_reg_offset(const T_INSTR instruction)
         {
             int addr = r[Rn] + r[Rm];
             if ((addr & MASK_1BIT) == 0)
-                r[Rd] = my_mmu->get_halfword(addr) & 0xffff;//zero extend
+                r[Rd] = my_mmu->get_halfword(addr, true) & 0xffff;//zero extend
             else
             {
                 UnexpectInst e;
@@ -543,7 +543,7 @@ void Thumb::ld_str_reg_offset(const T_INSTR instruction)
         case 3://LDRSB
         {
             int addr = r[Rn] + r[Rm];
-            r[Rd] = SignExtend(my_mmu->get_byte(addr), 8);//sign extend
+            r[Rd] = SignExtend(my_mmu->get_byte(addr, true), 8);//sign extend
             break;
         }
         case 7://LDRSH
@@ -557,7 +557,7 @@ void Thumb::ld_str_reg_offset(const T_INSTR instruction)
                 throw e;
             }
 
-            r[Rd] = SignExtend(my_mmu->get_halfword(addr), 16);//sign extend
+            r[Rd] = SignExtend(my_mmu->get_halfword(addr, true), 16);//sign extend
         	break;
         }
         case 0://STR(2)
@@ -626,7 +626,7 @@ void Thumb::ld_from_pool(const T_INSTR instruction)
     int offset = (instruction) & MASK_8BIT;
     int address = ((rPC + 2) & 0xfffffffc) + (offset * 4);//pc + 2, due to pipeline
 
-    r[Rd] = my_mmu->get_word(address);//memory accessA7-51
+    r[Rd] = my_mmu->get_word(address, true);//memory accessA7-51
 
 }
 
@@ -1049,7 +1049,7 @@ void Thumb::ld_str_word_byte_imm(const T_INSTR instruction)
             e.error_name = tmp;
             throw e;
         }
-        r[Rd] = my_mmu->get_word(addr);
+        r[Rd] = my_mmu->get_word(addr, true);
     }
 
 //memory access, LDRB(1), A7-55, 01111
@@ -1057,7 +1057,7 @@ void Thumb::ld_str_word_byte_imm(const T_INSTR instruction)
     {
         int addr = r[Rn] + offset;
 
-        r[Rd] = my_mmu->get_byte(addr);
+        r[Rd] = my_mmu->get_byte(addr, true);
     }
 
 
@@ -1113,7 +1113,7 @@ void Thumb::ld_str_stack(const T_INSTR instruction)
             throw e;
         }
 
-        r[Rd] = my_mmu->get_word(addr);
+        r[Rd] = my_mmu->get_word(addr, true);
     }
 //(Birdman#1#): memory access, STR(3), A7-103
     if (L == 0)
@@ -1158,7 +1158,7 @@ void Thumb::ld_str_halfw_imm(const T_INSTR instruction)
             throw e;
         }
 
-        r[Rd] = my_mmu->get_halfword(addr) & 0xffff;//zero extend
+        r[Rd] = my_mmu->get_halfword(addr, true) & 0xffff;//zero extend
     }
 //(Birdman#1#): memory access, STRH(1), A7-109, 10000
     if (L == 0)
@@ -1270,12 +1270,12 @@ void Thumb::misc(const T_INSTR instruction)
                 if (((reg_list>>i) & MASK_1BIT) == 1)
                 {
                     //r[i] = my_mmu->pop_stack(rSP);//get reg from memory, addr's content, A7-83
-                    r[i] = my_mmu->get_word(addr);
+                    r[i] = my_mmu->get_word(addr, false); // TODO: We should figure out a solution to workaround the multiple load problem.
                     addr +=4;
                 }
             if (R == 1)
             {
-                int value = my_mmu->get_word(addr);//my_mmu->pop_stack(addr);//get addr's content, A7-83
+                int value = my_mmu->get_word(addr, true);//my_mmu->pop_stack(addr);//get addr's content, A7-83
                 rPC = value & 0xfffffffe;
                 if ((value & MASK_1BIT) == 0)
                 {
@@ -1398,7 +1398,7 @@ void Thumb::ld_str_multiple(const T_INSTR instruction)
         for (int i = 0; i < 8; i++)
             if (((reg_list>>i) & MASK_1BIT) == 1)
             {
-                r[i] = my_mmu->get_word(addr); //memory access, A7-45
+                r[i] = my_mmu->get_word(addr, false); //memory access, A7-45 // TODO: We should figure out a solution to workaround the multiple load problem.
                 addr +=4;
             }
         assert(end_addr  == addr -4);

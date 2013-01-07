@@ -22,7 +22,7 @@ public:
 
     ~ArmulatorCPU();
 
-    void init(smcsim::MMU *mmu);
+    void init(smcsim::Core *core, smcsim::MMU *mmu);
 
     void reset();
 

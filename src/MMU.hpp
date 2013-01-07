@@ -56,6 +56,8 @@ public:
      */
     std::vector<OutstandingRequest> requests;
 
+    uint32_t loadStallAddr;
+
 
     // #################### Simulation stuff ##################################
 
@@ -123,26 +125,26 @@ public:
 
     // #################### Interfaces for ARMulator ##########################
 
-    /// Load the byte at the address in the memory without stall.  If the byte
-    /// can't be retrived without the stall, then return false.
-    bool LoadReadyByte(uint32_t addr, uint8_t& byte);
+    /// Load the byte at the address in the memory.  If the byte can't be
+    /// retrived without the stall, then throw LoadStall exception.
+    uint8_t GetByte(uint32_t addr, bool simulateDelay);
 
-    /// Load the half word at the address in the memory without stall.  If the
-    /// half word can't be retrived without the stall, then return false.
-    bool LoadReadyHalfWord(uint32_t addr, uint16_t& halfword);
+    /// Load the half word at the address in the memory.  If the half word
+    /// can't be retrived without the stall, then throw LoadStall exception.
+    uint16_t GetHalfWord(uint32_t addr, bool simulateDelay);
 
-    /// Load the word at the address in the memory without stall.  If the word
-    /// can't be retrived without the stall, then return false.
-    bool LoadReadyWord(uint32_t addr, uint32_t& word);
+    /// Load the word at the address in the memory.  If the word can't be
+    /// retrived without the stall, then throw LoadStall exception.
+    uint32_t GetWord(uint32_t addr, bool simulateDelay);
 
     /// Store the byte at the address in the memory.
-    void StoreByte(uint32_t addr, uint8_t byte);
+    void SetByte(uint32_t addr, uint8_t byte, bool simulateDelay);
 
     /// Store the half word at the address in the memory.
-    void StoreHalfWord(uint32_t addr, uint16_t halfword);
+    void SetHalfWord(uint32_t addr, uint16_t halfword, bool simulateDelay);
 
     /// Store the word at the address in the memory.
-    void StoreWord(uint32_t addr, uint32_t word);
+    void SetWord(uint32_t addr, uint32_t word, bool simulateDelay);
 
     int GetEntry();
 
@@ -153,6 +155,9 @@ public:
     int GetHeapTop();
 
     int GetHeapSize();
+
+private:
+    void SimulateLoadStall(bool simulateDelay, uint32_t addr);
 };
 
 } // end namespace smcsim

@@ -21,8 +21,9 @@ ArmulatorCPU::~ArmulatorCPU()
     reset();
 }
 
-void ArmulatorCPU::init(smcsim::MMU *tileMMU)
+void ArmulatorCPU::init(smcsim::Core *tileCore, smcsim::MMU *tileMMU)
 {
+    core = tileCore;
     cpu = new ARM();
     cpu->InitMMU(new MMU(tileMMU));
 }
@@ -64,6 +65,7 @@ bool ArmulatorCPU::sim_step()
     catch (LoadStall &e)
     {
         cpu->unfetch();
+        core->OnLoadStall(e.delay);
         return true;
     }
     catch (SwitchMode &e)

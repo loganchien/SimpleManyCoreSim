@@ -89,6 +89,10 @@ public:
 class LoadStall
 {
 public:
+    int delay;
+
+    LoadStall(int d) : delay(d)
+    { }
 };
 
 /*!	\exception ProgramEnd
