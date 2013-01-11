@@ -68,9 +68,8 @@ void Cache::Reset()
 bool Cache::GetEntry(const Address& addr, CacheLine* line)
 {
     ++simAccessCount;
-
-    line = &lines[addr.GetL1Index() - offset];
-    if (line->valid && line->tag == addr.GetL1Tag())
+    line = &lines[addr.GetIndex(GetIndexMask()) - offset];
+    if (line->valid && line->tag == addr.GetTag(GetTagShift()))
     {
         // cache hit
         return true;
@@ -79,4 +78,11 @@ bool Cache::GetEntry(const Address& addr, CacheLine* line)
     // cache miss
     ++simMissCount;
     return false;
+}
+
+int Cache::GetIndexMask(){
+	return size*GlobalConfig.CacheLineSize-1;
+}
+int Cache::GetTagShift(){
+	return SimConfig::numbCacheLineBits + int(log(size)/log(2));
 }

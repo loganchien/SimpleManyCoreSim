@@ -6,6 +6,16 @@
 
 using namespace smcsim;
 
+uint32_t Address::GetIndex(int mask) const
+{
+    return (mask & (raw>>SimConfig::numbCacheLineBits));
+}
+
+uint32_t Address::GetTag(int shift) const
+{
+    return raw>>shift; 
+}
+
 uint32_t Address::GetL1Index() const
 {
     return (GlobalConfig.CacheL1Size-1 & (raw>>SimConfig::numbCacheLineBits));

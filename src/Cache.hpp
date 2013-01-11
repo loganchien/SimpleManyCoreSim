@@ -61,6 +61,8 @@ public:
 
     /// Get the entry of the given address
     bool GetEntry(const Address& addr, CacheLine* line);
+	int GetIndexMask();
+	int GetTagShift();
 };
 
 } // end namespace smcsim

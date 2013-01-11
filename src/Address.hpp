@@ -15,6 +15,8 @@ public:
 public:
     Address(uint32_t addr = 0u): raw(addr)
     { }
+	uint32_t GetIndex(int mask) const;
+    uint32_t GetTag(int shift) const;
 
     uint32_t GetL1Index() const;
     uint32_t GetL1Tag() const;

@@ -245,10 +245,9 @@ void MMU::SendResponse(MessageType type, const Dim2& receiver, const int reqId,
 /// retrived without the stall, then throw LoadStall exception.
 uint8_t MMU::GetByte(uint32_t addr, bool simulateDelay)
 {
-    // TODO: Should look for cache line instead
-    SimulateLoadStall(simulateDelay, addr);
-    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    return gmc.LoadByte(addr, tile);
+	uint32_t word = GetWord(addr,simulateDelay);
+	uint32_t shift = addr & 0x7u;
+	return (word >> (shift * 4));
 }
 
 
@@ -256,10 +255,9 @@ uint8_t MMU::GetByte(uint32_t addr, bool simulateDelay)
 /// can't be retrived without the stall, then throw LoadStall exception.
 uint16_t MMU::GetHalfWord(uint32_t addr, bool simulateDelay)
 {
-    // TODO: Should look for cache line instead
-    SimulateLoadStall(simulateDelay, addr);
-    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    return gmc.LoadHalfWord(addr, tile);
+	uint32_t word = GetWord(addr,simulateDelay);
+	uint32_t shift = addr & 0x3u;
+	return (word >> (shift * 8));
 }
 
 
@@ -287,9 +285,39 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
 
 #undef VAR_VALUE_MAP
 
-    // Load word from memory
-    SimulateLoadStall(simulateDelay, addr);
-    // TODO: Should look for cache line instead
+	// Lookup in caches
+	CacheLine* line = new CacheLine();
+	Address formatedAddr = Address(addr);
+	 
+	task->Stats.TotalSimulationTime.TotalCount += GlobalConfig.CacheL1Delay;
+	task->Stats.L1AccessCount.TotalCount++;
+
+	if(!l1.GetEntry(addr,line)){
+		// not found in L1 cache:
+		// update stats: L1 miss + L2 access
+		task->Stats.L1MissCount.TotalCount++;
+		task->Stats.TotalSimulationTime.TotalCount += task->Stats.MemAccessTime.TotalCount += GlobalConfig.CacheL1Delay;
+		task->Stats.L2AccessCount.TotalCount++;
+
+		// Look in L2 cache
+		if (!l2.GetEntry(addr,line)){
+			// not found in L2 cache
+			// update stats: L2 miss + memory access
+			task->Stats.L2MissCount.TotalCount++;
+			task->Stats.MemAccessTime.TotalCount += GlobalConfig.MemDelay;
+
+			// Simulate load stall
+			SimulateLoadStall(simulateDelay, addr);		
+
+		}
+		else{
+			return line->GetWord(formatedAddr);
+		}
+	}
+	else{
+		return line->GetWord(formatedAddr);
+	}
+
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
     return gmc.LoadWord(addr, tile);
 }
