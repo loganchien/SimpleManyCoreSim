@@ -84,5 +84,5 @@ int Cache::GetIndexMask(){
 	return size*GlobalConfig.CacheLineSize-1;
 }
 int Cache::GetTagShift(){
-	return SimConfig::numbCacheLineBits + int(log(size)/log(2));
+	return SimConfig::numbCacheLineBits + int(log(size*64)/log(2));
 }
