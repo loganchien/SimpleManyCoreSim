@@ -108,17 +108,19 @@ void Processor::CollectStats(TaskBlock& taskBlock)
     Tile* t = taskBlock.assignedBlock->tiles;
 
     Cache *l1,*l2;
-    long long totalL1AccessCount(0),totalL1MissCount(0),avgL1MissRate(0);	// Cache L1 stats
-    long long totalL2AccessCount(0),totalL2MissCount(0),avgL2MissRate(0);	// Cache L1 stats
+    long long totalL1AccessCount(0),totalL1MissCount(0); // Cache L1 stats
+	double avgL1MissRate(0);	
+    long long totalL2AccessCount(0),totalL2MissCount(0);	// Cache L1 stats
+	double avgL2MissRate(0);
     long long totalInstructions(0),totalLoadInstructions(0);			// Core (CPU) stats
-    long long avgSimTime(0), maxSimTime(0);					// MMU stats
+    long long avgSimTime(0), totalSimTime(0);					// MMU stats
     long long totalPacketsReceived(0);						// Router stats
 
 
     for(int i=0; i < coreBlockArea; i++){	// iterate over each tile in CoreBlock to get statistics:
         /// Cache and Router statistics:
         avgSimTime+=t[i].mmu.simTime/coreBlockArea; //normalize to get average
-        maxSimTime=std::max(maxSimTime,t[i].mmu.simTime);
+        totalSimTime+=t[i].mmu.simTime;
         l1 = &t[i].mmu.l1;
         totalL1AccessCount+=l1->simAccessCount;	//or better to directly take averages?
         totalL1MissCount+=l1->simMissCount;
@@ -135,13 +137,11 @@ void Processor::CollectStats(TaskBlock& taskBlock)
     // Calculate averages out of totals:
     if (totalL1MissCount + totalL1AccessCount > 0)
     {
-        // TODO: Change to use "double" as the type.
-        avgL1MissRate = totalL1MissCount/(totalL1MissCount+totalL1AccessCount);
+        avgL1MissRate = (double)(totalL1MissCount/(totalL1MissCount+totalL1AccessCount));
     }
     if (totalL2MissCount + totalL2AccessCount > 0)
     {
-        // TODO: Change to use "double" as the type.
-        avgL2MissRate = totalL2MissCount/(totalL2MissCount+totalL2AccessCount);
+        avgL2MissRate = (double)(totalL2MissCount/(totalL2MissCount+totalL2AccessCount));
     }
 
     taskBlock.task->Stats.InstructionCount.TotalCount += totalInstructions;
@@ -150,9 +150,9 @@ void Processor::CollectStats(TaskBlock& taskBlock)
     taskBlock.task->Stats.L1MissCount.TotalCount +=totalL1MissCount;
     taskBlock.task->Stats.L2AccessCount.TotalCount +=totalL2AccessCount;
     taskBlock.task->Stats.L2MissCount.TotalCount +=totalL2MissCount;
-    taskBlock.task->Stats.TotalSimulationTime.TotalCount += maxSimTime;
+    taskBlock.task->Stats.TotalSimulationTime.TotalCount += totalSimTime;
     taskBlock.task->Stats.AverageSimulationTimeTile.TotalCount += avgSimTime;
-    taskBlock.task->Stats.MemAccessTime.TotalCount ; // TODO ADD!
+    //taskBlock.task->Stats.MemAccessTime.TotalCount ; // TODO ADD!
     taskBlock.task->Stats.TotalRouterPackets.TotalCount += totalPacketsReceived;
     taskBlock.task->Stats.TotalThreadCount++;
 }
@@ -275,6 +275,7 @@ void Processor::OnTaskFinished(Task& task)
 void Processor::OnBatchFinished()
 {
     PrintLine("Batch finished: " << batchNum);
+	EvaluateStats();
     batchFinished = true;
 }
 

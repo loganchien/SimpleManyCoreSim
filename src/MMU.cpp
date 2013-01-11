@@ -290,20 +290,20 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
 	Address formatedAddr = Address(addr);
 	 
 	task->Stats.TotalSimulationTime.TotalCount += GlobalConfig.CacheL1Delay;
-	task->Stats.L1AccessCount.TotalCount++;
+	l1.simAccessCount++;
 
 	if(!l1.GetEntry(addr,line)){
 		// not found in L1 cache:
 		// update stats: L1 miss + L2 access
-		task->Stats.L1MissCount.TotalCount++;
+		l1.simMissCount++;
 		task->Stats.TotalSimulationTime.TotalCount += task->Stats.MemAccessTime.TotalCount += GlobalConfig.CacheL1Delay;
-		task->Stats.L2AccessCount.TotalCount++;
+		l2.simAccessCount++;
 
 		// Look in L2 cache
 		if (!l2.GetEntry(addr,line)){
 			// not found in L2 cache
 			// update stats: L2 miss + memory access
-			task->Stats.L2MissCount.TotalCount++;
+			l2.simMissCount++;
 			task->Stats.MemAccessTime.TotalCount += GlobalConfig.MemDelay;
 
 			// Simulate load stall
