@@ -275,7 +275,6 @@ void Processor::OnTaskFinished(Task& task)
 void Processor::OnBatchFinished()
 {
     PrintLine("Batch finished: " << batchNum);
-	EvaluateStats();
     batchFinished = true;
 }
 
