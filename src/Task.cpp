@@ -109,6 +109,7 @@ void Task::WriteTaskStatsToFile(){
 	ofstream statFile;
 	//char path[] = "//results//taskstats.txt";
 	char path[] = "taskstats.txt";
+	PrintLine("Writing results to file");
 	statFile.open (path,ios::out | ios::app);
 	statFile << name << "," << Stats.TotalThreadCount 
 		<< "," << Stats.InstructionCount.TotalCount
@@ -122,6 +123,6 @@ void Task::WriteTaskStatsToFile(){
 		<< "," << Stats.L2AccessCount.TotalCount
 		<< "," << Stats.L2MissCount.TotalCount
 		<< endl ;
-	
+	PrintLine("L2 miss count: " << Stats.L2MissCount.TotalCount );
 	statFile.close();
 }
