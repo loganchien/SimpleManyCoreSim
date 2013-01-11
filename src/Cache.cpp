@@ -2,7 +2,7 @@
 
 #include "Address.hpp"
 #include "SimConfig.hpp"
-
+#include <math.h>
 #include <vector>
 #include <stdint.h>
 
@@ -84,5 +84,5 @@ int Cache::GetIndexMask(){
 	return size*GlobalConfig.CacheLineSize-1;
 }
 int Cache::GetTagShift(){
-	return SimConfig::numbCacheLineBits + int(log(double(size))/log(2.0));
+	return SimConfig::numbCacheLineBits + int(log(size)/log(2));
 }
