@@ -22,6 +22,6 @@ int main() {
 
     //write_pair(1, "result.row= ", row);
     //write_pair(1, "result.col= ", col);
-    dump1(1, sum);
+    //dump1(1, sum);
     return 0;
 }
