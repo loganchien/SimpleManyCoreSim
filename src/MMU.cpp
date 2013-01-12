@@ -245,9 +245,10 @@ void MMU::SendResponse(MessageType type, const Dim2& receiver, const int reqId,
 /// retrived without the stall, then throw LoadStall exception.
 uint8_t MMU::GetByte(uint32_t addr, bool simulateDelay)
 {
-	uint32_t word = GetWord(addr,simulateDelay);
-	uint32_t shift = addr & 0x7u;
-	return (word >> (shift * 4));
+    uint32_t align = addr & ~0x3u;
+    uint32_t shift = addr & 0x3u;
+    uint32_t word = GetWord(align, simulateDelay);
+    return (word >> (shift * 8));
 }
 
 
@@ -255,9 +256,11 @@ uint8_t MMU::GetByte(uint32_t addr, bool simulateDelay)
 /// can't be retrived without the stall, then throw LoadStall exception.
 uint16_t MMU::GetHalfWord(uint32_t addr, bool simulateDelay)
 {
-	uint32_t word = GetWord(addr,simulateDelay);
-	uint32_t shift = addr & 0x3u;
-	return (word >> (shift * 8));
+    assert((addr & 0x1u) == 0);
+    uint32_t align = addr & ~0x3u;
+    uint32_t shift = addr & 0x3u;
+    uint32_t word = GetWord(align, simulateDelay);
+    return (word >> (shift * 8));
 }
 
 
