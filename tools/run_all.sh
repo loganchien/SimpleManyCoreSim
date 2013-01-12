@@ -28,7 +28,10 @@ for task in ${TASKS}; do
     if [ "$1" = "debug" ]; then
       gdb --args ${BUILD_DIR}/TileSim "${cfg}" "${task}"
     else
-      time ${BUILD_DIR}/TileSim "${cfg}" "${task}" 2>&1 | tee "run$i.log"
+      ${BUILD_DIR}/TileSim "${cfg}" "${task}"
+      if [ "$?" != "0" ]; then
+        echo "Finished with error: $?"
+      fi
     fi
   done
 
