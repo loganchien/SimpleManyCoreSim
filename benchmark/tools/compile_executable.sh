@@ -71,7 +71,7 @@ ${CC} ${CFLAGS} "${INPUT_FILE}" -o "${OUTPUT_EXECUTABLE}"
 
 rm -f "${OUTPUT_CONFIG}"
 echo "[task]" >> "${OUTPUT_CONFIG}"
-echo "executable=${OUTPUT_EXECUTABLE}" >> "${OUTPUT_CONFIG}"
+echo "executable=${OUTPUT_NAME}" >> "${OUTPUT_CONFIG}"
 
 get_addr () {
   ${OBJDUMP} -t ${OUTPUT_EXECUTABLE} | grep $1 | awk '{ print $1 }'
