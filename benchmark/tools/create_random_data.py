@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import random
+import sys
 
-SIZE = 256
+SIZE = int(sys.argv[1])
 
 for i in range(SIZE):
     for j in range(SIZE):
