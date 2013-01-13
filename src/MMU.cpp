@@ -27,19 +27,27 @@ MMU::MMU(Tile* tile_)
 /// New custom function that we call during start-up
 void MMU::InitMMU()
 {
-    uint32_t numCacheLine, chunkOffset;
+    uint32_t numCacheLinePerCache, numCacheLinePerChunk, chunkOffset;
 
     // Initialize L1 Cache
-    numCacheLine = GlobalConfig.CacheL1Size / GlobalConfig.CacheLineSize;
+    numCacheLinePerCache = GlobalConfig.CacheL1Size /
+                           GlobalConfig.CacheLineSize;
+    numCacheLinePerChunk = numCacheLinePerCache;
     chunkOffset = 0;
     l1.InitCache(GlobalConfig.CacheL1Size, GlobalConfig.CacheLineSize,
-                 numCacheLine, chunkOffset);
+                 numCacheLinePerChunk, chunkOffset);
 
     // Initialize L2 Cache
-    numCacheLine = GlobalConfig.CacheL2Size / GlobalConfig.CacheLineSize * 1;
-    chunkOffset = 0;
+    CoreBlock& coreBlock = *tile->coreBlock;
+    numCacheLinePerCache = GlobalConfig.CacheL2Size /
+                           GlobalConfig.CacheLineSize;
+    numCacheLinePerChunk = numCacheLinePerCache *
+                           coreBlock.coreBlockSize.Area();
+    chunkOffset = numCacheLinePerCache *
+                  Dim2::ToLinear(coreBlock.coreBlockSize,
+                                 tile->ComputeLocalIndex());
     l2.InitCache(GlobalConfig.CacheL2Size, GlobalConfig.CacheLineSize,
-                 numCacheLine, chunkOffset);
+                 numCacheLinePerChunk, chunkOffset);
 
     //l2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(tile->tileIdx);
     //PrintLine("MMU: ChunkIdx: " << l2ChunkIdx);
@@ -348,9 +356,12 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
 
         // Update cache access counter
         ++l1.simMissCount;
-        ++l2.simAccessCount;
 
-        if (l2.GetLine(addr, line))
+        uint32_t chunkIdx = l2.GetAddrChunkTileLinearIndex(addr);
+        Cache& targetL2 = tile->coreBlock->tiles[chunkIdx].mmu.l2;
+        ++targetL2.simAccessCount;
+
+        if (targetL2.GetLine(addr, line))
         {
             CacheLine& L1Line = l1.GetSameIndexLine(addr);
             L1Line.SetLine(addr, line->GetContent());
@@ -363,20 +374,21 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
         else
         {
             // Update cache access counter
-            ++l2.simMissCount;
+            ++targetL2.simMissCount;
 
             // Increase the access latency
             task->Stats.TotalSimulationTime.TotalCount +=
                 GlobalConfig.MemDelay;
 
             CacheLine& L1Line = l1.GetSameIndexLine(addr);
-            CacheLine& L2Line = l2.GetSameIndexLine(addr);
+            CacheLine& L2Line = targetL2.GetSameIndexLine(addr);
 
             // Read the memory and copy the data to L2 cache line
-            uint32_t alignedAddr = addr / l2.cacheLineSize * l2.cacheLineSize;
+            uint32_t alignedAddr =
+                addr / targetL2.cacheLineSize * targetL2.cacheLineSize;
 
             gmc.FillCacheLine(alignedAddr, L2Line, tile);
-            L2Line.tag = l2.GetAddrTag(addr);
+            L2Line.tag = targetL2.GetAddrTag(addr);
             L2Line.valid = true;
 
             L1Line.SetLine(addr, L2Line.GetContent());
@@ -452,7 +464,9 @@ void MMU::SetWord(uint32_t addr, uint32_t word, bool simulateDelay)
     {
         line->SetWord(addr, word);
     }
-    if (l2.GetLine(addr, line))
+    uint32_t chunkIdx = l2.GetAddrChunkTileLinearIndex(addr);
+    Cache& targetL2 = tile->coreBlock->tiles[chunkIdx].mmu.l2;
+    if (targetL2.GetLine(addr, line))
     {
         line->SetWord(addr, word);
     }

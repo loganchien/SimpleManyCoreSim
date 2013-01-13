@@ -132,10 +132,23 @@ uint32_t Cache::GetAddrTag(uint32_t addr) const
 
 
 /// Get the direct mapped index of the addr.
+uint32_t Cache::GetAddrChunkIndex(uint32_t addr) const
+{
+    return (GetAddrTag(addr) % numCacheLinePerChunk);
+}
+
+/// Get the direct mapped index of the addr.
+uint32_t Cache::GetAddrChunkTileLinearIndex(uint32_t addr) const
+{
+    return (GetAddrTag(addr) % numCacheLinePerChunk) / lines.size();
+}
+
+
+/// Get the direct mapped index of the addr.
 uint32_t Cache::GetAddrIndex(uint32_t addr) const
 {
-    uint32_t index = (GetAddrTag(addr) % numCacheLinePerChunk) - chunkOffset;
-    assert(index < line.size());
+    uint32_t index = GetAddrChunkIndex(addr) - chunkOffset;
+    assert(index < lines.size());
     return index;
 }
 

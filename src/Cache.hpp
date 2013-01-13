@@ -93,6 +93,12 @@ public:
     uint32_t GetAddrTag(uint32_t addr) const;
 
     /// Get the direct mapped index of the addr.
+    uint32_t GetAddrChunkIndex(uint32_t addr) const;
+
+    /// Get the direct mapped index of the addr.
+    uint32_t GetAddrChunkTileLinearIndex(uint32_t addr) const;
+
+    /// Get the direct mapped index of the addr.
     uint32_t GetAddrIndex(uint32_t addr) const;
 
     /// Get the offset in the cache line of the addr.
