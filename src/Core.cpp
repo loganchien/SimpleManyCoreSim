@@ -21,9 +21,14 @@ Core::Core(Tile* tile_)
 /// This Core starts running the given Thread
 void Core::StartThread(Thread* thread)
 {
+    // Set the running thread
     currentThread = thread;
+
+    // Reset the simulation counter
     simInstructionCount = 0;
     simLoadInstructionCount = 0;
+
+    // Initialize the core
     armulator.init(this, &tile->mmu);
 }
 
