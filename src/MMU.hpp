@@ -106,7 +106,6 @@ public:
     void CommitLoad(CacheLine* line, int totalDelay, const Address& addr);
 
 
-
     // #################### Handle Request buffer & Send Messages #############
 
     /// Get a free request buffer entry
@@ -157,7 +156,7 @@ public:
     int GetHeapSize();
 
 private:
-    void SimulateLoadStall(bool simulateDelay, uint32_t addr);
+    void SimulateLoadStall(bool simulateDelay, uint32_t addr, uint32_t delay);
 };
 
 } // end namespace smcsim

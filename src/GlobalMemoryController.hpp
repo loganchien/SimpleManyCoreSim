@@ -89,17 +89,12 @@ public:
     void DispatchNext();
 
     /// Interface to access the memory
-    uint8_t LoadByte(uint32_t addr, Tile* requestTile);
+    uint32_t GetWord(uint32_t addr, Tile* requestTile);
 
-    uint16_t LoadHalfWord(uint32_t addr, Tile* requestTile);
+    void SetWord(uint32_t addr, uint32_t word, Tile* requestTile);
 
-    uint32_t LoadWord(uint32_t addr, Tile* requestTile);
-
-    void StoreByte(uint32_t addr, uint8_t byte, Tile* requestTile);
-
-    void StoreHalfWord(uint32_t addr, uint16_t halfword, Tile* requestTile);
-
-    void StoreWord(uint32_t addr, uint32_t word, Tile* requestTile);
+    void FillCacheLine(uint32_t alignedAddr, CacheLine& line,
+                       Tile* requestTile);
 
 private:
     uint8_t* GetMemory(uint32_t addr, uint32_t size, Tile* requestTile);

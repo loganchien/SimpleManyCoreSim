@@ -1,88 +1,145 @@
 #include "Cache.hpp"
 
-#include "Address.hpp"
-#include "SimConfig.hpp"
-#include <math.h>
 #include <vector>
+#include "Debug.hpp"
+
+#include <assert.h>
+#include <math.h>
 #include <stdint.h>
+#include <string.h>
 
 using namespace smcsim;
 
-CacheLine::CacheLine(): valid(false), tag(0), bytes(GlobalConfig.CacheLineSize)
+CacheLine::CacheLine(): owner(0), valid(false), tag(0)
 {
 }
+
+
+/// Initialize the CacheLine
+void CacheLine::InitCacheLine(Cache* owner_, size_t cacheLineSize)
+{
+    owner = owner_;
+    valid = false;
+    tag = 0;
+    content.resize(cacheLineSize);
+}
+
 
 /// Get the word at the given address (given the address maps to this line)
-uint32_t CacheLine::GetWord(const Address& addr) const
+uint32_t CacheLine::GetWord(uint32_t addr) const
 {
-    return *reinterpret_cast<const uint32_t*>(&*bytes.begin() +
-                                              addr.GetWordOffset());
-}
-
-/// Set the word to the given address (given the address maps to this line)
-void CacheLine::SetWord(const Address& addr, uint32_t word)
-{
-    *reinterpret_cast<uint32_t*>(&*bytes.begin() +
-                                 addr.GetWordOffset()) = word;
+    return *reinterpret_cast<const uint32_t*>(
+        &*content.begin() + owner->GetAddrOffset(addr));
 }
 
 
-void Cache::InitCache(int size, int offset)
+/// Set the word at the given address (given the address maps to this line)
+void CacheLine::SetWord(uint32_t addr, uint32_t word)
 {
-    this->size = size;
-    this->offset = offset;
-
-    lines.resize(size);
+    *reinterpret_cast<uint32_t*>(
+        &*content.begin() + owner->GetAddrOffset(addr)) = word;
 }
 
 
-/// The given CacheLine is updated
-CacheLine& Cache::UpdateLine(const Address& addr, const CacheLine &cacheLine)
+/// Set the content of the CacheLine
+void CacheLine::SetLine(uint32_t addr, const uint8_t* newContent)
 {
-    CacheLine& line = lines[addr.GetL1Index() - offset];
-
-    // TODO: Copy words into cacheline and set valid and tag
-    line = cacheLine;
-
-    return line;
+    valid = true;
+    tag = owner->GetAddrTag(addr);
+    memcpy(&*content.begin(), newContent, content.size());
 }
 
 
-CacheLine* Cache::GetLine(const Address& addr)
+void Cache::InitCache(uint32_t capacity_, uint32_t cacheLineSize_,
+                      uint32_t addrSpaceBegin_, uint32_t addrSpaceSize)
 {
-	return &lines[addr.GetL1Index() - offset];
+    // Initialize the stats
+    simAccessCount = 0;
+    simMissCount = 0;
+
+    // Initialize the cache capacity and the cache line size
+    capacity = capacity_;
+    cacheLineSize = cacheLineSize_;
+    assert(capacity != 0 && cacheLineSize != 0);
+
+    // Initialize the address space of this cache
+    // Note: addrSpaceSize = 0 stands for addrSpaceSize = 4G.
+    addrSpaceBegin = addrSpaceBegin_;
+    addrSpaceEnd = addrSpaceBegin_ + addrSpaceSize - 1;
+    assert(addrSpaceBegin <= addrSpaceEnd);
+
+    // Initialize CacheLine
+    assert(capacity > cacheLineSize && capacity % cacheLineSize == 0);
+    lines.resize(capacity / cacheLineSize);
+
+    for (size_t i = 0; i < lines.size(); ++i)
+    {
+        lines[i].InitCacheLine(this, cacheLineSize);
+    }
 }
 
 
-/// Usually the cache is only reset when the processor is reset (i.e. when starting a new batch)
 void Cache::Reset()
 {
-    lines.clear();
-    lines.resize(size);
+    simAccessCount = 0;
+    simMissCount = 0;
+    capacity = 0;
+    cacheLineSize = 0;
+    addrSpaceBegin = 0;
+    addrSpaceEnd = 0;
+    simAccessCount = 0;
+    simMissCount = 0;
 
-    simAccessCount = simMissCount = 0;
+    lines.clear();
 }
 
 
 /// Get the entry of the given address
-bool Cache::GetEntry(const Address& addr, CacheLine* line)
+bool Cache::GetLine(uint32_t addr, CacheLine*& line)
 {
-    ++simAccessCount;
-    line = &lines[addr.GetIndex(GetIndexMask()) - offset];
-    if (line->valid && line->tag == addr.GetTag(GetTagShift()))
+    // Find the cache line
+    CacheLine& foundLine = GetSameIndexLine(addr);
+    if (foundLine.valid && foundLine.tag == GetAddrTag(addr))
     {
-        // cache hit
+        // Cache Hit
+        line = &foundLine;
         return true;
     }
-
-    // cache miss
-    ++simMissCount;
     return false;
 }
 
-int Cache::GetIndexMask(){
-	return size*GlobalConfig.CacheLineSize-1;
+
+/// The given CacheLine is updated
+void Cache::SetLine(uint32_t addr, const uint8_t *content)
+{
+    CacheLine& line = GetSameIndexLine(addr);
+    line.SetLine(addr, content);
 }
-int Cache::GetTagShift(){
-	return SimConfig::numbCacheLineBits + int(log(size*64)/log(2));
+
+
+CacheLine& Cache::GetSameIndexLine(uint32_t addr)
+{
+    return lines[GetAddrIndex(addr)];
+}
+
+
+/// Get the tag of the addr.
+uint32_t Cache::GetAddrTag(uint32_t addr) const
+{
+    return (addr / cacheLineSize);
+}
+
+
+/// Get the direct mapped index of the addr.
+uint32_t Cache::GetAddrIndex(uint32_t addr) const
+{
+    assert(addr >= addrSpaceBegin && addr <= addrSpaceEnd);
+    return (((addr - addrSpaceBegin) / cacheLineSize) % lines.size());
+}
+
+
+/// Get the offset in the cache line of the addr.
+uint32_t Cache::GetAddrOffset(uint32_t addr) const
+{
+    return (addr % cacheLineSize);
 }

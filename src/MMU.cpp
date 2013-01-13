@@ -27,12 +27,12 @@ MMU::MMU(Tile* tile_): tile(tile_), loadStallAddr(0)
 void MMU::InitMMU()
 {
     // Initialize Caches
+    l1.InitCache(GlobalConfig.CacheL1Size, GlobalConfig.CacheLineSize, 0, 0);
+    l2.InitCache(GlobalConfig.CacheL2Size, GlobalConfig.CacheLineSize, 0, 0);
+
     //l2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(tile->tileIdx);
-
-    //l1.InitCache(GlobalConfig.CacheL1Size);
+    //PrintLine("MMU: ChunkIdx: " << l2ChunkIdx);
     //l2.InitCache(GlobalConfig.CacheL2Size, l2ChunkIdx * GlobalConfig.CacheL2Size);
-
-    //ResetMMU();
 }
 
 
@@ -55,13 +55,16 @@ void MMU::ResetMMU()
 /// Loads a word into the on-tile Core
 void MMU::LoadWord(const Address& addr)
 {
-    // Lookup in caches
+    assert(0 && "Not implemented.  Currently, please call GetWord instead");
+    abort();
 
+#if 0
+    // Lookup in caches
     // L1 access time
     int totalDelay = GlobalConfig.CacheL1Delay;
 
-    CacheLine* line = l1.GetLine(addr);
-    if (!line)
+    CacheLine* line = 0;
+    if (!l1.GetLine(addr.raw, line))
     {
         // L1 miss
         int addrL2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(addr);
@@ -80,6 +83,7 @@ void MMU::LoadWord(const Address& addr)
     {
         CommitLoad(line, totalDelay, addr);
     }
+#endif
 }
 
 
@@ -98,8 +102,8 @@ void MMU::FetchLocalL2(const Dim2& requesterIdx, int requestId, int totalDelay,
     // Add hit penalty
     totalDelay += GlobalConfig.CacheL2Delay;
 
-    CacheLine* line = l2.GetLine(addr);
-    if (!line)
+    CacheLine* line = NULL;
+    if (!l2.GetLine(addr.raw, line))
     {
         // L2 miss
         FetchFromMemory(requesterIdx, requestId, addr, totalDelay);
@@ -128,7 +132,7 @@ int MMU::FetchFromMemory(const Dim2& requesterIdx, int requestId,
 }
 
 
-// ############################################# Handle incoming Messages #############################################
+// #################### Handle incoming Messages ##############################
 
 /// Called by router when a Cacheline has been sent to this tile
 void MMU::OnCachelineReceived(int requestId, int totalDelay,
@@ -141,26 +145,29 @@ void MMU::OnCachelineReceived(int requestId, int totalDelay,
     if (addrChunkIdx == l2ChunkIdx)
     {
         // Address maps to this tile's L2 chunk, so have to update it
-        l2.UpdateLine(request.addr, cacheLine);
+        l2.SetLine(request.addr.raw, cacheLine.GetContent());
     }
 
-
-    // AdvTODO: Handle coalescing (i.e. multiple requesters request the same line in a single packets)
+    // AdvTODO: Handle coalescing (i.e. multiple requesters request the same
+    // line in a single packets)
 
     if (request.requesterIdx == tile->tileIdx)
     {
         // Cacheline was requested by this guy
 
         // -> Also goes into L1
-        CacheLine& line = l1.UpdateLine(request.addr, cacheLine);
+        l1.SetLine(request.addr.raw, cacheLine.GetContent());
 
         // And we can finally restart the CPU
-        CommitLoad(&line, totalDelay, request.addr);
+        CommitLoad(&l1.GetSameIndexLine(request.addr.raw),
+                   totalDelay, request.addr);
     }
     else
     {
-        // CacheLine is a response to an off-tile request -> Send it to requester
-        SendResponse(MessageTypeResponseCacheline, request.requesterIdx, request.origRequestId, cacheLine, totalDelay);
+        // CacheLine is a response to an off-tile request -> Send it to
+        // requester
+        SendResponse(MessageTypeResponseCacheline, request.requesterIdx,
+                     request.origRequestId, cacheLine, totalDelay);
     }
 
     // Request buffer entry not in use anymore
@@ -173,17 +180,18 @@ void MMU::CommitLoad(CacheLine* line, int totalDelay, const Address& addr)
 {
     // Add time spent on this request to total sim time
     simTime += totalDelay;
-    tile->core.CommitLoad(line->GetWord(addr));
+    tile->core.CommitLoad(line->GetWord(addr.raw));
 }
 
 
 
-// ############################################# Handle Request buffer & Send Messages #############################################
+// #################### Handle Request buffer & Send Messages #################
 
 /// Get a free request buffer entry
 OutstandingRequest& MMU::GetFreeRequest(int& requestId)
 {
-    for (int i = lastRequestId, count = 0; count < MAX_OUTSTANDING_REQUESTS; i = (i+1)%MAX_OUTSTANDING_REQUESTS)
+    for (int i = lastRequestId, count = 0; count < MAX_OUTSTANDING_REQUESTS;
+         i = (i+1)%MAX_OUTSTANDING_REQUESTS)
     {
         if (!requests[i].pending)
         {
@@ -213,7 +221,7 @@ void MMU::SendRequest(MessageType type, const Dim2& requesterIdx, int origReqId,
     msg.type = type;
     msg.sender = tile->tileIdx;
     msg.receiver = receiver;
-    msg.requestId = requestId; 
+    msg.requestId = requestId;
     msg.totalDelay = totalDelay;
     msg.addr = addr;
 
@@ -268,14 +276,13 @@ uint16_t MMU::GetHalfWord(uint32_t addr, bool simulateDelay)
 /// retrived without the stall, then throw LoadStall exception.
 uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
 {
-    // If the addr is mapped to special range, then return the special value,
-    // such as threadIdx, threadDim, blockIdx, blockDim.
+    // Inject the special variables
     Thread* thread = tile->core.currentThread;
     TaskBlock* taskBlock = thread->taskBlock;
     Task* task = taskBlock->task;
 
 #define VAR_VALUE_MAP(ADDR, VAR) \
-    if (addr == (ADDR)) { return (VAR); }
+    do { if (addr == (ADDR)) { return (VAR); } } while (0)
 
     VAR_VALUE_MAP(task->threadIdxAddr + 0, thread->threadIdx.y);
     VAR_VALUE_MAP(task->threadIdxAddr + 4, thread->threadIdx.x);
@@ -287,71 +294,154 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
     VAR_VALUE_MAP(task->blockDimAddr + 4, task->blockDim.x);
 
 #undef VAR_VALUE_MAP
+    GlobalMemoryController& gmc =
+        tile->coreBlock->processor->gMemController;
 
-	// Lookup in caches
-	CacheLine* line = new CacheLine();
-	Address formatedAddr = Address(addr);
-	 
-	task->Stats.TotalSimulationTime.TotalCount += GlobalConfig.CacheL1Delay;
-	l1.simAccessCount++;
+    if (!simulateDelay)
+    {
+        return gmc.GetWord(addr, tile);
+    }
 
-	if(!l1.GetEntry(addr,line)){
-		// not found in L1 cache:
-		// update stats: L1 miss + L2 access
-		l1.simMissCount++;
-		task->Stats.TotalSimulationTime.TotalCount += task->Stats.MemAccessTime.TotalCount += GlobalConfig.CacheL1Delay;
-		l2.simAccessCount++;
+    // Lookup in caches
+    CacheLine* line = NULL;
 
-		// Look in L2 cache
-		if (!l2.GetEntry(addr,line)){
-			// not found in L2 cache
-			// update stats: L2 miss + memory access
-			l2.simMissCount++;
-			task->Stats.MemAccessTime.TotalCount += GlobalConfig.MemDelay;
+    // Increase the access latency
+    task->Stats.TotalSimulationTime.TotalCount += GlobalConfig.CacheL1Delay;
 
-			// Simulate load stall
-			SimulateLoadStall(simulateDelay, addr);		
+    // Update cache access counter
+    ++l1.simAccessCount;
 
-		}
-		else{
-			return line->GetWord(formatedAddr);
-		}
-	}
-	else{
-		return line->GetWord(formatedAddr);
-	}
+    if (l1.GetLine(addr, line))
+    {
+        SimulateLoadStall(simulateDelay, addr,
+                          GlobalConfig.CacheL1Delay +
+                          GlobalConfig.MemDelay);
+        return line->GetWord(addr);
+    }
+    else
+    {
+        // Increase the access latency
+        task->Stats.TotalSimulationTime.TotalCount += GlobalConfig.CacheL2Delay;
 
-    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    return gmc.LoadWord(addr, tile);
+        // Update cache access counter
+        ++l1.simMissCount;
+        ++l2.simAccessCount;
+
+        if (l2.GetLine(addr, line))
+        {
+            CacheLine& L1Line = l1.GetSameIndexLine(addr);
+            L1Line.SetLine(addr, line->GetContent());
+            SimulateLoadStall(simulateDelay, addr,
+                              GlobalConfig.CacheL1Delay +
+                              GlobalConfig.MemDelay);
+            return L1Line.GetWord(addr);
+        }
+        else
+        {
+            // Update cache access counter
+            ++l2.simMissCount;
+
+            // Increase the access latency
+            task->Stats.TotalSimulationTime.TotalCount +=
+                GlobalConfig.MemDelay;
+
+            CacheLine& L1Line = l1.GetSameIndexLine(addr);
+            CacheLine& L2Line = l2.GetSameIndexLine(addr);
+
+            // Read the memory and copy the data to L2 cache line
+            uint32_t alignedAddr = addr / l2.cacheLineSize * l2.cacheLineSize;
+
+            gmc.FillCacheLine(alignedAddr, L2Line, tile);
+            L2Line.tag = l2.GetAddrTag(addr);
+            L2Line.valid = true;
+
+            L1Line.SetLine(addr, L2Line.GetContent());
+
+            SimulateLoadStall(simulateDelay, addr,
+                              GlobalConfig.CacheL1Delay +
+                              GlobalConfig.CacheL2Delay +
+                              GlobalConfig.MemDelay);
+
+            return L1Line.GetWord(addr);
+        }
+    }
 }
 
 /// Store the byte at the address in the memory.
 void MMU::SetByte(uint32_t addr, uint8_t byte, bool simulateDelay)
 {
-    assert(!simulateDelay && "Simulate delay for store is not implemented");
-    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    gmc.StoreByte(addr, byte, tile);
+    uint32_t alignAddr = addr & ~0x3u;
+    uint32_t word = GetWord(alignAddr, false);
+
+    switch (addr & 0x3u)
+    {
+    case 0x0u:
+        SetWord(alignAddr, (word & 0xffffff00u) | byte, false);
+        break;
+
+    case 0x1u:
+        SetWord(alignAddr, (word & 0xffff00ffu) | (byte << 8), false);
+        break;
+
+    case 0x2u:
+        SetWord(alignAddr, (word & 0xff00ffffu) | (byte << 16), false);
+        break;
+
+    case 0x3u:
+        SetWord(alignAddr, (word & 0x00ffffffu) | (byte << 24), false);
+        break;
+
+    default:
+        abort();
+    }
 }
 
 /// Store the half word at the address in the memory.
 void MMU::SetHalfWord(uint32_t addr, uint16_t halfword, bool simulateDelay)
 {
-    assert(!simulateDelay && "Simulate delay for store is not implemented");
-    GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    gmc.StoreHalfWord(addr, halfword, tile);
+    uint32_t alignAddr = addr & ~0x3u;
+    uint32_t word = GetWord(alignAddr, false);
+
+    switch (addr & 0x3u)
+    {
+    case 0x0u:
+        SetWord(alignAddr, (word & 0xffff0000u) | halfword, false);
+        break;
+
+    case 0x2u:
+        SetWord(alignAddr, (word & 0x0000ffffu) | (halfword << 16), false);
+        break;
+
+    default:
+        assert(0 && "Unaligned half-word access");
+        abort();
+    }
 }
 
 /// Store the word at the address in the memory.
 void MMU::SetWord(uint32_t addr, uint32_t word, bool simulateDelay)
 {
     assert(!simulateDelay && "Simulate delay for store is not implemented");
+
+    // Cache coherence
+    CacheLine *line = NULL;
+    if (l1.GetLine(addr, line))
+    {
+        line->SetWord(addr, word);
+    }
+    if (l2.GetLine(addr, line))
+    {
+        line->SetWord(addr, word);
+    }
+
+    // Memory write back
     GlobalMemoryController& gmc = tile->coreBlock->processor->gMemController;
-    gmc.StoreWord(addr, word, tile);
+    gmc.SetWord(addr, word, tile);
 }
 
-void MMU::SimulateLoadStall(bool simulateDelay, uint32_t addr)
+void MMU::SimulateLoadStall(bool simulateDelay, uint32_t addr, uint32_t delay)
 {
-    if (simulateDelay && GlobalConfig.MemDelay > 1)
+    if (simulateDelay && delay > 1)
     {
         if (addr == loadStallAddr)
         {
@@ -364,7 +454,7 @@ void MMU::SimulateLoadStall(bool simulateDelay, uint32_t addr)
             // The CPU will execute the load instruction again after (MEM_DELAY
             // - 2) clock so that it can load the data.
             loadStallAddr = addr;
-            throw LoadStall(GlobalConfig.MemDelay - 2);
+            throw LoadStall(delay - 2);
         }
     }
 }

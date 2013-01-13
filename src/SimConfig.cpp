@@ -34,9 +34,9 @@ bool SimConfig::LoadConfig(const string& path)
     HeapSize = pt.get("setting.HEAP_SIZE", 1 * 1024 * 1024);
     CoreGridLen = pt.get("setting.CORE_GRID_LEN", 2);
     CoreBlockLen = pt.get("setting.CORE_BLOCK_LEN", 2);
-    CacheL1Size = pt.get("setting.CACHE_L1_SIZE", 32 * 1024);
+    CacheL1Size = pt.get("setting.CACHE_L1_SIZE_IN_BYTES", 32 * 1024);
     CacheL1Delay = pt.get("setting.CACHE_L1_DELAY", 1);
-    CacheL2Size = pt.get("setting.CACHE_L2_SIZE", 256 * 1024);
+    CacheL2Size = pt.get("setting.CACHE_L2_SIZE_IN_BYTES", 256 * 1024);
     CacheL2Delay = pt.get("setting.CACHE_L2_DELAY", 5);
     CacheMissDelay = pt.get("setting.CACHE_MISS_DELAY", 50);
     DispatchDelay = pt.get("setting.DISPATCH_DELAY", 5);

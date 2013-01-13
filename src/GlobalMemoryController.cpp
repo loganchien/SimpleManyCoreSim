@@ -1,6 +1,7 @@
 #include "GlobalMemoryController.hpp"
 
 #include "Address.hpp"
+#include "Cache.hpp"
 #include "Debug.hpp"
 #include "Processor.hpp"
 #include "Router.hpp"
@@ -261,7 +262,7 @@ void GlobalMemoryController::DispatchNext()
     response.receiver = request.sender;
     response.requestId = request.requestId;
     response.totalDelay = request.totalDelay + GlobalConfig.MemDelay;
-    memcpy(&*response.cacheLine.bytes.begin(),
+    memcpy(&*response.cacheLine.content.begin(),
            GetMemory(request.addr.raw, GlobalConfig.CacheLineSize,
                      processor->GetTile(request.sender)),
            GlobalConfig.CacheLineSize);
@@ -286,37 +287,52 @@ void GlobalMemoryController::DispatchNext()
 }
 
 /// Interface to access the memory
-uint8_t GlobalMemoryController::LoadByte(uint32_t addr, Tile* tile)
-{
-    return *GetMemory(addr, 1, tile);
-}
-
-uint16_t GlobalMemoryController::LoadHalfWord(uint32_t addr, Tile* tile)
-{
-    return *reinterpret_cast<uint16_t*>(GetMemory(addr, 2, tile));
-}
-
-uint32_t GlobalMemoryController::LoadWord(uint32_t addr, Tile* tile)
+uint32_t GlobalMemoryController::GetWord(uint32_t addr, Tile* tile)
 {
     return *reinterpret_cast<uint32_t*>(GetMemory(addr, 4, tile));
 }
 
-void GlobalMemoryController::StoreByte(uint32_t addr, uint8_t byte,
-                                       Tile* tile)
-{
-    *GetMemory(addr, 1, tile) = byte;
-}
-
-void GlobalMemoryController::StoreHalfWord(uint32_t addr, uint16_t halfword,
-                                           Tile* tile)
-{
-    *reinterpret_cast<uint16_t*>(GetMemory(addr, 2, tile)) = halfword;
-}
-
-void GlobalMemoryController::StoreWord(uint32_t addr, uint32_t word,
-                                       Tile* tile)
+void GlobalMemoryController::SetWord(uint32_t addr, uint32_t word, Tile* tile)
 {
     *reinterpret_cast<uint32_t*>(GetMemory(addr, 4, tile)) = word;
+}
+
+void GlobalMemoryController::FillCacheLine(uint32_t alignedAddr,
+                                           CacheLine& line,
+                                           Tile* tile)
+{
+    uint32_t addr = alignedAddr;
+    for (size_t i = 0, n = line.content.size(); i < n; ++i, ++addr)
+    {
+        uint8_t byte = 0;
+
+#define MEMORY_RANGE(NAME) \
+        if (addr >= (NAME##VMA) && addr < ((NAME##VMA) + (NAME##Size))) \
+        { \
+            byte = *(NAME + (addr - (NAME##VMA))); \
+        }
+
+        MEMORY_RANGE(text);
+        MEMORY_RANGE(rodata);
+
+#undef MEMORY_RANGE
+
+#define MEMORY_RANGE(NAME) \
+        if (addr >= (NAME##VMA) && addr < ((NAME##VMA) + (NAME##Size))) \
+        { \
+            byte = *(NAME + (addr - (NAME##VMA)) + \
+                     tile->GetGlobalLinearIndex() * (NAME##AlignSize)); \
+        }
+
+        MEMORY_RANGE(data);
+        MEMORY_RANGE(bss);
+        MEMORY_RANGE(heap);
+        MEMORY_RANGE(stackBegin);
+#undef MEMORY_RANGE
+
+#undef VAR_VALUE_MAP
+        line.content[i] = byte;
+    }
 }
 
 uint8_t* GlobalMemoryController::GetMemory(uint32_t addr, uint32_t size,
