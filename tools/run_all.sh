@@ -9,9 +9,9 @@ BENCHMARK_DIR="${ROOT}/benchmark/binaries"
 
 TASKS=""
 
-TASKS="${TASKS}
-${BENCHMARK_DIR}/helloworld.ini
-"
+#TASKS="${TASKS}
+#${BENCHMARK_DIR}/helloworld.ini
+#"
 
 TASKS="${TASKS}
 ${BENCHMARK_DIR}/matrix_simple_16_1_16.ini
@@ -76,11 +76,11 @@ ${BENCHMARK_DIR}/matrix_simple_64_64_1.ini
 #${BENCHMARK_DIR}/matrix_simple_512_512_1.ini
 #"
 
-"${SCRIPT_DIR}/build_all.sh" "$1"
+"${SCRIPT_DIR}/build_all.sh" "$1" > /dev/null
 
 ulimit -t 3600
 ulimit -v 1048576
-ulimit -a
+#ulimit -a
 
 i=0
 for cfg in ${SIMCONFIG_DIR}/*; do
