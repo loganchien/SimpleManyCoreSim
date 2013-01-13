@@ -2,6 +2,7 @@
 #define DIMENSION_HPP
 
 #include <iostream>
+#include <sstream>
 
 #include <stdlib.h>
 
@@ -42,7 +43,9 @@ public:
 
 inline std::ostream &operator<<(std::ostream& os, const Dim1& rhs)
 {
-    os << "(" << rhs.x << ")";
+    std::stringstream ss;
+    ss << "(" << rhs.x << ")";
+    os << ss.str();
     return os;
 }
 
@@ -125,7 +128,9 @@ public:
 
 inline std::ostream &operator<<(std::ostream& os, const Dim2& rhs)
 {
-    os << "(" << rhs.y << ", " << rhs.x << ")";
+    std::stringstream ss;
+    ss << "(" << rhs.y << ", " << rhs.x << ")";
+    os << ss.str();
     return os;
 }
 
