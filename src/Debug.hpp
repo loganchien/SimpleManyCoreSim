@@ -1,7 +1,7 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
-#ifndef _NDEBUG
+#ifndef NDEBUG
 
 #include <iostream>
 
