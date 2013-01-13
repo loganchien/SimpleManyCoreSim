@@ -13,8 +13,8 @@ int C[SIZE][SIZE] = { 0 };
 int main() {
     int i;
     int sum = 0;
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * threadDim.y + threadIdx.y;
+    int col = blockIdx.x * threadDim.x + threadIdx.x;
     for (i = 0; i < SIZE; ++i) {
         sum += A[row][i] * B[i][col];
     }
