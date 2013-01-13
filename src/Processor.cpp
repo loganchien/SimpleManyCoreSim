@@ -207,6 +207,12 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
     for (int i = 0; i < std::min(tileCount, threadCount); ++i)
     {
         Tile& tile = coreBlock.tiles[i];
+
+        tile.mmu.l1.simAccessCount = 0;
+        tile.mmu.l1.simMissCount = 0;
+        tile.mmu.l2.simAccessCount = 0;
+        tile.mmu.l2.simMissCount = 0;
+
         coreBlock.ScheduleThread(*taskBlock, tile);
     }
 }
