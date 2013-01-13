@@ -51,7 +51,7 @@ void CacheLine::SetLine(uint32_t addr, const uint8_t* newContent)
 
 
 void Cache::InitCache(uint32_t capacity_, uint32_t cacheLineSize_,
-                      uint32_t addrSpaceBegin_, uint32_t addrSpaceSize)
+                      uint32_t numCacheLinePerChunk_, uint32_t chunkOffset_)
 {
     // Initialize the stats
     simAccessCount = 0;
@@ -62,12 +62,6 @@ void Cache::InitCache(uint32_t capacity_, uint32_t cacheLineSize_,
     cacheLineSize = cacheLineSize_;
     assert(capacity != 0 && cacheLineSize != 0);
 
-    // Initialize the address space of this cache
-    // Note: addrSpaceSize = 0 stands for addrSpaceSize = 4G.
-    addrSpaceBegin = addrSpaceBegin_;
-    addrSpaceEnd = addrSpaceBegin_ + addrSpaceSize - 1;
-    assert(addrSpaceBegin <= addrSpaceEnd);
-
     // Initialize CacheLine
     assert(capacity > cacheLineSize && capacity % cacheLineSize == 0);
     lines.resize(capacity / cacheLineSize);
@@ -76,6 +70,13 @@ void Cache::InitCache(uint32_t capacity_, uint32_t cacheLineSize_,
     {
         lines[i].InitCacheLine(this, cacheLineSize);
     }
+
+    // Initialize the CacheLine chunk properties
+    numCacheLinePerChunk = numCacheLinePerChunk_;
+    chunkOffset = chunkOffset_;
+    assert(numCacheLinePerChunk % lines.size() == 0);
+    assert(chunkOffset < numCacheLinePerChunk &&
+           chunkOffset + lines.size() <= numCacheLinePerChunk);
 }
 
 
@@ -85,8 +86,8 @@ void Cache::Reset()
     simMissCount = 0;
     capacity = 0;
     cacheLineSize = 0;
-    addrSpaceBegin = 0;
-    addrSpaceEnd = 0;
+    numCacheLinePerChunk = 0;
+    chunkOffset = 0;
     simAccessCount = 0;
     simMissCount = 0;
 
@@ -133,8 +134,9 @@ uint32_t Cache::GetAddrTag(uint32_t addr) const
 /// Get the direct mapped index of the addr.
 uint32_t Cache::GetAddrIndex(uint32_t addr) const
 {
-    assert(addr >= addrSpaceBegin && addr <= addrSpaceEnd);
-    return (((addr - addrSpaceBegin) / cacheLineSize) % lines.size());
+    uint32_t index = (GetAddrTag(addr) % numCacheLinePerChunk) - chunkOffset;
+    assert(index < line.size());
+    return index;
 }
 
 

@@ -27,9 +27,19 @@ MMU::MMU(Tile* tile_)
 /// New custom function that we call during start-up
 void MMU::InitMMU()
 {
-    // Initialize Caches
-    l1.InitCache(GlobalConfig.CacheL1Size, GlobalConfig.CacheLineSize, 0, 0);
-    l2.InitCache(GlobalConfig.CacheL2Size, GlobalConfig.CacheLineSize, 0, 0);
+    uint32_t numCacheLine, chunkOffset;
+
+    // Initialize L1 Cache
+    numCacheLine = GlobalConfig.CacheL1Size / GlobalConfig.CacheLineSize;
+    chunkOffset = 0;
+    l1.InitCache(GlobalConfig.CacheL1Size, GlobalConfig.CacheLineSize,
+                 numCacheLine, chunkOffset);
+
+    // Initialize L2 Cache
+    numCacheLine = GlobalConfig.CacheL2Size / GlobalConfig.CacheLineSize * 1;
+    chunkOffset = 0;
+    l2.InitCache(GlobalConfig.CacheL2Size, GlobalConfig.CacheLineSize,
+                 numCacheLine, chunkOffset);
 
     //l2ChunkIdx = tile->coreBlock->ComputeL2ChunkID(tile->tileIdx);
     //PrintLine("MMU: ChunkIdx: " << l2ChunkIdx);

@@ -62,10 +62,8 @@ public:
     uint32_t cacheLineSize;
 
     /// Address space should be handled by this cache
-    uint32_t addrSpaceBegin;
-    uint32_t addrSpaceEnd; // (inclusive)
-    // Note: addrSpaceEnd should be inclusive because we don't want to promote
-    // the type to uint64_t.
+    uint32_t numCacheLinePerChunk;
+    uint32_t chunkOffset;
 
     /// Amount of all accesses and of misses in this cache (chunk)
     long long simAccessCount;
@@ -74,7 +72,7 @@ public:
 public:
     /// Initialize the Cache.
     void InitCache(uint32_t cache, uint32_t cacheLineSize,
-                   uint32_t addrSpaceBegin, uint32_t addrSpaceSize);
+                   uint32_t numCacheLinePerChunk, uint32_t chunkOffset);
 
     /// Reset the Cache.
     void Reset();
