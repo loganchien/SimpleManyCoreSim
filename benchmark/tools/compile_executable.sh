@@ -44,9 +44,13 @@ if [ -z "${BLOCK_HEIGHT}" ]; then
   exit 1
 fi
 
-OUTPUT_DIR="$(dirname "${INPUT_FILE}")"
+OUTPUT_DIR="$(dirname "${INPUT_FILE}")/binaries"
 OUTPUT_EXECUTABLE="${OUTPUT_DIR}/${OUTPUT_NAME}"
 OUTPUT_CONFIG="${OUTPUT_DIR}/${OUTPUT_NAME}.ini"
+
+if [ ! -d "${OUTPUT_DIR}" ]; then
+  mkdir -p "${OUTPUT_DIR}"
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd)"
 RT_DIR="$(cd "${SCRIPT_DIR}/../rt"; pwd)"
