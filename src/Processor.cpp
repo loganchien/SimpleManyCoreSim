@@ -193,16 +193,20 @@ void Processor::ScheduleTaskBlock(Task& task, CoreBlock& coreBlock)
     int tileCount = GlobalConfig.CoreBlockSize().Area();
     int threadCount = task.threadDim.Area();
 
-    // Put all initial threads on tiles
-    for (int i = 0; i < std::min(tileCount, threadCount); ++i)
+    // Reset the cache stats
+    for (int i = 0; i < tileCount; ++i)
     {
         Tile& tile = coreBlock.tiles[i];
-
         tile.mmu.l1.simAccessCount = 0;
         tile.mmu.l1.simMissCount = 0;
         tile.mmu.l2.simAccessCount = 0;
         tile.mmu.l2.simMissCount = 0;
+    }
 
+    // Put all initial threads on tiles
+    for (int i = 0; i < std::min(tileCount, threadCount); ++i)
+    {
+        Tile& tile = coreBlock.tiles[i];
         coreBlock.ScheduleThread(*taskBlock, tile);
     }
 }
