@@ -72,7 +72,7 @@ void Processor::StartBatch(const std::vector<Task>& tasks)
     // Done!
     EvaluateStats();
 
-    PrintLine("Clock used: " << clock);
+    std::cout << "Clock used: " << clock << std::endl;
 }
 
 
