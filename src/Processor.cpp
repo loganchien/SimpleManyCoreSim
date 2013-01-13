@@ -7,6 +7,7 @@
 #include "TaskBlock.hpp"
 #include "Tile.hpp"
 
+#include <iomanip>
 #include <iostream>
 #include <algorithm>
 
@@ -100,48 +101,37 @@ void Processor::SimSteps()
 
 
 /// Collect stats from the functional units of the block
-void Processor::CollectStats(TaskBlock& taskBlock)
+void Processor::CollectStats(TaskBlock& taskBlock,
+                             long long& totalL1AccessCount,
+                             long long& totalL1MissCount,
+                             long long& totalL2AccessCount,
+                             long long& totalL2MissCount)
 {
+    long long totalInstructions(0),totalLoadInstructions(0);
+    long long avgSimTime(0), totalSimTime(0);
+    long long totalPacketsReceived(0);
+
     // Collect stats from all tiles (Core, MMU, Cache)
-    taskBlock.task->Stats;
     int coreBlockArea = GlobalConfig.CoreBlockSize().Area();
     Tile* t = taskBlock.assignedBlock->tiles;
-
-    Cache *l1,*l2;
-    long long totalL1AccessCount(0),totalL1MissCount(0); // Cache L1 stats
-	double avgL1MissRate(0);	
-    long long totalL2AccessCount(0),totalL2MissCount(0);	// Cache L1 stats
-	double avgL2MissRate(0);
-    long long totalInstructions(0),totalLoadInstructions(0);			// Core (CPU) stats
-    long long avgSimTime(0), totalSimTime(0);					// MMU stats
-    long long totalPacketsReceived(0);						// Router stats
-
-
-    for(int i=0; i < coreBlockArea; i++){	// iterate over each tile in CoreBlock to get statistics:
+    for(int i = 0; i < coreBlockArea; i++)
+    {
         /// Cache and Router statistics:
-        avgSimTime+=t[i].mmu.simTime/coreBlockArea; //normalize to get average
-        totalSimTime+=t[i].mmu.simTime;
-        l1 = &t[i].mmu.l1;
-        totalL1AccessCount+=l1->simAccessCount;	//or better to directly take averages?
-        totalL1MissCount+=l1->simMissCount;
-        l2 = &t[i].mmu.l2;
-        totalL2AccessCount+=l2->simAccessCount;
-        totalL2MissCount+=l2->simMissCount;
-        totalPacketsReceived+= t[i].router.simTotalPacketsReceived; 
+        avgSimTime += t[i].mmu.simTime / coreBlockArea;
+        totalSimTime += t[i].mmu.simTime;
+
+        Cache* l1 = &t[i].mmu.l1;
+        totalL1AccessCount += l1->simAccessCount;
+        totalL1MissCount += l1->simMissCount;
+
+        Cache* l2 = &t[i].mmu.l2;
+        totalL2AccessCount += l2->simAccessCount;
+        totalL2MissCount += l2->simMissCount;
+        totalPacketsReceived += t[i].router.simTotalPacketsReceived;
 
         /// CPU (Core) statistics:
-        totalInstructions=t[i].core.simInstructionCount;
-        totalLoadInstructions=t[i].core.simLoadInstructionCount;
-    }
-
-    // Calculate averages out of totals:
-    if (totalL1MissCount + totalL1AccessCount > 0)
-    {
-        avgL1MissRate = (double)(totalL1MissCount/(totalL1MissCount+totalL1AccessCount));
-    }
-    if (totalL2MissCount + totalL2AccessCount > 0)
-    {
-        avgL2MissRate = (double)(totalL2MissCount/(totalL2MissCount+totalL2AccessCount));
+        totalInstructions = t[i].core.simInstructionCount;
+        totalLoadInstructions = t[i].core.simLoadInstructionCount;
     }
 
     taskBlock.task->Stats.InstructionCount.TotalCount += totalInstructions;
@@ -232,7 +222,21 @@ void Processor::OnTaskBlockFinished(TaskBlock& taskBlock)
               << " coreBlockIdx=" << coreBlock->blockIdx);
 
     // Collect stats from the functional units of the block
-    CollectStats(taskBlock);
+    long long totalL1AccessCount(0), totalL1MissCount(0);
+    long long totalL2AccessCount(0),totalL2MissCount(0);
+    CollectStats(taskBlock,
+                 totalL1AccessCount, totalL1MissCount,
+                 totalL2AccessCount, totalL2MissCount);
+
+    long long totalL1HitCount = totalL1AccessCount - totalL1MissCount;
+    long long totalL2HitCount = totalL2AccessCount - totalL2MissCount;
+
+    std::cout << "  TB " << std::setw(8) << taskBlock.taskBlockIdx << ":";
+    std::cout << " | L1 hit:" << std::setw(8) << totalL1HitCount;
+    std::cout << " miss:" << std::setw(8) << totalL1MissCount;
+    std::cout << " | L2 hit:" << std::setw(8) << totalL2HitCount;
+    std::cout << " miss:" << std::setw(8) << totalL2MissCount;
+    std::cout << std::endl;
 
     // Update the finished task counter
     task->OnTaskBlockFinished(taskBlock);

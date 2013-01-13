@@ -51,7 +51,11 @@ public:
     void SimSteps();
 
     /// Collect stats from the functional units of the block
-    void CollectStats(TaskBlock& taskBlock);
+    void CollectStats(TaskBlock& taskBlock,
+                      long long& totalL1AccessCount,
+                      long long& totalL1MissCount,
+                      long long& totalL2AccessCount,
+                      long long& totalL2MissCount);
 
     /// Evaluates and/or writes stats to file
     void EvaluateStats();
