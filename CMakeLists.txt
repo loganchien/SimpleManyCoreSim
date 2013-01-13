@@ -13,6 +13,8 @@ IF (WINDOWS)
   )
 ENDIF (WINDOWS)
 
+add_definitions (-DNDEBUG)
+
 add_executable (TileSim
   external/armulator/src/ARM.cpp
   external/armulator/src/ArmulatorCPU.cpp
