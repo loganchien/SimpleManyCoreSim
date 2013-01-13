@@ -78,7 +78,7 @@ ${BENCHMARK_DIR}/matrix_simple_64_64_1.ini
 
 "${SCRIPT_DIR}/build_all.sh" "$1" > /dev/null
 
-ulimit -t 3600
+#ulimit -t 3600
 ulimit -v 1048576
 #ulimit -a
 
