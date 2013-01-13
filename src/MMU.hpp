@@ -56,7 +56,8 @@ public:
      */
     std::vector<OutstandingRequest> requests;
 
-    uint32_t loadStallAddr;
+    uint32_t lastLoadStallAddr;
+    uint32_t lastLoadStallResult;
 
 
     // #################### Simulation stuff ##################################
@@ -156,7 +157,8 @@ public:
     int GetHeapSize();
 
 private:
-    void SimulateLoadStall(bool simulateDelay, uint32_t addr, uint32_t delay);
+    void SimulateLoadStall(uint32_t addr, uint32_t word, bool simulateDelay,
+                           uint32_t delay);
 };
 
 } // end namespace smcsim

@@ -20,7 +20,8 @@
 
 using namespace smcsim;
 
-MMU::MMU(Tile* tile_): tile(tile_), loadStallAddr(0)
+MMU::MMU(Tile* tile_)
+    : tile(tile_), lastLoadStallAddr(0), lastLoadStallResult(0)
 { }
 
 /// New custom function that we call during start-up
@@ -294,12 +295,23 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
     VAR_VALUE_MAP(task->blockDimAddr + 4, task->blockDim.x);
 
 #undef VAR_VALUE_MAP
+
+    // Bypass the load stall simulation if simulateDelay=false.
     GlobalMemoryController& gmc =
         tile->coreBlock->processor->gMemController;
 
     if (!simulateDelay)
     {
         return gmc.GetWord(addr, tile);
+    }
+
+    // Return the previously stall word
+    if (addr == lastLoadStallAddr)
+    {
+        uint32_t word = lastLoadStallResult;
+        lastLoadStallAddr = 0;
+        lastLoadStallResult = 0;
+        return word;
     }
 
     // Lookup in caches
@@ -313,10 +325,11 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
 
     if (l1.GetLine(addr, line))
     {
-        SimulateLoadStall(simulateDelay, addr,
+        uint32_t word = line->GetWord(addr);
+        SimulateLoadStall(addr, word, simulateDelay,
                           GlobalConfig.CacheL1Delay +
                           GlobalConfig.MemDelay);
-        return line->GetWord(addr);
+        return word;
     }
     else
     {
@@ -331,10 +344,11 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
         {
             CacheLine& L1Line = l1.GetSameIndexLine(addr);
             L1Line.SetLine(addr, line->GetContent());
-            SimulateLoadStall(simulateDelay, addr,
+            uint32_t word = L1Line.GetWord(addr);
+            SimulateLoadStall(addr, word, simulateDelay,
                               GlobalConfig.CacheL1Delay +
                               GlobalConfig.MemDelay);
-            return L1Line.GetWord(addr);
+            return word;
         }
         else
         {
@@ -356,13 +370,12 @@ uint32_t MMU::GetWord(uint32_t addr, bool simulateDelay)
             L2Line.valid = true;
 
             L1Line.SetLine(addr, L2Line.GetContent());
-
-            SimulateLoadStall(simulateDelay, addr,
+            uint32_t word = L1Line.GetWord(addr);
+            SimulateLoadStall(addr, word, simulateDelay,
                               GlobalConfig.CacheL1Delay +
                               GlobalConfig.CacheL2Delay +
                               GlobalConfig.MemDelay);
-
-            return L1Line.GetWord(addr);
+            return word;
         }
     }
 }
@@ -439,23 +452,16 @@ void MMU::SetWord(uint32_t addr, uint32_t word, bool simulateDelay)
     gmc.SetWord(addr, word, tile);
 }
 
-void MMU::SimulateLoadStall(bool simulateDelay, uint32_t addr, uint32_t delay)
+void MMU::SimulateLoadStall(uint32_t addr, uint32_t word,
+                            bool simulateDelay, uint32_t delay)
 {
     if (simulateDelay && delay > 1)
     {
-        if (addr == loadStallAddr)
-        {
-            // Second trail after the load stall.  Reset the address and serve
-            // the request.
-            loadStallAddr = 0;
-        }
-        else
-        {
-            // The CPU will execute the load instruction again after (MEM_DELAY
-            // - 2) clock so that it can load the data.
-            loadStallAddr = addr;
-            throw LoadStall(delay - 2);
-        }
+        // The CPU will execute the load instruction again after (MEM_DELAY
+        // - 2) clock so that it can load the data.
+        lastLoadStallAddr = addr;
+        lastLoadStallResult = word;
+        throw LoadStall(delay - 2);
     }
 }
 
